@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Memory management &mdash; PYB11Generator 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="STL containers" href="stl.html" />
+    <link rel="prev" title="Classes" href="classes.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PYB11Generator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to PYB11Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Memory management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#class-holder-types">Class holder types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#return-value-policies">Return value policies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stl.html">STL containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PYB11decorators.html">PYB11 decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PYB11functions.html">PYB11 special functions and classes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PYB11Generator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Memory management</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/memory.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="memory-management">
+<span id="memory-policies"></span><h1>Memory management<a class="headerlink" href="#memory-management" title="Permalink to this headline">¶</a></h1>
+<p>It is generally fine to bind C++ and Python via pybind11 without worrying about how the memory/lifetime of the objects is handled – the defaults work fine in most cases.  However, since C++ allows memory and objects to be allocated/deallocated in a variety of ways, at times it is necessary to pay attention to this issue.  In this section we discuss the pybind11 methods of handling memory and object lifetimes PYB11Generator provides wrappers for.  In order to understand this section it is advisable to read the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#smart-pointers">pybind11 documentation on the use of smart pointers</a>, pybind11 <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>, and <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#call-policies" title="(in pybind11 v2.2)"><span>Additional call policies</span></a>.</p>
+<div class="section" id="class-holder-types">
+<span id="class-holder"></span><h2>Class holder types<a class="headerlink" href="#class-holder-types" title="Permalink to this headline">¶</a></h2>
+<p>When pybind11 creates a new instance of a bound C++ class, it uses a smart pointer type to hold and manage that instance.  The default type used by pybind11 for this purpose is <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>, which means new objects created in this manner by Python will be deallocated when their reference count goes to zero.  In most circumstances this is fine, but some C++ applications may have a smart pointer type they already are working with.  In such cases we can take control of the smart pointer type used to allocate and manage classes from Python.  In PYB11 we specify this by decorating class declarations with <code class="docutils literal notranslate"><span class="pre">&#64;PYB11holder</span></code>.  For instance, to make pybind11 use <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> to hold a class type <code class="docutils literal notranslate"><span class="pre">A</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@PYB11holder</span><span class="p">(</span><span class="s2">&quot;std::shared_ptr&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">pyinit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Default constructor&quot;</span>
+
+    <span class="k">def</span> <span class="nf">some_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;int&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;int&quot;</span>
+</pre></div>
+</div>
+<p>pybind11 supports <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> and <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> without further work.  It is possible to use any reference counting smart pointer for this purpose, but other types require more information specified to pybind11.  See the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#custom-smart-pointers">pybind11 documentation for further information</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Overriding the holder smart pointer type can result in subtleties that lead to hard to understand memory errors.  If using this capability, read the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#std-shared-ptr">pybind11 description</a> carefully!</p>
+</div>
+</div>
+<div class="section" id="return-value-policies">
+<span id="return-policies"></span><h2>Return value policies<a class="headerlink" href="#return-value-policies" title="Permalink to this headline">¶</a></h2>
+<p>Return value policies are important but at times tricky for C++ types returned by reference or pointer.  By default pybind11 assumes Python will take ownership of returned values, implying Python can delete those objects when the Python reference count falls to zero.  If a C++ library returns a pointer to memory it expects to manage, however, the result of this conflict over who can manage (delete) that memory is an error.  For this reason pybind11 provides <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>, allowing the developer to explicitly state how memory returned from C++ should be handled.  Before using these policies it is <em>critical</em> to read and understand these policies from pybind11.  These return value policies are applied (for functions or methods) using the <code class="docutils literal notranslate"><span class="pre">&#64;PYB11returnpolicy</span></code> decorator, with allowed values <code class="docutils literal notranslate"><span class="pre">take_ownership</span></code>, <code class="docutils literal notranslate"><span class="pre">copy</span></code>, <code class="docutils literal notranslate"><span class="pre">move</span></code>, <code class="docutils literal notranslate"><span class="pre">reference</span></code>, <code class="docutils literal notranslate"><span class="pre">reference_internal</span></code>, <code class="docutils literal notranslate"><span class="pre">automatic</span></code>, and <code class="docutils literal notranslate"><span class="pre">automatic_reference</span></code>.  The default policy is <code class="docutils literal notranslate"><span class="pre">automatic</span></code>.</p>
+<p>Consider the example C++ function from the pybind11 documentation:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/* Function declaration */</span>
+<span class="n">Data</span> <span class="o">*</span><span class="nf">get_data</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_data</span><span class="p">;</span> <span class="cm">/* (pointer to a static data structure) */</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>If we want to tell pybind11 the C++ side will manage the memory for the returned <code class="docutils literal notranslate"><span class="pre">Data*</span></code> from this method, we can apply the <code class="docutils literal notranslate"><span class="pre">reference</span></code>, we can bind this function with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@PYB11returnpolicy</span><span class="p">(</span><span class="s2">&quot;reference&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_data</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;Data*&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="stl.html" class="btn btn-neutral float-right" title="STL containers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="classes.html" class="btn btn-neutral" title="Classes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, J. Michael Owen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

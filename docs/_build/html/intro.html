@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction to PYB11Generator &mdash; PYB11Generator 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Functions" href="functions.html" />
+    <link rel="prev" title="PYB11Generator’s documentation" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PYB11Generator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction to PYB11Generator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-basics-how-to-generate-pybind11-code-using-pyb11generator">The basics: how to generate pybind11 code using PYB11Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-first-example-start-to-finish">A first example start to finish</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory.html">Memory management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stl.html">STL containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PYB11decorators.html">PYB11 decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PYB11functions.html">PYB11 special functions and classes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PYB11Generator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Introduction to PYB11Generator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction-to-pyb11generator">
+<span id="intro"></span><h1>Introduction to PYB11Generator<a class="headerlink" href="#introduction-to-pyb11generator" title="Permalink to this headline">¶</a></h1>
+<p>Using PYB11Generator to write the interface for a C++ binding is intended to emulate writing that same interface in Python, so if you’re familiar with Python it should be easy to get started with PYB11Generator.  As an example, if we have a header for a C++ function that looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// A really important function!
+int func();
+</pre></div>
+</div>
+<p>We can define the PYB11Generator prescription for binding this method by writing a python method as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+    <span class="s2">&quot;A really important function!&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;int&quot;</span>
+</pre></div>
+</div>
+<p>Wherever possible we try to use ordinary python syntax to correspond to pybind11/C++ constructs: python functions correspond to and generate binding code for C++ functions as above; a python class generates binding code for pybind11 to bind a C++ class; arguments for functions and methods in python generate corresponding argument specifications in C++ function pointer syntax.  Because Python is not a strongly typed language, we specify C++ types using strings (if needed) as above, where we specify the return <code class="docutils literal notranslate"><span class="pre">int</span></code> type by returning the string <code class="docutils literal notranslate"><span class="pre">&quot;int&quot;</span></code> from <code class="docutils literal notranslate"><span class="pre">func</span></code>.  We also use Python decorators to annotate Python methods with uniquely C++ concepts such as <code class="docutils literal notranslate"><span class="pre">const</span></code>, <code class="docutils literal notranslate"><span class="pre">virtual</span></code>, etc., as will be discussed in succeeding sections.</p>
+<div class="section" id="the-basics-how-to-generate-pybind11-code-using-pyb11generator">
+<span id="the-basics"></span><h2>The basics: how to generate pybind11 code using PYB11Generator<a class="headerlink" href="#the-basics-how-to-generate-pybind11-code-using-pyb11generator" title="Permalink to this headline">¶</a></h2>
+<p>PYB11Generator works by starting up a Python process, importing a module containing Python definitions for functions and classes corresponding to the C++ interface to be bound, and invoking the function <code class="docutils literal notranslate"><span class="pre">PYB11generateModule</span></code> on the imported Python module, which writes out a C++ file of pybind11 statements binding that interface.  This generated pybind11 C++ file is what is compiled by a C++ compiler to create the final Python shared module allowing the C++ methods and classes to be exercised from Python.  As an example, if we have created a Python file <code class="docutils literal notranslate"><span class="pre">mymodule.py</span></code> containing the Python description of the C++ methods we wish to expose in a module to be called <code class="docutils literal notranslate"><span class="pre">mymodule</span></code>, we can invoke <code class="docutils literal notranslate"><span class="pre">PYB11generateModule</span></code> to create the intermediate C++ file as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s1">&#39;from PYB11Generator import *; import mymodule; PYB11generateModule(mymodule)&#39;</span>
+</pre></div>
+</div>
+<p>resulting in the creation of a C++ source file <code class="docutils literal notranslate"><span class="pre">mymodule.cc</span></code>.  A full description of the <code class="docutils literal notranslate"><span class="pre">PYB11generateModule</span></code> interface is given in <a class="reference internal" href="PYB11functions.html#pyb11-functions"><span class="std std-ref">PYB11 special functions and classes</span></a>.</p>
+</div>
+<div class="section" id="a-first-example-start-to-finish">
+<span id="first-example"></span><h2>A first example start to finish<a class="headerlink" href="#a-first-example-start-to-finish" title="Permalink to this headline">¶</a></h2>
+<p>To explicitly demonstrate the stages of creating bindings using PYB11Generator, here we recreate an early example in the pybind11 documentation: <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/basics.html#simple-example" title="(in pybind11 v2.2)"><span>Creating bindings for a simple function</span></a>.  Say we want to wrap the following C++ method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span> <span class="n">add</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span><span class="p">,</span> <span class="nb">int</span> <span class="n">j</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We can use PYB11Generator to create the same pybind11 code used to wrap this method in the pybind11 tutorial by writing a file <code class="docutils literal notranslate"><span class="pre">simple_example.py</span></code> containing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;pybind11 example plugin&quot;</span>
+
+<span class="n">PYB11preamble</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">int add(int i, int j) {</span>
+<span class="s2">  return i + j;</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">add</span><span class="p">():</span>
+    <span class="s2">&quot;A function which adds two numbers&quot;</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p>Now executing the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s1">&#39;from PYB11Generator import *; import simple_example; PYB11generateModule(simple_example, &quot;example&quot;)&#39;</span>
+</pre></div>
+</div>
+<p>creates a file <code class="docutils literal notranslate"><span class="pre">example.cc</span></code>, which looks like (omitting the boilerplate preamble code with <code class="docutils literal notranslate"><span class="pre">#include</span></code>’s):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span> <span class="n">add</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span><span class="p">,</span> <span class="nb">int</span> <span class="n">j</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="o">//------------------------------------------------------------------------------</span>
+<span class="o">//</span> <span class="n">Make</span> <span class="n">the</span> <span class="n">module</span>
+<span class="o">//------------------------------------------------------------------------------</span>
+<span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="n">m</span><span class="o">.</span><span class="n">doc</span><span class="p">()</span> <span class="o">=</span> <span class="s2">&quot;pybind11 example plugin&quot;</span>  <span class="p">;</span>
+
+  <span class="o">//...........................................................................</span>
+  <span class="o">//</span> <span class="n">Methods</span>
+  <span class="n">m</span><span class="o">.</span><span class="n">def</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">add</span><span class="p">,</span> <span class="s2">&quot;A function which adds two numbers&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is identical to the native pybind11 binding code from the pybind11 tutorial <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/basics.html#simple-example" title="(in pybind11 v2.2)"><span>Creating bindings for a simple function</span></a>, modulo some comments.  This code can now be compiled to the final Python shared module as described this same pybind11 tutorial:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ c++ -O3 -Wall -shared -std=c++11 -fPIC `python -m pybind11 --includes` example.cc -o example.so
+</pre></div>
+</div>
+<p>A few things worth noting:</p>
+<ul class="simple">
+<li>This example uses the fact that if the function being wrapped is unambiguous, we can use a bare C++ function pointer (without the full explicit function prescription).  This is reflected in the PYB11Generator syntax when we write the <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">add()</span></code> function in python without arguments or a return type.</li>
+<li>In order to directly insert the C++ function definition into the resulting C++ file, we have used the special variable <code class="docutils literal notranslate"><span class="pre">PYB11preamble</span></code> variable.  A more typical use case will require <code class="docutils literal notranslate"><span class="pre">#include</span></code> ing the necessary C++ header files in the generated code, which is accomplished through another special variable, <code class="docutils literal notranslate"><span class="pre">PYB11includes</span></code>, described later.</li>
+<li>In general special variables and commands to PYB11Generator use the prefix <code class="docutils literal notranslate"><span class="pre">PYB11</span></code> such as <code class="docutils literal notranslate"><span class="pre">PYB11preamble</span></code> in this example.</li>
+<li>Note also that ordinary Python doc strings (both for the module and function) are picked up from <code class="docutils literal notranslate"><span class="pre">simple_example.py</span></code> and propagated to the pybind11 bindings.</li>
+</ul>
+<p>This example demonstrates the steps necessary to create a usable python module using PYB11Generator:</p>
+<ul class="simple">
+<li>Create a python file describing the desired interface using ordinary python syntax, based on the C++ methods and classes to be bound.</li>
+<li>Run a python line like above to generate the pybind11 C++ code from this python input.</li>
+<li>Compile the resulting pybind11 C++ code to create the python shared module.</li>
+</ul>
+<p>In the following sections we describe the nuances of creating the PYB11 python input files in much more detail; we will not show the compilation examples beyond this point since it is no different than using pybind11 directly, and the above example pretty much covers it.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="functions.html" class="btn btn-neutral float-right" title="Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="PYB11Generator’s documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, J. Michael Owen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

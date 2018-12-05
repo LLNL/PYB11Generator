@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PYB11 decorators &mdash; PYB11Generator 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PYB11 special functions and classes" href="PYB11functions.html" />
+    <link rel="prev" title="STL containers" href="stl.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PYB11Generator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to PYB11Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory.html">Memory management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stl.html">STL containers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PYB11 decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PYB11functions.html">PYB11 special functions and classes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PYB11Generator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>PYB11 decorators</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/PYB11decorators.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pyb11-decorators">
+<span id="decorators"></span><h1>PYB11 decorators<a class="headerlink" href="#pyb11-decorators" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="PYB11ignore">
+<code class="descclassname">&#64;</code><code class="descname">PYB11ignore</code><a class="headerlink" href="#PYB11ignore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies that the decorated object should be ignored by PYB11Generator, i.e., not processed to produce any pybind11 binding output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11template">
+<code class="descclassname">&#64;</code><code class="descname">PYB11template</code><span class="sig-paren">(</span><em>&quot;type1&quot;</em>, <em>&quot;type2&quot;</em>, <em>...</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates the object should be treated as a C++ template.  Accepts any number of strings which represent the names of the template arguments.</p>
+<p>The succeeding python class or function can use the specified template argument strings as patterns for substitation with python dictionary string replacement.  So if we are binding a C++ templated function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="n">T</span> <span class="n">manipulate</span><span class="p">(</span><span class="n">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">val</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The corresponding PYB11 template specfication would look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@PYB11template</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">manipulate</span><span class="p">(</span><span class="n">val</span> <span class="o">=</span> <span class="s2">&quot;const </span><span class="si">%(T)s</span><span class="s2">&quot;</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%(T)s</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11template_dict">
+<code class="descclassname">&#64;</code><code class="descname">PYB11template_dict</code><a class="headerlink" href="#PYB11template_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Explicitly specifies the dictionary of template args to values for use with <code class="docutils literal notranslate"><span class="pre">&#64;PYB11template</span></code> types.</p>
+<p><em>NOTE: this is a highly unusual pattern to need/use.  It is preferable to use the ordinary PYB11 template instantion methods</em> <code class="docutils literal notranslate"><span class="pre">PYB11TemplateClass</span></code>, <code class="docutils literal notranslate"><span class="pre">PYB11TemplateMethod</span></code>, <em>or</em> <code class="docutils literal notranslate"><span class="pre">PYB11TemplateFunction</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11singleton">
+<code class="descclassname">&#64;</code><code class="descname">PYB11singleton</code><a class="headerlink" href="#PYB11singleton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies that the decorated object should be treated as a C++ singleton.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11holder">
+<code class="descclassname">&#64;</code><code class="descname">PYB11holder</code><span class="sig-paren">(</span><em>holder_type</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11holder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify a special C++ holder for the generated type in <code class="docutils literal notranslate"><span class="pre">pybind</span></code>, rather than the usual default <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>.  See pybind11 documentation on using <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#std-shared-ptr">shared_ptr as a holder type</a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11dynamic_attr">
+<code class="descclassname">&#64;</code><code class="descname">PYB11dynamic_attr</code><a class="headerlink" href="#PYB11dynamic_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the wrapped class modifiable, i.e., allow attributes to be added dynamically to an instance of the class in python.  See pybind11 documentation about <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/classes.html?highlight=dynamic_attr#dynamic-attributes">dynamic attributes</a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11namespace">
+<code class="descclassname">&#64;</code><code class="descname">PYB11namespace</code><span class="sig-paren">(</span><em>&quot;val&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the namespace the C++ type should be found in.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11cppname">
+<code class="descclassname">&#64;</code><code class="descname">PYB11cppname</code><span class="sig-paren">(</span><em>&quot;val&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11cppname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Give a value for the C++ name of the decorated function, class, or method.  Overrides the default assumption that the C++ name is the same as that given for the object in the PYB11 python binding file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11pycppname">
+<code class="descclassname">&#64;</code><code class="descname">PYB11pycppname</code><span class="sig-paren">(</span><em>&quot;val&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11pycppname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simultaneously set the Python and C++ name of the decorated function, class, or method.  Shorthand for specifying both <code class="docutils literal notranslate"><span class="pre">&#64;PYB11pyname</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;PYB11cppname</span></code> to the given <code class="docutils literal notranslate"><span class="pre">&quot;val&quot;</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11virtual">
+<code class="descclassname">&#64;</code><code class="descname">PYB11virtual</code><a class="headerlink" href="#PYB11virtual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark a class method as virtual.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11pure_virtual">
+<code class="descclassname">&#64;</code><code class="descname">PYB11pure_virtual</code><a class="headerlink" href="#PYB11pure_virtual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark a class method as pure virtual, making the class abstract.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11protected">
+<code class="descclassname">&#64;</code><code class="descname">PYB11protected</code><a class="headerlink" href="#PYB11protected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark a class method as protected.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11const">
+<code class="descclassname">&#64;</code><code class="descname">PYB11const</code><a class="headerlink" href="#PYB11const" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark a class method as const.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11static">
+<code class="descclassname">&#64;</code><code class="descname">PYB11static</code><a class="headerlink" href="#PYB11static" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark a class method as static.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11implementation">
+<code class="descclassname">&#64;</code><code class="descname">PYB11implementation</code><span class="sig-paren">(</span><em>&quot;val&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11implementation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Give an implementation for the bound function or method.  This is typically used to specify lambda function implementations, or explicitly call a helper method.</p>
+</dd></dl>
+
+<span class="target" id="returnpolicy"></span><dl class="function">
+<dt id="PYB11returnpolicy">
+<code class="descclassname">&#64;</code><code class="descname">PYB11returnpolicy</code><span class="sig-paren">(</span><em>&quot;val&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11returnpolicy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify a pybind11 return policy for the return value of a function or method.  This is a tricky topic that if misused can create memory errors, but is at times absolutely necessary to get the expected behavior from the underlying C++ code and types.  Before using this method carefully read the pybind11 discussion about <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11keepalive">
+<code class="descclassname">&#64;</code><code class="descname">PYB11keepalive</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11keepalive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tie the lifetime of objects in the return value/argument spec together, where the arguments (<code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>) are integers indicating the order of the arguments to tie together (0 refers to the return value).  This is another way of specifying memory policies, similar to <a class="reference internal" href="#returnpolicy">returnpolicy</a>.  Carefully read the pybind11 discussion of the <code class="docutils literal notranslate"><span class="pre">keep_alive</span></code> directive in <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#call-policies" title="(in pybind11 v2.2)"><span>Additional call policies</span></a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11module">
+<code class="descclassname">&#64;</code><code class="descname">PYB11module</code><span class="sig-paren">(</span><em>&quot;val&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicate the object should be imported from the specified python module.  This is useful for classes wrapped in one module which are needed in another, such as for inheritance.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="PYB11functions.html" class="btn btn-neutral float-right" title="PYB11 special functions and classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="stl.html" class="btn btn-neutral" title="STL containers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, J. Michael Owen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
