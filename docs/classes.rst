@@ -134,6 +134,10 @@ we can simply reflect this object hiearchy in the PYB11Generator code::
           "Some useful function of B"
           return "double"
 
+.. Note::
+
+   Cross module inheritance (binding a class in one module that inherits from a class bound in another) is a slightly trickier case.  See the discussion in :ref:`cross-module-inheritance` for an example of how to do this.
+
 .. _class-methods:
 
 -------
@@ -673,6 +677,62 @@ This method has the advantage we are using all ordinary python constructs, which
 .. Note::
 
    In this example we have also exposed the ``getx`` and ``setx`` methods to be bound in pybind11.  If this is not desired, we can decorate these methods with ``@PYB11ignore``, allowing these methods to be used in the :py:func:`property` definition while preventing them from being directly exposed themselves.
+
+.. _dynamic-attributes:
+
+------------------
+Dynamic attributes
+------------------
+
+By default pybind11 classes are immutable from Python, so it is an error to try and insert new attributes to an instance of a pybind11 bound C++ class.  This is different than default behavior in Python however, which allows instances of classes to be modified with new attributes.  For example, the following is legal Python code:
+
+.. code-block:: pycon
+
+   >>> class Strongbadia:
+   ...     headOfState = "Strong Bad"
+   ...
+   >>> country = Strongbadia()
+   >>> country.population = "Tire"    # Valid, we just dynamically added a new attribute
+
+pybind11 allows us to specify if we want classes to be modifiable in this way (see `pybind11 docs <https://pybind11.readthedocs.io/en/stable/classes.html#dynamic-attributes>`_), which is reflected in PYB11Generator by using the decorator ``@PYB11dynamic_attr``.  So if we wanted to modify one of our class bindings for ``A`` above to allow dynamic attributes, we can simply decorate the class declaration like::
+
+  @PYB11dynamic_attr
+  class A:
+  ...
+
+.. _class-singletons:
+
+----------
+Singletons
+----------
+
+Suppose we have declared a C++ class to be a singleton object (i.e., declared all constructors and destructors private) like so:
+
+.. code-block:: cpp
+
+  class Asingleton {
+  public:
+    static A* instance() { return instanceptr; }
+
+  private:
+    static A* instanceptr;
+    A();
+    A(const A&);
+    A& operator=(const A&);
+    ~A();
+  };
+
+pybind11 (via its use of ``std::unique_ptr`` to hold Python instances) assumes bound objects are destructible, but for singletons such as ``Asingleton`` above the destructor is private.  We must notify pybind11 that singletons such as this are different (as discussed in pybind11 for :ref:`pybind11:classes_with_non_public_destructors`) -- PYB11Generator accomplishes this via the decorator ``@PYB11singleton`` like so::
+
+  @PYB11singleton
+  class Asingleton:
+
+      @PYB11static
+      @PYB11returnpolicy("reference")
+      def instance(self):
+          return "Asingleton*"
+
+This example also involves setting a policy for handling the memory of the ``Asingle*`` returned by ``A.instance``: these sorts of memory mangement details are discussed in :ref:`return-policies`.
 
 .. _class-templates:
 

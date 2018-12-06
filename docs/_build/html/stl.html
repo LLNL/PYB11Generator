@@ -83,8 +83,13 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to PYB11Generator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="enums.html">Enums</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory.html">Memory management</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">STL containers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">STL containers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#std-vector">std::vector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#std-map">std::map</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="PYB11decorators.html">PYB11 decorators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PYB11functions.html">PYB11 special functions and classes</a></li>
 </ul>
@@ -153,6 +158,26 @@
             
   <div class="section" id="stl-containers">
 <span id="stl"></span><h1>STL containers<a class="headerlink" href="#stl-containers" title="Permalink to this headline">¶</a></h1>
+<p>In many cases STL containers (such as <code class="docutils literal notranslate"><span class="pre">vector</span></code>, <code class="docutils literal notranslate"><span class="pre">deque</span></code>, <code class="docutils literal notranslate"><span class="pre">map</span></code>, etc.) can be used transparently with pybind11: python lists will automatically convert to <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> and vice versa for example with no extra work or notation needed.  The main caveat to this convenience, however, is that this is accomplished by copying the data in the container, which has two potential drawbacks: for large containers this may not be practical; second, any attempt to change data on either the C++ or Python side will be lost due to the fact you would be operating on a copy.  Even if your function/method specification is passing STL containers by reference, this silent copying will make modifying them across the Python/C++ interface impossible without further work.</p>
+<p>If you need to pass an STL container without all this magic copying, it becomes necessary to directly bind such containers and define the behavior you want.  PYB11Generator provides some interfaces to pybind11’s machinery for such bindings, but it is essential to first read and understand what <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#stl-containers">pybind11 is doing for STL types</a>.</p>
+<p>PYB11Generator currently only provides Python convenience methods for handling two STL containers: <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> via <a class="reference internal" href="PYB11functions.html#PYB11_bind_vector" title="PYB11_bind_vector"><code class="xref py py-func docutils literal notranslate"><span class="pre">PYB11_bind_vector()</span></code></a>, and <code class="docutils literal notranslate"><span class="pre">std::map</span></code> with <a class="reference internal" href="PYB11functions.html#PYB11_bind_map" title="PYB11_bind_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">PYB11_bind_map()</span></code></a>.  It is possible to use the pybind11 semantics directly in C++ in combination with PYB11Generator to handle cases beyond <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> and <code class="docutils literal notranslate"><span class="pre">std::map</span></code> of course, it simply involves using the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#stl-containers">pybind11 C++ interface</a> directly.</p>
+<div class="section" id="std-vector">
+<h2>std::vector<a class="headerlink" href="#std-vector" title="Permalink to this headline">¶</a></h2>
+<p>Suppose we want to bind <code class="docutils literal notranslate"><span class="pre">std::vector&lt;int&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">std::vector&lt;Aclass&gt;</span></code> in our module such that they will be modifiable through the interface (no copying).  We can accomplish this by adding two lines to our Python module definition:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vector_of_int</span> <span class="o">=</span> <span class="n">PYB11_bind_vector</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="n">opaque</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">vector_of_Aclass</span> <span class="o">=</span> <span class="n">PYB11_bind_vector</span><span class="p">(</span><span class="s2">&quot;Aclass&quot;</span><span class="p">,</span> <span class="n">opaque</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When we import the resulting compiled module it will now include the types <code class="docutils literal notranslate"><span class="pre">vector_of_int</span></code> and <code class="docutils literal notranslate"><span class="pre">vector_of_Aclass</span></code> explicitly, and we need to deal in those types rather than the more convenient Python lists for arguments of those types.  The <code class="docutils literal notranslate"><span class="pre">opaque</span></code> argument here is what makes pybind11 treat these vector’s as mutable refrences through the Python/C++ interface.  We also have the option of making these bindings local to the module or global: see <a class="reference internal" href="PYB11functions.html#PYB11_bind_vector" title="PYB11_bind_vector"><code class="xref py py-func docutils literal notranslate"><span class="pre">PYB11_bind_vector()</span></code></a> for the full description.</p>
+</div>
+<div class="section" id="std-map">
+<h2>std::map<a class="headerlink" href="#std-map" title="Permalink to this headline">¶</a></h2>
+<p>Making <code class="docutils literal notranslate"><span class="pre">std::map</span></code> instances mutable through the Python/C++ interface (opaque as described in pybind11 terms) is similar to our treatment of <code class="docutils literal notranslate"><span class="pre">std::vector</span></code>.  If in our module we need to use <code class="docutils literal notranslate"><span class="pre">std::map&lt;std::string,</span> <span class="pre">Aclass&gt;</span></code> as an opaque argument we simply add a line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">map_of_int_to_Aclass</span> <span class="o">=</span> <span class="n">PYB11_bind_map</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;Aclass&quot;</span><span class="p">,</span> <span class="n">opaque</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Just as in our prior <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> examples, our module will now include a type <code class="docutils literal notranslate"><span class="pre">map_of_int_to_Aclass</span></code> which we can use explicitly to pass this container between Python and C++ mutably.</p>
+</div>
 </div>
 
 

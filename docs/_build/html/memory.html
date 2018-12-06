@@ -86,6 +86,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Memory management</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#class-holder-types">Class holder types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#return-value-policies">Return value policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#call-policies">Call policies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="stl.html">STL containers</a></li>
@@ -157,21 +158,18 @@
             
   <div class="section" id="memory-management">
 <span id="memory-policies"></span><h1>Memory management<a class="headerlink" href="#memory-management" title="Permalink to this headline">¶</a></h1>
-<p>It is generally fine to bind C++ and Python via pybind11 without worrying about how the memory/lifetime of the objects is handled – the defaults work fine in most cases.  However, since C++ allows memory and objects to be allocated/deallocated in a variety of ways, at times it is necessary to pay attention to this issue.  In this section we discuss the pybind11 methods of handling memory and object lifetimes PYB11Generator provides wrappers for.  In order to understand this section it is advisable to read the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#smart-pointers">pybind11 documentation on the use of smart pointers</a>, pybind11 <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>, and <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#call-policies" title="(in pybind11 v2.2)"><span>Additional call policies</span></a>.</p>
+<p>Generally memory management “just works” when binding C++ and Python with pybind11 without worrying about how the memory/lifetime of the objects is handled.  However, since C++ allows memory and objects to be allocated/deallocated in a variety of ways, at times it is necessary to pay attention to this issue.  In this section we discuss the pybind11 methods of handling memory and object lifetimes PYB11Generator provides wrappers for.  In order to understand this section it is advisable to read the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#smart-pointers">pybind11 documentation on the use of smart pointers</a>, pybind11 <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>, and <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#call-policies" title="(in pybind11 v2.2)"><span>Additional call policies</span></a>.</p>
 <div class="section" id="class-holder-types">
 <span id="class-holder"></span><h2>Class holder types<a class="headerlink" href="#class-holder-types" title="Permalink to this headline">¶</a></h2>
-<p>When pybind11 creates a new instance of a bound C++ class, it uses a smart pointer type to hold and manage that instance.  The default type used by pybind11 for this purpose is <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>, which means new objects created in this manner by Python will be deallocated when their reference count goes to zero.  In most circumstances this is fine, but some C++ applications may have a smart pointer type they already are working with.  In such cases we can take control of the smart pointer type used to allocate and manage classes from Python.  In PYB11 we specify this by decorating class declarations with <code class="docutils literal notranslate"><span class="pre">&#64;PYB11holder</span></code>.  For instance, to make pybind11 use <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> to hold a class type <code class="docutils literal notranslate"><span class="pre">A</span></code>:</p>
+<p>When pybind11 creates a new instance of a bound C++ class, it uses a smart pointer type to hold and manage that instance.  The default type used by pybind11 for this purpose is <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>, which means new objects created in this manner by Python will be deallocated when their reference count goes to zero.  In most circumstances this is fine, but some C++ applications may have a smart pointer type they already are working with.  In such cases it might be preferable to make pybind11 manage these object using the same sort of smart pointer.  In PYB11 we specify this by decorating class declarations with <code class="docutils literal notranslate"><span class="pre">&#64;PYB11holder</span></code>.  For instance, to make pybind11 use <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> to hold a class type <code class="docutils literal notranslate"><span class="pre">A</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@PYB11holder</span><span class="p">(</span><span class="s2">&quot;std::shared_ptr&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
 
     <span class="k">def</span> <span class="nf">pyinit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Default constructor&quot;</span>
-
-    <span class="k">def</span> <span class="nf">some_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;int&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;int&quot;</span>
 </pre></div>
 </div>
-<p>pybind11 supports <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> and <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> without further work.  It is possible to use any reference counting smart pointer for this purpose, but other types require more information specified to pybind11.  See the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#custom-smart-pointers">pybind11 documentation for further information</a>.</p>
+<p>This tells pybind11 any new instance of <code class="docutils literal notranslate"><span class="pre">A</span></code> created from python should be managed by <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>.  pybind11 supports <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> and <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> without further work.  It is possible to use any reference counting smart pointer for this purpose, but types other than <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> and <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> require more information be specified to pybind11.  PYB11 does not provide any convenience methods for adding that additional information, but it can be done directly with pybind11  as described in the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#custom-smart-pointers">pybind11 documentation</a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Overriding the holder smart pointer type can result in subtleties that lead to hard to understand memory errors.  If using this capability, read the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#std-shared-ptr">pybind11 description</a> carefully!</p>
@@ -185,12 +183,32 @@
 <span class="n">Data</span> <span class="o">*</span><span class="nf">get_data</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_data</span><span class="p">;</span> <span class="cm">/* (pointer to a static data structure) */</span> <span class="p">}</span>
 </pre></div>
 </div>
-<p>If we want to tell pybind11 the C++ side will manage the memory for the returned <code class="docutils literal notranslate"><span class="pre">Data*</span></code> from this method, we can apply the <code class="docutils literal notranslate"><span class="pre">reference</span></code>, we can bind this function with:</p>
+<p>If we want to tell pybind11 the C++ side will manage the memory for the returned <code class="docutils literal notranslate"><span class="pre">Data*</span></code> from this method, the <code class="docutils literal notranslate"><span class="pre">reference</span></code> return policy is appropriate.  We can express this by decorating the function binding as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@PYB11returnpolicy</span><span class="p">(</span><span class="s2">&quot;reference&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_data</span><span class="p">():</span>
     <span class="k">return</span> <span class="s2">&quot;Data*&quot;</span>
 </pre></div>
 </div>
+<p>Decorating return values from class methods is identical to functions: simply use <code class="docutils literal notranslate"><span class="pre">&#64;PYB11returnpolicy</span></code> to decorate the method declaration.</p>
+</div>
+<div class="section" id="call-policies">
+<span id="id1"></span><h2>Call policies<a class="headerlink" href="#call-policies" title="Permalink to this headline">¶</a></h2>
+<p>While <a class="reference internal" href="#return-policies"><span class="std std-ref">Return value policies</span></a> are specific to return types from functions or methods, call policies allow the user to tie together the lifetimes of return values and/or arguments.  This is discussed in depth in the pybind11 documentation <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#call-policies" title="(in pybind11 v2.2)"><span>Additional call policies</span></a>.  PYB11 provides the decorator <code class="docutils literal notranslate"><span class="pre">&#64;PYB11keepalive(a,</span> <span class="pre">b)</span></code> for direct access to the pybind11 command <code class="docutils literal notranslate"><span class="pre">py::keep_alive&lt;a,</span> <span class="pre">b&gt;</span></code>.  The arguments to the decorator <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> are integers indicating arguments in the call signature by positon index, with the convention:</p>
+<blockquote>
+<div><ul class="simple">
+<li>0 denotes the return value of the function/method.</li>
+<li>If decorating a class method, index 1 is the <code class="docutils literal notranslate"><span class="pre">this</span></code> (or <code class="docutils literal notranslate"><span class="pre">self</span></code>) pointer.</li>
+</ul>
+</div></blockquote>
+<p>To recreate the example from the pybind11 documentation, if we have a custom <code class="docutils literal notranslate"><span class="pre">List</span></code> class which we are binding in Python, we might want to decorate the <code class="docutils literal notranslate"><span class="pre">append</span></code> method like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">List</span><span class="p">:</span>
+
+    <span class="nd">@PYB11keepalive</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;void&quot;</span>
+</pre></div>
+</div>
+<p>This tells pybind11 to keep the the second argument (<code class="docutils literal notranslate"><span class="pre">x</span></code>, the element being appended) alive so long as the first argument (<code class="docutils literal notranslate"><span class="pre">self</span></code>, our container class) is alive.</p>
 </div>
 </div>
 

@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Memory management" href="memory.html" />
+    <link rel="next" title="Enums" href="enums.html" />
     <link rel="prev" title="Functions" href="functions.html" /> 
 
   
@@ -108,11 +108,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#option-2-use-an-ordinary-python-property-definition">Option 2: use an ordinary python property definition</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#dynamic-attributes">Dynamic attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#singletons">Singletons</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#templated-classes">Templated classes</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="enums.html">Enums</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory.html">Memory management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stl.html">STL containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="complications.html">Complications and corner cases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PYB11decorators.html">PYB11 decorators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PYB11functions.html">PYB11 special functions and classes</a></li>
 </ul>
@@ -290,6 +294,10 @@
         <span class="s2">&quot;Some useful function of B&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;double&quot;</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Cross module inheritance (binding a class in one module that inherits from a class bound in another) is a slightly trickier case.  See the discussion in <a class="reference internal" href="complications.html#cross-module-inheritance"><span class="std std-ref">Cross-module inheritance</span></a> for an example of how to do this.</p>
 </div>
 </div>
 <div class="section" id="methods">
@@ -760,6 +768,51 @@
 </div>
 </div>
 </div>
+<div class="section" id="dynamic-attributes">
+<span id="id6"></span><h2>Dynamic attributes<a class="headerlink" href="#dynamic-attributes" title="Permalink to this headline">¶</a></h2>
+<p>By default pybind11 classes are immutable from Python, so it is an error to try and insert new attributes to an instance of a pybind11 bound C++ class.  This is different than default behavior in Python however, which allows instances of classes to be modified with new attributes.  For example, the following is legal Python code:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Strongbadia</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">headOfState</span> <span class="o">=</span> <span class="s2">&quot;Strong Bad&quot;</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">country</span> <span class="o">=</span> <span class="n">Strongbadia</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">country</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="s2">&quot;Tire&quot;</span>    <span class="c1"># Valid, we just dynamically added a new attribute</span>
+</pre></div>
+</div>
+<p>pybind11 allows us to specify if we want classes to be modifiable in this way (see <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/classes.html#dynamic-attributes">pybind11 docs</a>), which is reflected in PYB11Generator by using the decorator <code class="docutils literal notranslate"><span class="pre">&#64;PYB11dynamic_attr</span></code>.  So if we wanted to modify one of our class bindings for <code class="docutils literal notranslate"><span class="pre">A</span></code> above to allow dynamic attributes, we can simply decorate the class declaration like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@PYB11dynamic_attr</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="singletons">
+<span id="class-singletons"></span><h2>Singletons<a class="headerlink" href="#singletons" title="Permalink to this headline">¶</a></h2>
+<p>Suppose we have declared a C++ class to be a singleton object (i.e., declared all constructors and destructors private) like so:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Asingleton</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="k">static</span> <span class="n">A</span><span class="o">*</span> <span class="n">instance</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">instanceptr</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="k">static</span> <span class="n">A</span><span class="o">*</span> <span class="n">instanceptr</span><span class="p">;</span>
+  <span class="n">A</span><span class="p">();</span>
+  <span class="n">A</span><span class="p">(</span><span class="k">const</span> <span class="n">A</span><span class="o">&amp;</span><span class="p">);</span>
+  <span class="n">A</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">A</span><span class="o">&amp;</span><span class="p">);</span>
+  <span class="o">~</span><span class="n">A</span><span class="p">();</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>pybind11 (via its use of <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> to hold Python instances) assumes bound objects are destructible, but for singletons such as <code class="docutils literal notranslate"><span class="pre">Asingleton</span></code> above the destructor is private.  We must notify pybind11 that singletons such as this are different (as discussed in pybind11 for <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/classes.html#classes-with-non-public-destructors" title="(in pybind11 v2.2)"><span>Non-public destructors</span></a>) – PYB11Generator accomplishes this via the decorator <code class="docutils literal notranslate"><span class="pre">&#64;PYB11singleton</span></code> like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@PYB11singleton</span>
+<span class="k">class</span> <span class="nc">Asingleton</span><span class="p">:</span>
+
+    <span class="nd">@PYB11static</span>
+    <span class="nd">@PYB11returnpolicy</span><span class="p">(</span><span class="s2">&quot;reference&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Asingleton*&quot;</span>
+</pre></div>
+</div>
+<p>This example also involves setting a policy for handling the memory of the <code class="docutils literal notranslate"><span class="pre">Asingle*</span></code> returned by <code class="docutils literal notranslate"><span class="pre">A.instance</span></code>: these sorts of memory mangement details are discussed in <a class="reference internal" href="memory.html#return-policies"><span class="std std-ref">Return value policies</span></a>.</p>
+</div>
 <div class="section" id="templated-classes">
 <span id="class-templates"></span><h2>Templated classes<a class="headerlink" href="#templated-classes" title="Permalink to this headline">¶</a></h2>
 <p>PYB11 handles C++ class templates similarly to <a class="reference internal" href="functions.html#function-templates"><span class="std std-ref">C++ template functions</span></a>: first, we decorate a class definition with <code class="docutils literal notranslate"><span class="pre">&#64;PYB11template</span></code>, which takes an arbitrary number of string arguments representing the template parameters; second, we use the <a class="reference internal" href="PYB11functions.html#PYB11TemplateClass" title="PYB11TemplateClass"><code class="xref py py-func docutils literal notranslate"><span class="pre">PYB11TemplateClass()</span></code></a> function to create instantiations of the template class.  Consider a C++ template class definition:</p>
@@ -806,7 +859,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="memory.html" class="btn btn-neutral float-right" title="Memory management" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="enums.html" class="btn btn-neutral float-right" title="Enums" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="functions.html" class="btn btn-neutral" title="Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

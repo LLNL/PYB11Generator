@@ -82,6 +82,7 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to PYB11Generator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="enums.html">Enums</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory.html">Memory management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stl.html">STL containers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PYB11decorators.html">PYB11 decorators</a></li>
@@ -225,6 +226,20 @@
 <li><code class="docutils literal notranslate"><span class="pre">cppname</span></code>: The name of the C++ class template, if different from that used for <code class="docutils literal notranslate"><span class="pre">klass_template</span></code>.</li>
 <li><code class="docutils literal notranslate"><span class="pre">pyname</span></code>: The name of the resulting Python class; defaults to the name of the instance created for this invocation of <code class="docutils literal notranslate"><span class="pre">PYB11TemplateClass</span></code>.</li>
 <li><code class="docutils literal notranslate"><span class="pre">docext</span></code>: An optional string extension to be applied to the docstring associated with <code class="docutils literal notranslate"><span class="pre">klass_template</span></code>.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11enum">
+<code class="descname">PYB11enum</code><span class="sig-paren">(</span><em>values</em><span class="optional">[</span>, <em>name=None</em>, <em>namespace=&quot;&quot;</em>, <em>cppname=None</em>, <em>export_values=False</em>, <em>doc=None</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#PYB11enum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Declare a C++ enum for wrapping in pybind11 – see <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/classes.html#enumerations-and-internal-types">pybind11 docs</a>.</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">values</span></code>: a tuple of strings listing the possible values for the enum</li>
+<li>name: set the name of enum type in Python.  <code class="docutils literal notranslate"><span class="pre">None</span></code> defaults to the name of the instance given this enum declaration instance.</li>
+<li>namespace: an optional C++ namespace the enum lives in.</li>
+<li>cppname: the C++ name of the enum.  <code class="docutils literal notranslate"><span class="pre">None</span></code> defaults to the same as <code class="docutils literal notranslate"><span class="pre">name</span></code>.</li>
+<li>export_values: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, causes the enum values to be exported into the enclosing scope (like an old-style C enum).</li>
+<li>doc: an optional document string.</li>
 </ul>
 </dd></dl>
 
