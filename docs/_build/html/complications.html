@@ -225,7 +225,12 @@
 <div class="section" id="non-templated-class-inheriting-from-a-templated-class">
 <span id="non-template-to-template-inheritance"></span><h2>Non-templated class inheriting from a templated class<a class="headerlink" href="#non-templated-class-inheriting-from-a-templated-class" title="Permalink to this headline">¶</a></h2>
 <p>PYB11Generator needs to know template parameters for templated classes in order to create concrete instantiations, but since Python does not have the concept of templates we have adopted a two-stage process for creating template class instantiations in PYB11 as described in <a class="reference internal" href="classes.html#class-templates"><span class="std std-ref">Templated classes</span></a>.  However, if we have a non-templated class which inherits from a templated base, there is no longer the second-stage of this proceedure using <a class="reference internal" href="PYB11functions.html#PYB11TemplateClass" title="PYB11TemplateClass"><code class="xref py py-func docutils literal notranslate"><span class="pre">PYB11TemplateClass()</span></code></a> to instantiate the base with the proper template parameters.</p>
-<p>PYB11 offers a slightly kludgy way to handle this problem: since template parameters in PYB11Generator are really just specified with python dictionary matching, we can directly insert the proper template parameter choices in the appropriate dictionary for our non-templated descendant using <code class="docutils literal notranslate"><span class="pre">&#64;PYB11template_dict</span></code>.  This is best demonstrated by an example – consider the following C++ class hierarchy:</p>
+<p>It is possible to handle this situation, but it requires two decorations be applied to the non-templated descendant:</p>
+<ol class="arabic simple">
+<li>Because the descendant will inherit the template decoration of the base class, we must explicitly state that the descendant has no template parameters with <code class="docutils literal notranslate"><span class="pre">&#64;PYB11template()</span></code>.</li>
+<li>We still need to specify what template parameters should be used for the base class.  Template parameters in PYB11Generator are specified using python dictionary matching, so we can directly insert the proper template parameter choices in the appropriate dictionary for our non-templated descendant using <code class="docutils literal notranslate"><span class="pre">&#64;PYB11template_dict</span></code>.</li>
+</ol>
+<p>These two steps are best demonstrated by an example – consider the following C++ class hierarchy:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">Value1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Value2</span><span class="o">&gt;</span>
 <span class="k">class</span> <span class="nc">A</span> <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
@@ -255,7 +260,8 @@
         <span class="s2">&quot;Default A::func&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;std::string&quot;</span>
 
-<span class="nd">@PYB11template_dict</span><span class="p">({</span><span class="s2">&quot;Value1&quot;</span> <span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="s2">&quot;Value2&quot;</span> <span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">})</span>    <span class="c1"># &lt;---- specify the template parameter substitutions</span>
+<span class="nd">@PYB11template</span><span class="p">()</span>                                             <span class="c1"># &lt;--- force not to inherit template parameters from A</span>
+<span class="nd">@PYB11template_dict</span><span class="p">({</span><span class="s2">&quot;Value1&quot;</span> <span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="s2">&quot;Value2&quot;</span> <span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">})</span> <span class="c1"># &lt;--- specify the template parameter substitutions</span>
 <span class="k">class</span> <span class="nc">B</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">pyinit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -268,7 +274,7 @@
         <span class="k">return</span> <span class="s2">&quot;std::string&quot;</span>
 
 <span class="c1"># We still need to instantiate any versions of A that we need/use.</span>
-<span class="n">A_double_int</span> <span class="o">=</span> <span class="n">PYB11TemplateClass</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">template_paramters</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">))</span>
+<span class="n">A_double_int</span> <span class="o">=</span> <span class="n">PYB11TemplateClass</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">template_parameters</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
