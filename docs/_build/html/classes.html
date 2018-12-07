@@ -117,6 +117,7 @@
 <li class="toctree-l1"><a class="reference internal" href="memory.html">Memory management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stl.html">STL containers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="complications.html">Complications and corner cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PYB11variables.html">PYB11 reserved variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PYB11decorators.html">PYB11 decorators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PYB11functions.html">PYB11 special functions and classes</a></li>
 </ul>
@@ -298,6 +299,10 @@
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Cross module inheritance (binding a class in one module that inherits from a class bound in another) is a slightly trickier case.  See the discussion in <a class="reference internal" href="complications.html#cross-module-inheritance"><span class="std std-ref">Cross-module inheritance</span></a> for an example of how to do this.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Another esoteric case is having a non-templated class inherit from a templated one.  A method of handling this situation is discussed in <a class="reference internal" href="complications.html#non-template-to-template-inheritance"><span class="std std-ref">Non-templated class inheriting from a templated class</span></a>.</p>
 </div>
 </div>
 <div class="section" id="methods">
