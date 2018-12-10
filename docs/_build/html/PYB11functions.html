@@ -167,6 +167,19 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="PYB11TemplateFunction">
+<code class="descname">PYB11TemplateFunction</code><span class="sig-paren">(</span><em>func_template</em>, <em>template_parameters</em><span class="optional">[</span>, <em>cppname = None</em>, <em>pyname = None</em>, <em>docext = &quot;&quot;</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#PYB11TemplateFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate a function template (<code class="docutils literal notranslate"><span class="pre">func_template</span></code>) that was decorated by <code class="docutils literal notranslate"><span class="pre">&#64;PYB11template</span></code>.</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">func_template</span></code>: The template function definition</li>
+<li><code class="docutils literal notranslate"><span class="pre">template_parameters</span></code>: A single string (for a single template parameter function) or tuple of strings (for multiple template parameters), one for each template parameter defined by <code class="docutils literal notranslate"><span class="pre">&#64;PYB11template</span></code> on <code class="docutils literal notranslate"><span class="pre">func_template</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">cppname</span></code>: The name of the C++ function template, if different from that used for <code class="docutils literal notranslate"><span class="pre">func_template</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">pyname</span></code>: The name of the resulting Python function; defaults to the name of the instance created for this invocation of <code class="docutils literal notranslate"><span class="pre">PYB11TemplateFunction</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">docext</span></code>: An optional string extension to be applied to the docstring associated with <code class="docutils literal notranslate"><span class="pre">func_template</span></code>.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
 <dt id="PYB11attr">
 <code class="descname">PYB11attr</code><span class="sig-paren">(</span><span class="optional">[</span><em>value=None</em>, <em>pyname=None</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#PYB11attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an attribute in a module; corresponds to the pybind11 command <code class="docutils literal notranslate"><span class="pre">attr</span></code>.</p>
@@ -215,6 +228,19 @@
 <li><code class="docutils literal notranslate"><span class="pre">setterconst</span></code>: Specify if <code class="docutils literal notranslate"><span class="pre">setter</span></code> is a const method.</li>
 <li><code class="docutils literal notranslate"><span class="pre">static</span></code>: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make this a static property.</li>
 <li><code class="docutils literal notranslate"><span class="pre">returnPolicy</span></code>: Specify a special return policy for how to handle the memory of the return value.  Read pybind11 documentation at <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="PYB11TemplateMethod">
+<code class="descname">PYB11TemplateMethod</code><span class="sig-paren">(</span><em>func_template</em>, <em>template_parameters</em><span class="optional">[</span>, <em>cppname = None</em>, <em>pyname = None</em>, <em>docext = &quot;&quot;</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#PYB11TemplateMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate a class method (<code class="docutils literal notranslate"><span class="pre">func_template</span></code>) that was decorated by <code class="docutils literal notranslate"><span class="pre">&#64;PYB11template</span></code>.</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">func_template</span></code>: The template method definition</li>
+<li><code class="docutils literal notranslate"><span class="pre">template_parameters</span></code>: A single string (for a single template parameter method) or tuple of strings (for multiple template parameters), one for each template parameter defined by <code class="docutils literal notranslate"><span class="pre">&#64;PYB11template</span></code> on <code class="docutils literal notranslate"><span class="pre">func_template</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">cppname</span></code>: The name of the C++ method template, if different from that used for <code class="docutils literal notranslate"><span class="pre">func_template</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">pyname</span></code>: The name of the resulting Python method; defaults to the name of the instance created for this invocation of <code class="docutils literal notranslate"><span class="pre">PYB11TemplateMethod</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">docext</span></code>: An optional string extension to be applied to the docstring associated with <code class="docutils literal notranslate"><span class="pre">func_template</span></code>.</li>
 </ul>
 </dd></dl>
 

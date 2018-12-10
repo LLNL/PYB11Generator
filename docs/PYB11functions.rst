@@ -15,6 +15,21 @@ This section describes the special functions and classes defined in PYB11Generat
   * ``"basename"``: a basename for the generated C++ file.  If specified, the output is written to ``basename.cc``, otherwise output will be written to ``pymodule.cc``
 
 .. #############################################################################
+.. py:function:: PYB11TemplateFunction(func_template, template_parameters[, cppname = None, pyname = None, docext = ""])
+
+  Instantiate a function template (``func_template``) that was decorated by ``@PYB11template``.
+
+  * ``func_template``: The template function definition
+
+  * ``template_parameters``: A single string (for a single template parameter function) or tuple of strings (for multiple template parameters), one for each template parameter defined by ``@PYB11template`` on ``func_template``.
+
+  * ``cppname``: The name of the C++ function template, if different from that used for ``func_template``.
+
+  * ``pyname``: The name of the resulting Python function; defaults to the name of the instance created for this invocation of ``PYB11TemplateFunction``.
+
+  * ``docext``: An optional string extension to be applied to the docstring associated with ``func_template``.
+
+.. #############################################################################
 .. py:function:: PYB11attr([value=None, pyname=None])
 
   Create an attribute in a module; corresponds to the pybind11 command ``attr``.
@@ -73,6 +88,21 @@ This section describes the special functions and classes defined in PYB11Generat
    * ``static``: If ``True``, make this a static property.
 
    * ``returnPolicy``: Specify a special return policy for how to handle the memory of the return value.  Read pybind11 documentation at :ref:`pybind11:return_value_policies`.
+
+.. #############################################################################
+.. py:function:: PYB11TemplateMethod(func_template, template_parameters[, cppname = None, pyname = None, docext = ""])
+
+  Instantiate a class method (``func_template``) that was decorated by ``@PYB11template``.
+
+  * ``func_template``: The template method definition
+
+  * ``template_parameters``: A single string (for a single template parameter method) or tuple of strings (for multiple template parameters), one for each template parameter defined by ``@PYB11template`` on ``func_template``.
+
+  * ``cppname``: The name of the C++ method template, if different from that used for ``func_template``.
+
+  * ``pyname``: The name of the resulting Python method; defaults to the name of the instance created for this invocation of ``PYB11TemplateMethod``.
+
+  * ``docext``: An optional string extension to be applied to the docstring associated with ``func_template``.
 
 .. #############################################################################
 .. py:function:: PYB11TemplateClass(klass_template, template_parameters[, cppname = None, pyname = None, docext = ""])
