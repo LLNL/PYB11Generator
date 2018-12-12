@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PYB11 reserved variables &mdash; PYB11Generator 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PYB11 decorators" href="PYB11decorators.html" />
+    <link rel="prev" title="Complications and corner cases" href="complications.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PYB11Generator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to PYB11Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="enums.html">Enums</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory.html">Memory management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stl.html">STL containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="complications.html">Complications and corner cases</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PYB11 reserved variables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pyb11-variables-for-classes">PYB11 variables for classes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PYB11decorators.html">PYB11 decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PYB11functions.html">PYB11 special functions and classes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PYB11Generator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>PYB11 reserved variables</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/PYB11variables.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pyb11-reserved-variables">
+<span id="variables"></span><h1>PYB11 reserved variables<a class="headerlink" href="#pyb11-reserved-variables" title="Permalink to this headline">¶</a></h1>
+<p>For the most part Python variables declared in module bindings are ignored by PYB11Generator.  There are a few exceptions to this rule though – some variables are used to communicate information to PYB11Generator as described below.</p>
+<dl class="docutils">
+<dt>PYB11includes = […]</dt>
+<dd><p class="first">A list of strings, each of which represents a file that should be <code class="docutils literal notranslate"><span class="pre">#include</span></code>-ed in the final C++ generated file.  For instance, if we needed the C++ to have the following include statements:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;A.hh&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+</pre></div>
+</div>
+<p>We would put this in our file for PYB11Generator:</p>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYB11includes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;A.hh&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;vector&gt;&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd>
+<dt>PYB11namespaces = […]</dt>
+<dd><p class="first">A list of strings for C++ namespaces we wish to use in the generated C++ – as an example, the following statement:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYB11namespaces</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;extreme&quot;</span><span class="p">,</span> <span class="s2">&quot;measures&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>results in the following in the generated pybind11 C++ source:</p>
+<div class="last highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">extreme</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">measures</span><span class="p">;</span>
+</pre></div>
+</div>
+</dd>
+<dt>PYB11scopenames = […]</dt>
+<dd><p class="first">A list of C++ types we want to directly declare with <code class="docutils literal notranslate"><span class="pre">use</span></code> (more focused than importing an entire namespace).  In order to decare we want to use <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> and <code class="docutils literal notranslate"><span class="pre">MyNameSpace::A</span></code>, we could use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYB11scopenames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;std::vector&quot;</span><span class="p">,</span> <span class="s2">&quot;MyNameSpace::A&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>which simply inserts the following in the generated C++:</p>
+<div class="last highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span>
+<span class="k">using</span> <span class="n">MyNameSpace</span><span class="o">::</span><span class="n">A</span>
+</pre></div>
+</div>
+</dd>
+<dt>PYB11preamble = “…”</dt>
+<dd><p class="first">PYB11preamble is used to specify a string of arbitrary C++ code that will be inserted near the top of the generated pybind11 source file.  <code class="docutils literal notranslate"><span class="pre">PYB11preamble</span></code> is a bit of catch-all, we could for instance directly perform the tasks of <code class="docutils literal notranslate"><span class="pre">PYB11includes</span></code> and <code class="docutils literal notranslate"><span class="pre">PYB11namespace</span></code> using <code class="docutils literal notranslate"><span class="pre">PYB11preamble</span></code> by simply typing the final C++ code in here.  One typical usage of this preamble variable is to insert small inline utility methods directly in the final C++ code.  For instance, if we had need of a simple function we want to use in the subsequent bindings, we could do something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYB11preamble</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">namespace JustForBindings {</span>
+<span class="s2">  inline int square(int x) { return x*x; }</span>
+<span class="s2">}&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p class="last">and now our generated code will include this function.</p>
+</dd>
+<dt>PYB11opaque = […]</dt>
+<dd><p class="first">A list of C++ types we want to be treated as opaque: typically STL types declared as opaque and global in another module.  See <a class="reference internal" href="stl.html#stl"><span class="std std-ref">STL containers</span></a> for further information.  As an example, to declare that <code class="docutils literal notranslate"><span class="pre">std::vector&lt;int&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">std::vector&lt;std::string&gt;</span></code> are declared as opaque in another module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYB11opaque</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;std::vector&lt;int&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;std::vector&lt;std::string&gt;&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>which results in the following inserted into the generated C++:</p>
+<div class="last highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">PYBIND11_MAKE_OPAQUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">PYBIND11_MAKE_OPAQUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>Note all of these reserved variables affect the start of the generated pybind11 C++ code, coming before any of the function, class, module, or other pybind11 declarations that are subsequently generated.  The order that these methods are executed in is the same as they are listed above: first any <code class="docutils literal notranslate"><span class="pre">PYB11includes</span></code>, then <code class="docutils literal notranslate"><span class="pre">PYB11namespaces</span></code>, <code class="docutils literal notranslate"><span class="pre">PYB11scopenames</span></code>, <code class="docutils literal notranslate"><span class="pre">PYB11preamble</span></code>, and finally <code class="docutils literal notranslate"><span class="pre">PYB11opaque</span></code>.  If we were to include all of the above examples (in any order) in a single source code for instance like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYB11includes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;A.hh&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;vector&gt;&#39;</span><span class="p">]</span>
+<span class="n">PYB11namespaces</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;extreme&quot;</span><span class="p">,</span> <span class="s2">&quot;measures&quot;</span><span class="p">]</span>
+<span class="n">PYB11scopenames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;std::vector&quot;</span><span class="p">,</span> <span class="s2">&quot;MyNameSpace::A&quot;</span><span class="p">]</span>
+<span class="n">PYB11preamble</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">namespace JustForBindings {</span>
+<span class="s2">  inline int square(int x) { return x*x; }</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="n">PYB11opaque</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;std::vector&lt;int&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;std::vector&lt;std::string&gt;&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>the generated pybind11 code would look like:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="cp">#include</span> <span class="cpf">&quot;A.hh&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">extreme</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">measures</span><span class="p">;</span>
+
+<span class="k">using</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span>
+<span class="k">using</span> <span class="n">MyNameSpace</span><span class="o">::</span><span class="n">A</span>
+
+
+<span class="k">namespace</span> <span class="n">JustForBindings</span> <span class="p">{</span>
+  <span class="kr">inline</span> <span class="kt">int</span> <span class="n">square</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="n">PYBIND11_MAKE_OPAQUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">PYBIND11_MAKE_OPAQUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">)</span>
+
+<span class="c1">//------------------------------------------------------------------------------</span>
+<span class="c1">// Make the module</span>
+<span class="c1">//------------------------------------------------------------------------------</span>
+<span class="p">...</span>
+</pre></div>
+</div>
+<div class="section" id="pyb11-variables-for-classes">
+<span id="class-variables"></span><h2>PYB11 variables for classes<a class="headerlink" href="#pyb11-variables-for-classes" title="Permalink to this headline">¶</a></h2>
+<p>There is also one reserved variable for class scope in PYB11:</p>
+<dl class="docutils">
+<dt>PYB11typedefs = “….”</dt>
+<dd><p class="first">A string of C++ to be inserted at the beginning of a class declaration.  This is a bit of a misnomer; the string can be any valid C++ for use in the class declaration scope.  Suppose for instance we are defining a class <code class="docutils literal notranslate"><span class="pre">A</span></code>, and we want to declare some typedefs only for use in the scope of <code class="docutils literal notranslate"><span class="pre">A</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+
+    <span class="n">PYB11typedefs</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">typedef int    IntType;</span>
+<span class="s2">typedef double ScalarType;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>which results in the following C++ code:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//............................................................................</span>
+<span class="c1">// Class A</span>
+<span class="p">{</span>
+
+  <span class="k">typedef</span> <span class="kt">int</span>    <span class="n">IntType</span><span class="p">;</span>
+  <span class="k">typedef</span> <span class="kt">double</span> <span class="n">ScalarType</span><span class="p">;</span>
+
+  <span class="n">class_</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;</span> <span class="n">obj</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="s">&quot;A&quot;</span><span class="p">);</span>
+  <span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last">so now <code class="docutils literal notranslate"><span class="pre">IntType</span></code> and <code class="docutils literal notranslate"><span class="pre">ScalarType</span></code> are avaiable as types in the scope where we are defining A.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="PYB11decorators.html" class="btn btn-neutral float-right" title="PYB11 decorators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="complications.html" class="btn btn-neutral" title="Complications and corner cases" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, J. Michael Owen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

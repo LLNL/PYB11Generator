@@ -1,0 +1,417 @@
+# Sphinx inventory version 2
+# Project: pybind11
+# Version: 2.2
+# The remainder of this file is compressed using zlib.
+PYBIND11_EMBEDDED_MODULE c:macro 1 reference.html#c.$ -
+PYBIND11_MODULE c:macro 1 reference.html#c.$ -
+add_ostream_redirect cpp:function 1 reference.html#_CPPv320add_ostream_redirect6moduleNSt6stringE -
+add_ostream_redirect::m cpp:functionParam 1 reference.html#_CPPv320add_ostream_redirect6moduleNSt6stringE -
+add_ostream_redirect::name cpp:functionParam 1 reference.html#_CPPv320add_ostream_redirect6moduleNSt6stringE -
+arg cpp:class 1 reference.html#_CPPv33$ -
+arg::arg cpp:function 1 reference.html#_CPPv3N3arg3argEPKc -
+arg::arg::name cpp:functionParam 1 reference.html#_CPPv3N3arg3argEPKc -
+arg::flag_noconvert cpp:member 1 reference.html#_CPPv3N3arg14flag_noconvertE -
+arg::flag_none cpp:member 1 reference.html#_CPPv3N3arg9flag_noneE -
+arg::name cpp:member 1 reference.html#_CPPv3N3arg4nameE -
+arg::noconvert cpp:function 1 reference.html#_CPPv3N3arg9noconvertEb -
+arg::noconvert::flag cpp:functionParam 1 reference.html#_CPPv3N3arg9noconvertEb -
+arg::none cpp:function 1 reference.html#_CPPv3N3arg4noneEb -
+arg::none::flag cpp:functionParam 1 reference.html#_CPPv3N3arg4noneEb -
+arg::operator= cpp:function 1 reference.html#_CPPv3NK3argaSERR1T -
+arg::operator=::value cpp:functionParam 1 reference.html#_CPPv3NK3argaSERR1T -
+arg_v cpp:class 1 reference.html#_CPPv35$ -
+arg_v::arg_v cpp:function 1 reference.html#_CPPv3N5arg_v5arg_vEPKcRR1TPKc -
+arg_v::arg_v cpp:function 1 reference.html#_CPPv3N5arg_v5arg_vERK3argRR1TPKc -
+arg_v::arg_v::base cpp:functionParam 1 reference.html#_CPPv3N5arg_v5arg_vERK3argRR1TPKc -
+arg_v::arg_v::descr cpp:functionParam 1 reference.html#_CPPv3N5arg_v5arg_vEPKcRR1TPKc -
+arg_v::arg_v::descr cpp:functionParam 1 reference.html#_CPPv3N5arg_v5arg_vERK3argRR1TPKc -
+arg_v::arg_v::name cpp:functionParam 1 reference.html#_CPPv3N5arg_v5arg_vEPKcRR1TPKc -
+arg_v::arg_v::x cpp:functionParam 1 reference.html#_CPPv3N5arg_v5arg_vEPKcRR1TPKc -
+arg_v::arg_v::x cpp:functionParam 1 reference.html#_CPPv3N5arg_v5arg_vERK3argRR1TPKc -
+arg_v::descr cpp:member 1 reference.html#_CPPv3N5arg_v5descrE -
+arg_v::noconvert cpp:function 1 reference.html#_CPPv3N5arg_v9noconvertEb -
+arg_v::noconvert::flag cpp:functionParam 1 reference.html#_CPPv3N5arg_v9noconvertEb -
+arg_v::none cpp:function 1 reference.html#_CPPv3N5arg_v4noneEb -
+arg_v::none::flag cpp:functionParam 1 reference.html#_CPPv3N5arg_v4noneEb -
+arg_v::type cpp:member 1 reference.html#_CPPv3N5arg_v4typeE -
+arg_v::value cpp:member 1 reference.html#_CPPv3N5arg_v5valueE -
+args cpp:class 1 reference.html#_CPPv34$ -
+arithmetic cpp:class 1 reference.html#_CPPv310$ -
+as_unsigned cpp:function 1 reference.html#_CPPv311as_unsignedP8PyObject -
+as_unsigned::o cpp:functionParam 1 reference.html#_CPPv311as_unsignedP8PyObject -
+base cpp:class 1 reference.html#_CPPv34$ -
+bool_ cpp:class 1 reference.html#_CPPv35$ -
+buffer cpp:class 1 reference.html#_CPPv36$ -
+buffer_protocol cpp:class 1 reference.html#_CPPv315$ -
+builtin_exception cpp:class 1 reference.html#_CPPv317$ -
+builtin_exception::set_error cpp:function 1 reference.html#_CPPv3NK17builtin_exception9set_errorEv -
+bytes cpp:class 1 reference.html#_CPPv35$ -
+bytes::bytes cpp:function 1 reference.html#_CPPv3N5bytes5bytesERKN8pybind113strE -
+bytes::bytes::s cpp:functionParam 1 reference.html#_CPPv3N5bytes5bytesERKN8pybind113strE -
+call_guard cpp:class 1 reference.html#_CPPv310$ -
+capsule cpp:class 1 reference.html#_CPPv37$ -
+dict cpp:class 1 reference.html#_CPPv34$ -
+doc cpp:class 1 reference.html#_CPPv33$ -
+dynamic_attr cpp:class 1 reference.html#_CPPv312$ -
+error_already_set cpp:class 1 reference.html#_CPPv317$ -
+error_already_set::error_already_set cpp:function 1 reference.html#_CPPv3N17error_already_set17error_already_setEv -
+error_already_set::matches cpp:function 1 reference.html#_CPPv3NK17error_already_set7matchesE6handle -
+error_already_set::matches::ex cpp:functionParam 1 reference.html#_CPPv3NK17error_already_set7matchesE6handle -
+error_already_set::restore cpp:function 1 reference.html#_CPPv3N17error_already_set7restoreEv -
+finalize_interpreter cpp:function 1 reference.html#_CPPv320finalize_interpreterv -
+float_ cpp:class 1 reference.html#_CPPv36$ -
+function cpp:class 1 reference.html#_CPPv38$ -
+getattr cpp:function 1 reference.html#_CPPv37getattr6handle6handle -
+getattr cpp:function 1 reference.html#_CPPv37getattr6handle6handle6handle -
+getattr cpp:function 1 reference.html#_CPPv37getattr6handlePKc -
+getattr cpp:function 1 reference.html#_CPPv37getattr6handlePKc6handle -
+getattr::default_ cpp:functionParam 1 reference.html#_CPPv37getattr6handle6handle6handle -
+getattr::default_ cpp:functionParam 1 reference.html#_CPPv37getattr6handlePKc6handle -
+getattr::name cpp:functionParam 1 reference.html#_CPPv37getattr6handle6handle -
+getattr::name cpp:functionParam 1 reference.html#_CPPv37getattr6handle6handle6handle -
+getattr::name cpp:functionParam 1 reference.html#_CPPv37getattr6handlePKc -
+getattr::name cpp:functionParam 1 reference.html#_CPPv37getattr6handlePKc6handle -
+getattr::obj cpp:functionParam 1 reference.html#_CPPv37getattr6handle6handle -
+getattr::obj cpp:functionParam 1 reference.html#_CPPv37getattr6handle6handle6handle -
+getattr::obj cpp:functionParam 1 reference.html#_CPPv37getattr6handlePKc -
+getattr::obj cpp:functionParam 1 reference.html#_CPPv37getattr6handlePKc6handle -
+globals cpp:function 1 reference.html#_CPPv37globalsv -
+handle cpp:class 1 reference.html#_CPPv36$ -
+handle::cast cpp:function 1 reference.html#_CPPv3NK6handle4castEv -
+handle::dec_ref cpp:function 1 reference.html#_CPPv3NK6handle7dec_refEv -
+handle::handle cpp:function 1 reference.html#_CPPv3N6handle6handleEP8PyObject -
+handle::handle cpp:function 1 reference.html#_CPPv3N6handle6handleEv -
+handle::handle::ptr cpp:functionParam 1 reference.html#_CPPv3N6handle6handleEP8PyObject -
+handle::inc_ref cpp:function 1 reference.html#_CPPv3NK6handle7inc_refEv -
+handle::operator bool cpp:function 1 reference.html#_CPPv3NK6handlecvbEv -
+handle::operator== cpp:function 1 reference.html#_CPPv3NK6handleeqERK6handle -
+handle::operator==::h cpp:functionParam 1 reference.html#_CPPv3NK6handleeqERK6handle -
+handle::ptr cpp:function 1 reference.html#_CPPv3NK6handle3ptrEv -
+hasattr cpp:function 1 reference.html#_CPPv37hasattr6handle6handle -
+hasattr cpp:function 1 reference.html#_CPPv37hasattr6handlePKc -
+hasattr::name cpp:functionParam 1 reference.html#_CPPv37hasattr6handle6handle -
+hasattr::name cpp:functionParam 1 reference.html#_CPPv37hasattr6handlePKc -
+hasattr::obj cpp:functionParam 1 reference.html#_CPPv37hasattr6handle6handle -
+hasattr::obj cpp:functionParam 1 reference.html#_CPPv37hasattr6handlePKc -
+hash cpp:function 1 reference.html#_CPPv34hash6handle -
+hash::obj cpp:functionParam 1 reference.html#_CPPv34hash6handle -
+initialize_interpreter cpp:function 1 reference.html#_CPPv322initialize_interpreterb -
+initialize_interpreter::init_signal_handlers cpp:functionParam 1 reference.html#_CPPv322initialize_interpreterb -
+int_ cpp:class 1 reference.html#_CPPv34$ -
+is_method cpp:class 1 reference.html#_CPPv39$ -
+is_operator cpp:class 1 reference.html#_CPPv311$ -
+isinstance cpp:function 1 reference.html#_CPPv310isinstance6handle -
+isinstance cpp:function 1 reference.html#_CPPv310isinstance6handle6handle -
+isinstance::obj cpp:functionParam 1 reference.html#_CPPv310isinstance6handle -
+isinstance::obj cpp:functionParam 1 reference.html#_CPPv310isinstance6handle6handle -
+isinstance::type cpp:functionParam 1 reference.html#_CPPv310isinstance6handle6handle -
+iter cpp:function 1 reference.html#_CPPv34iter6handle -
+iter::obj cpp:functionParam 1 reference.html#_CPPv34iter6handle -
+iterable cpp:class 1 reference.html#_CPPv38$ -
+iterator cpp:class 1 reference.html#_CPPv38$ -
+iterator::sentinel cpp:function 1 reference.html#_CPPv3N8iterator8sentinelEv -
+keep_alive cpp:class 1 reference.html#_CPPv310$ -
+kwargs cpp:class 1 reference.html#_CPPv36$ -
+len cpp:function 1 reference.html#_CPPv33len6handle -
+len::h cpp:functionParam 1 reference.html#_CPPv33len6handle -
+list cpp:class 1 reference.html#_CPPv34$ -
+literals cpp:type 1 reference.html#_CPPv38$ -
+literals::operator""_a cpp:function 1 reference.html#_CPPv3N8literalsli2_aEPKc6size_t -
+literals::operator""_a::name cpp:functionParam 1 reference.html#_CPPv3N8literalsli2_aEPKc6size_t -
+literals::operator""_s cpp:function 1 reference.html#_CPPv3N8literalsli2_sEPKc6size_t -
+literals::operator""_s::s cpp:functionParam 1 reference.html#_CPPv3N8literalsli2_sEPKc6size_t -
+literals::operator""_s::size cpp:functionParam 1 reference.html#_CPPv3N8literalsli2_sEPKc6size_t -
+memoryview cpp:class 1 reference.html#_CPPv310$ -
+metaclass cpp:class 1 reference.html#_CPPv39$ -
+metaclass::metaclass cpp:function 1 reference.html#_CPPv3N9metaclass9metaclassE6handle -
+metaclass::metaclass::value cpp:functionParam 1 reference.html#_CPPv3N9metaclass9metaclassE6handle -
+module cpp:class 1 reference.html#_CPPv36$ -
+module::def cpp:function 1 reference.html#_CPPv3N6module3defEPKcRR4FuncDpRK5Extra -
+module::def::extra cpp:functionParam 1 reference.html#_CPPv3N6module3defEPKcRR4FuncDpRK5Extra -
+module::def::f cpp:functionParam 1 reference.html#_CPPv3N6module3defEPKcRR4FuncDpRK5Extra -
+module::def::name_ cpp:functionParam 1 reference.html#_CPPv3N6module3defEPKcRR4FuncDpRK5Extra -
+module::def_submodule cpp:function 1 reference.html#_CPPv3N6module13def_submoduleEPKcPKc -
+module::def_submodule::doc cpp:functionParam 1 reference.html#_CPPv3N6module13def_submoduleEPKcPKc -
+module::def_submodule::name cpp:functionParam 1 reference.html#_CPPv3N6module13def_submoduleEPKcPKc -
+module::import cpp:function 1 reference.html#_CPPv3N6module6importEPKc -
+module::import::name cpp:functionParam 1 reference.html#_CPPv3N6module6importEPKc -
+module::module cpp:function 1 reference.html#_CPPv3N6module6moduleEPKcPKc -
+module::module::doc cpp:functionParam 1 reference.html#_CPPv3N6module6moduleEPKcPKc -
+module::module::name cpp:functionParam 1 reference.html#_CPPv3N6module6moduleEPKcPKc -
+module::reload cpp:function 1 reference.html#_CPPv3N6module6reloadEv -
+module_local cpp:class 1 reference.html#_CPPv312$ -
+multiple_inheritance cpp:class 1 reference.html#_CPPv320$ -
+name cpp:class 1 reference.html#_CPPv34$ -
+none cpp:class 1 reference.html#_CPPv34$ -
+object cpp:class 1 reference.html#_CPPv36$ -
+object::object cpp:function 1 reference.html#_CPPv3N6object6objectERK6object -
+object::object cpp:function 1 reference.html#_CPPv3N6object6objectERR6object -
+object::object::o cpp:functionParam 1 reference.html#_CPPv3N6object6objectERK6object -
+object::object::other cpp:functionParam 1 reference.html#_CPPv3N6object6objectERR6object -
+object::release cpp:function 1 reference.html#_CPPv3N6object7releaseEv -
+object::~object cpp:function 1 reference.html#_CPPv3N6objectD0Ev -
+object_api cpp:class 1 reference.html#_CPPv310$ -
+object_api::attr cpp:function 1 reference.html#_CPPv3NK10object_api4attrE6handle -
+object_api::attr cpp:function 1 reference.html#_CPPv3NK10object_api4attrEPKc -
+object_api::attr::key cpp:functionParam 1 reference.html#_CPPv3NK10object_api4attrE6handle -
+object_api::attr::key cpp:functionParam 1 reference.html#_CPPv3NK10object_api4attrEPKc -
+object_api::begin cpp:function 1 reference.html#_CPPv3NK10object_api5beginEv -
+object_api::contains cpp:function 1 reference.html#_CPPv3NK10object_api8containsERR1T -
+object_api::contains::item cpp:functionParam 1 reference.html#_CPPv3NK10object_api8containsERR1T -
+object_api::doc cpp:function 1 reference.html#_CPPv3NK10object_api3docEv -
+object_api::end cpp:function 1 reference.html#_CPPv3NK10object_api3endEv -
+object_api::get_type cpp:function 1 reference.html#_CPPv3NK10object_api8get_typeEv -
+object_api::is cpp:function 1 reference.html#_CPPv3NK10object_api2isER10object_api -
+object_api::is::other cpp:functionParam 1 reference.html#_CPPv3NK10object_api2isER10object_api -
+object_api::is_none cpp:function 1 reference.html#_CPPv3NK10object_api7is_noneEv -
+object_api::operator() cpp:function 1 reference.html#_CPPv3NK10object_apiclEDpRR4Args -
+object_api::operator()::args cpp:functionParam 1 reference.html#_CPPv3NK10object_apiclEDpRR4Args -
+object_api::operator* cpp:function 1 reference.html#_CPPv3NK10object_apimlEv -
+object_api::operator[] cpp:function 1 reference.html#_CPPv3NK10object_apiixE6handle -
+object_api::operator[] cpp:function 1 reference.html#_CPPv3NK10object_apiixEPKc -
+object_api::operator[]::key cpp:functionParam 1 reference.html#_CPPv3NK10object_apiixE6handle -
+object_api::operator[]::key cpp:functionParam 1 reference.html#_CPPv3NK10object_apiixEPKc -
+object_api::ref_count cpp:function 1 reference.html#_CPPv3NK10object_api9ref_countEv -
+reinterpret_borrow cpp:function 1 reference.html#_CPPv318reinterpret_borrow6handle -
+reinterpret_borrow::h cpp:functionParam 1 reference.html#_CPPv318reinterpret_borrow6handle -
+reinterpret_steal cpp:function 1 reference.html#_CPPv317reinterpret_steal6handle -
+reinterpret_steal::h cpp:functionParam 1 reference.html#_CPPv317reinterpret_steal6handle -
+repr cpp:function 1 reference.html#_CPPv34repr6handle -
+repr::h cpp:functionParam 1 reference.html#_CPPv34repr6handle -
+scope cpp:class 1 reference.html#_CPPv35$ -
+scoped_estream_redirect cpp:class 1 reference.html#_CPPv323$ -
+scoped_interpreter cpp:class 1 reference.html#_CPPv318$ -
+scoped_ostream_redirect cpp:class 1 reference.html#_CPPv323$ -
+sequence cpp:class 1 reference.html#_CPPv38$ -
+set cpp:class 1 reference.html#_CPPv33$ -
+setattr cpp:function 1 reference.html#_CPPv37setattr6handle6handle6handle -
+setattr cpp:function 1 reference.html#_CPPv37setattr6handlePKc6handle -
+setattr::name cpp:functionParam 1 reference.html#_CPPv37setattr6handle6handle6handle -
+setattr::name cpp:functionParam 1 reference.html#_CPPv37setattr6handlePKc6handle -
+setattr::obj cpp:functionParam 1 reference.html#_CPPv37setattr6handle6handle6handle -
+setattr::obj cpp:functionParam 1 reference.html#_CPPv37setattr6handlePKc6handle -
+setattr::value cpp:functionParam 1 reference.html#_CPPv37setattr6handle6handle6handle -
+setattr::value cpp:functionParam 1 reference.html#_CPPv37setattr6handlePKc6handle -
+sibling cpp:class 1 reference.html#_CPPv37$ -
+slice cpp:class 1 reference.html#_CPPv35$ -
+str cpp:class 1 reference.html#_CPPv33$ -
+str::str cpp:function 1 reference.html#_CPPv3N3str3strE6handle -
+str::str cpp:function 1 reference.html#_CPPv3N3str3strERK5bytes -
+str::str::b cpp:functionParam 1 reference.html#_CPPv3N3str3strERK5bytes -
+str::str::h cpp:functionParam 1 reference.html#_CPPv3N3str3strE6handle -
+tuple cpp:class 1 reference.html#_CPPv35$ -
+weakref cpp:class 1 reference.html#_CPPv37$ -
+advanced/cast/chrono std:doc -1 advanced/cast/chrono.html Chrono
+advanced/cast/custom std:doc -1 advanced/cast/custom.html Custom type casters
+advanced/cast/eigen std:doc -1 advanced/cast/eigen.html Eigen
+advanced/cast/functional std:doc -1 advanced/cast/functional.html Functional
+advanced/cast/index std:doc -1 advanced/cast/index.html Type conversions
+advanced/cast/overview std:doc -1 advanced/cast/overview.html Overview
+advanced/cast/stl std:doc -1 advanced/cast/stl.html STL containers
+advanced/cast/strings std:doc -1 advanced/cast/strings.html Strings, bytes and Unicode conversions
+advanced/classes std:doc -1 advanced/classes.html Classes
+advanced/embedding std:doc -1 advanced/embedding.html Embedding the interpreter
+advanced/exceptions std:doc -1 advanced/exceptions.html Exceptions
+advanced/functions std:doc -1 advanced/functions.html Functions
+advanced/misc std:doc -1 advanced/misc.html Miscellaneous
+advanced/pycpp/index std:doc -1 advanced/pycpp/index.html Python C++ interface
+advanced/pycpp/numpy std:doc -1 advanced/pycpp/numpy.html NumPy
+advanced/pycpp/object std:doc -1 advanced/pycpp/object.html Python types
+advanced/pycpp/utilities std:doc -1 advanced/pycpp/utilities.html Utilities
+advanced/smart_ptrs std:doc -1 advanced/smart_ptrs.html Smart pointers
+basics std:doc -1 basics.html First steps
+basics std:label -1 basics.html#$ First steps
+benchmark std:doc -1 benchmark.html Benchmark
+binder std:label -1 compiling.html#$ -
+building_manually std:label -1 compiling.html#building-manually Building manually
+call_policies std:label -1 advanced/functions.html#call-policies Additional call policies
+calling_python_functions std:label -1 advanced/pycpp/object.html#calling-python-functions Calling Python functions
+calling_python_methods std:label -1 advanced/pycpp/object.html#calling-python-methods Calling Python methods
+changelog std:doc -1 changelog.html Changelog
+changelog std:label -1 changelog.html#$ Changelog
+classes std:doc -1 classes.html Object-oriented code
+classes std:label -1 classes.html#$ Object-oriented code
+classes_with_non_public_destructors std:label -1 advanced/classes.html#classes-with-non-public-destructors Non-public destructors
+cmake std:label -1 compiling.html#$ Building with CMake
+cmake_example std:label -1 compiling.html#cmake-example -
+compiling std:doc -1 compiling.html Build systems
+compiling std:label -1 compiling.html#$ Build systems
+conversion_table std:label -1 advanced/cast/overview.html#conversion-table List of all builtin conversions
+core_types std:label -1 reference.html#core-types Convenience classes for arbitrary Python types
+cpp17_container_casters std:label -1 advanced/cast/stl.html#cpp17-container-casters C++17 library containers
+cppimport std:label -1 compiling.html#$ -
+custom_constructors std:label -1 advanced/classes.html#custom-constructors Custom constructors
+default_args std:label -1 basics.html#default-args Default arguments
+embedding std:label -1 advanced/embedding.html#$ Embedding the interpreter
+embedding_modules std:label -1 advanced/embedding.html#embedding-modules Adding embedded modules
+eval std:label -1 advanced/pycpp/utilities.html#$ Evaluating Python expressions from strings and files
+extended_aliases std:label -1 advanced/classes.html#extended-aliases Extended trampoline class functionality
+extras std:label -1 reference.html#$ Passing extra arguments to def or class_
+faq std:doc -1 faq.html Frequently asked questions
+faq:hidden_visibility std:label -1 faq.html#faq-hidden-visibility “‘SomeClass’ declared with greater visibility than the type of its field ‘SomeClass::member’ [-Wattributes]”
+faq:symhidden std:label -1 faq.html#faq-symhidden How can I create smaller binaries?
+genindex std:label -1 genindex.html Index
+gil std:label -1 advanced/misc.html#$ Global Interpreter Lock (GIL)
+implicit_conversions std:label -1 advanced/classes.html#implicit-conversions Implicit conversions
+index std:doc -1 index.html pybind11 — Seamless operability between C++11 and Python
+inheritance std:label -1 classes.html#$ Inheritance and automatic upcasting
+intro std:doc -1 intro.html About this project
+keyword_args std:label -1 basics.html#keyword-args Keyword arguments
+limitations std:doc -1 limitations.html Limitations
+macro_notes std:label -1 advanced/misc.html#macro-notes General notes regarding convenience macros
+macros std:label -1 reference.html#$ Macros
+modindex std:label -1 py-modindex.html Module Index
+module_local std:label -1 advanced/classes.html#module-local Module-local class bindings
+nonconverting_arguments std:label -1 advanced/functions.html#nonconverting-arguments Non-converting arguments
+none_arguments std:label -1 advanced/functions.html#none-arguments Allow/Prohibiting None arguments
+numpy std:label -1 advanced/pycpp/numpy.html#$ NumPy
+opaque std:label -1 advanced/cast/stl.html#$ Making opaque types
+ostream_redirect std:label -1 advanced/pycpp/utilities.html#ostream-redirect Capturing standard output from ostream
+overriding_virtuals std:label -1 advanced/classes.html#overriding-virtuals Overriding virtual functions in Python
+pickling std:label -1 advanced/classes.html#$ Pickling support
+properties std:label -1 classes.html#$ Instance and static fields
+pybind11cast_8h_1aeade6773ae4649d485c790a1eb9dc729 std:label -1 reference.html#$ -
+pybind11classargs std:label -1 reference.html#$ -
+pybind11classbool__ std:label -1 reference.html#$ -
+pybind11classbuffer std:label -1 reference.html#$ -
+pybind11classbuiltin__exception std:label -1 reference.html#$ -
+pybind11classbuiltin__exception_1a1a12a564ae0fd4687e2f491c36d1133b std:label -1 reference.html#$ -
+pybind11classbytes std:label -1 reference.html#$ -
+pybind11classcapsule std:label -1 reference.html#$ -
+pybind11classdict std:label -1 reference.html#$ -
+pybind11classerror__already__set std:label -1 reference.html#$ -
+pybind11classerror__already__set_1a751b231e5c796447d867cf30007a7fc0 std:label -1 reference.html#$ -
+pybind11classerror__already__set_1a9f6456fb9f03460d943682037132e819 std:label -1 reference.html#$ -
+pybind11classerror__already__set_1ae120cea67df659e1dae415f742ea4246 std:label -1 reference.html#$ -
+pybind11classfloat__ std:label -1 reference.html#$ -
+pybind11classfunction std:label -1 reference.html#$ -
+pybind11classhandle std:label -1 reference.html#$ -
+pybind11classhandle_1a03747f7b62a7b61eb7d9d1df25bfa7c4 std:label -1 reference.html#$ -
+pybind11classhandle_1a0cd611a5486b72d1442d06fb81502c2a std:label -1 reference.html#$ -
+pybind11classhandle_1a5205a17a2c6cbdb223f228f51b89befc std:label -1 reference.html#$ -
+pybind11classhandle_1a53ba30cccfb1cabee421fd4ea555cf44 std:label -1 reference.html#$ -
+pybind11classhandle_1a89810affcf6ddff3b32fca4659f25b3e std:label -1 reference.html#$ -
+pybind11classhandle_1a99eb912e1b9b823bc447980a16772584 std:label -1 reference.html#$ -
+pybind11classhandle_1ab9c5f2cbecb0b37f53765b1c501b7451 std:label -1 reference.html#$ -
+pybind11classhandle_1ad6d0a0adff270dc98b0d2d98080ca821 std:label -1 reference.html#$ -
+pybind11classint__ std:label -1 reference.html#$ -
+pybind11classiterable std:label -1 reference.html#$ -
+pybind11classiterator std:label -1 reference.html#$ -
+pybind11classiterator_1ace2b4797f9e34e51c1df9d52ba164203 std:label -1 reference.html#$ -
+pybind11classkwargs std:label -1 reference.html#$ -
+pybind11classlist std:label -1 reference.html#$ -
+pybind11classmemoryview std:label -1 reference.html#$ -
+pybind11classmodule std:label -1 reference.html#$ -
+pybind11classmodule_1a0e559dd7ef70d0edd90d0327ddbd0c12 std:label -1 reference.html#$ -
+pybind11classmodule_1a40817edef0ded5727701534bcded9982 std:label -1 reference.html#$ -
+pybind11classmodule_1a6ca13662c15143718888ae5cb13094b0 std:label -1 reference.html#$ -
+pybind11classmodule_1abd798017921903073343c4479efb93c0 std:label -1 reference.html#$ -
+pybind11classmodule_1abdc147152dd2073839cfdf1deac1dd5a std:label -1 reference.html#$ -
+pybind11classnone std:label -1 reference.html#$ -
+pybind11classobject std:label -1 reference.html#$ -
+pybind11classobject_1a3fc437bccb86b745433164bc3a04a2a4 std:label -1 reference.html#$ -
+pybind11classobject_1a4ce66b1d44b37ae6b28e80228b075aae std:label -1 reference.html#$ -
+pybind11classobject_1a6537d8aee1fc94555af84e5bb9ecad21 std:label -1 reference.html#$ -
+pybind11classobject_1aecd824abdc96ff340acf4ea25a34d76d std:label -1 reference.html#$ -
+pybind11classobject__api std:label -1 reference.html#$ -
+pybind11classobject__api_1a0b8a4e73fe6191714ef873f0e1f5e682 std:label -1 reference.html#$ -
+pybind11classobject__api_1a0ed8ee560495cf9ed0141176645c08f3 std:label -1 reference.html#$ -
+pybind11classobject__api_1a32bf0f717d78c208f47197fe636a1257 std:label -1 reference.html#$ -
+pybind11classobject__api_1a5d4b3804d5465f76cae70e91e351f112 std:label -1 reference.html#$ -
+pybind11classobject__api_1a7500954bd20a4e16b6b3711320ca8bc6 std:label -1 reference.html#$ -
+pybind11classobject__api_1a7a63912366e2f591887b503c08e0f8ca std:label -1 reference.html#$ -
+pybind11classobject__api_1a83d506e18ab831e38028163781219562 std:label -1 reference.html#$ -
+pybind11classobject__api_1a861ec580186045597074c9cbaf721070 std:label -1 reference.html#$ -
+pybind11classobject__api_1a93834d64ed3f809190fe2b658077274b std:label -1 reference.html#$ -
+pybind11classobject__api_1ab87ebb73f2295897213556f40a89d9e8 std:label -1 reference.html#$ -
+pybind11classobject__api_1abdc56cba29cd5fa1d69497742888f72d std:label -1 reference.html#$ -
+pybind11classobject__api_1ad6801601adc0408e7cf85623e2f67d0b std:label -1 reference.html#$ -
+pybind11classobject__api_1adaad9df53707c60bc1b408da189129c9 std:label -1 reference.html#$ -
+pybind11classobject__api_1afc12b6f3198aac56d41e747053d14eef std:label -1 reference.html#$ -
+pybind11classscoped__estream__redirect std:label -1 reference.html#$ -
+pybind11classscoped__interpreter std:label -1 reference.html#$ -
+pybind11classscoped__ostream__redirect std:label -1 reference.html#$ -
+pybind11classsequence std:label -1 reference.html#$ -
+pybind11classset std:label -1 reference.html#$ -
+pybind11classslice std:label -1 reference.html#$ -
+pybind11classstr std:label -1 reference.html#$ -
+pybind11classstr_1a4bff3c112fa3379ba8a668ca1547b85a std:label -1 reference.html#$ -
+pybind11classtuple std:label -1 reference.html#$ -
+pybind11classweakref std:label -1 reference.html#$ -
+pybind11detail_2common_8h_1a991baae3535d684a3df1a116d479c33f std:label -1 reference.html#$ -
+pybind11embed_8h_1a0cc46b0d63035aa7a7026c05ee9daa24 std:label -1 reference.html#$ -
+pybind11embed_8h_1a0d80adcba8be5d0e73692b177cbf7d9b std:label -1 reference.html#$ -
+pybind11embed_8h_1adf4788e07fa707f87427a91d6819c42c std:label -1 reference.html#$ -
+pybind11group__annotations std:label -1 reference.html#$ -
+pybind11group__python__builtins std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga0be04c9e8c8a6833cabae628e2243b6c std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga0f2342d8d9000a3bcef531c39e97c531 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga117a7eab72791313448c40a2f25f3582 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga173e320e2458d711bbcea25283cdd488 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga4d0ac11f8ee1a907ff953245304720d2 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga563dccaeb6eca82ece3f56c5edfe838b std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga6343b45dbc05aa5698562c291766743a std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga7118ad0f420ebd4a3aa3debbc834e7d7 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga786700afa0e3e4bd67530355c4c5dec9 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1ga819d464970e7f4f4cd5cbdda8b0db4dd std:label -1 reference.html#$ -
+pybind11group__python__builtins_1gac3289f35cdfddaacada4217462992b00 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1gacc0a69f008d341c07ff939e0580c5985 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1gade020f155a1f133cc9e245bac2981280 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1gaec38f84a4416ddc3b311ecdbff659ed7 std:label -1 reference.html#$ -
+pybind11group__python__builtins_1gaeff368081ac50b8fe2cc0230d96e3acb std:label -1 reference.html#$ -
+pybind11group__pytypes std:label -1 reference.html#$ -
+pybind11group__pytypes_1ga5cf5177f54cd2d3a17326b8a729417a1 std:label -1 reference.html#$ -
+pybind11group__pytypes_1ga7315ac2686b4e6120790815f31e28edc std:label -1 reference.html#$ -
+pybind11group__pytypes_1gad58fa3b0ad77f0cac09c65772c8116bb std:label -1 reference.html#$ -
+pybind11iostream_8h_1a5337c03b8753ab32203fc4a0d4ff88dc std:label -1 reference.html#$ -
+pybind11namespaceliterals std:label -1 reference.html#$ -
+pybind11pytypes_8h_1a43d037958870ee4b6984930d0b5abdf0 std:label -1 reference.html#$ -
+pybind11pytypes_8h_1a8f086b5001169e61bd9260ee9f6978f9 std:label -1 reference.html#$ -
+pybind11pytypes_8h_1ae55e745a477e38745337a75ab5439f81 std:label -1 reference.html#$ -
+pybind11structarg std:label -1 reference.html#$ -
+pybind11structarg_1a19d6eebdcc5e2c4679c5f77760adb5dc std:label -1 reference.html#$ -
+pybind11structarg_1a57121005d089a7b05536d320ebc9d32f std:label -1 reference.html#$ -
+pybind11structarg_1a99082d77a1a365593a16939f03194e5e std:label -1 reference.html#$ -
+pybind11structarg_1aac5a00ec974c74d76240a02ea0c3fe08 std:label -1 reference.html#$ -
+pybind11structarg_1ae6211325dd7551f254b0428f9e1e4e4c std:label -1 reference.html#$ -
+pybind11structarg_1af69a71cd0c34cbce3ef8705e7b7da817 std:label -1 reference.html#$ -
+pybind11structarg_1affdcf2c99a2f27cb539efd6853335d4b std:label -1 reference.html#$ -
+pybind11structarg__v std:label -1 reference.html#$ -
+pybind11structarg__v_1a018e928b16cc3e83065740a92a490d07 std:label -1 reference.html#$ -
+pybind11structarg__v_1a0a3a669c2b644bf122c3363d88c5dea6 std:label -1 reference.html#$ -
+pybind11structarg__v_1a0a50cfb966acfce71fd61974a31f2a75 std:label -1 reference.html#$ -
+pybind11structarg__v_1a3d487f117dc8f3af6555519ab160716a std:label -1 reference.html#$ -
+pybind11structarg__v_1a3fe738ed6397b48b88244151dab53ee1 std:label -1 reference.html#$ -
+pybind11structarg__v_1a772bc79a04bfa30ab09034927be549ad std:label -1 reference.html#$ -
+pybind11structarg__v_1a7d90c329733699b99eccbb55797d65fb std:label -1 reference.html#$ -
+pybind11structarithmetic std:label -1 reference.html#$ -
+pybind11structbase std:label -1 reference.html#$ -
+pybind11structbuffer__protocol std:label -1 reference.html#$ -
+pybind11structcall__guard std:label -1 reference.html#$ -
+pybind11structdoc std:label -1 reference.html#$ -
+pybind11structdynamic__attr std:label -1 reference.html#$ -
+pybind11structis__method std:label -1 reference.html#$ -
+pybind11structis__operator std:label -1 reference.html#$ -
+pybind11structkeep__alive std:label -1 reference.html#$ -
+pybind11structmetaclass std:label -1 reference.html#$ -
+pybind11structmetaclass_1a315277a15107c2eb0136076274cdcee9 std:label -1 reference.html#$ -
+pybind11structmodule__local std:label -1 reference.html#$ -
+pybind11structmultiple__inheritance std:label -1 reference.html#$ -
+pybind11structname std:label -1 reference.html#$ -
+pybind11structscope std:label -1 reference.html#$ -
+pybind11structsibling std:label -1 reference.html#$ -
+python_example std:label -1 compiling.html#python-example -
+python_libs std:label -1 advanced/pycpp/object.html#python-libs Accessing Python libraries from C++
+python_objects_as_args std:label -1 advanced/functions.html#python-objects-as-args Python objects as arguments
+reference std:doc -1 reference.html Reference
+reference std:label -1 reference.html#$ -
+return_value_policies std:label -1 advanced/functions.html#return-value-policies Return value policies
+search std:label -1 search.html Search Page
+simple_example std:label -1 basics.html#simple-example Creating bindings for a simple function
+smart_pointers std:label -1 advanced/smart_ptrs.html#id1 Custom smart pointers
+static_properties std:label -1 advanced/classes.html#static-properties Static properties
+stl_bind std:label -1 advanced/cast/stl.html#stl-bind Binding STL containers
+storage_orders std:label -1 advanced/cast/eigen.html#storage-orders Storage orders
+supported_types std:label -1 basics.html#supported-types Supported data types
+upgrade std:doc -1 upgrade.html Upgrade guide
+virtual_and_inheritance std:label -1 advanced/classes.html#virtual-and-inheritance Combining virtual functions and inheritance
