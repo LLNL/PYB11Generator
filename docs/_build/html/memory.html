@@ -88,6 +88,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#class-holder-types">Class holder types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#return-value-policies">Return value policies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#call-policies">Call policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#call-guards">Call guards</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="stl.html">STL containers</a></li>
@@ -213,6 +214,16 @@
 </div>
 <p>This tells pybind11 to keep the the second argument (<code class="docutils literal notranslate"><span class="pre">x</span></code>, the element being appended) alive so long as the first argument (<code class="docutils literal notranslate"><span class="pre">self</span></code>, our container class) is alive.</p>
 </div>
+<div class="section" id="call-guards">
+<span id="id2"></span><h2>Call guards<a class="headerlink" href="#call-guards" title="Permalink to this headline">¶</a></h2>
+<p>Another variation on wrapping functions/methods is to provide <code class="docutils literal notranslate"><span class="pre">call_guard</span></code> as discussed in the <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#call-guard">pybind11 call_guard documentation</a>.  Call guards must be default constructable C++ types, and will be built in scope just before calling the wrapped method.  One typical usage would be to release the Python Global Interpreter Lock (GIL) before calling a wrapped method, so something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@PYB11call_guard</span><span class="p">(</span><span class="s2">&quot;py::gil_scoped_release&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_wrapped_method</span><span class="p">():</span>
+    <span class="s2">&quot;Some C++ method that needs to have the GIL released.&quot;</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -260,7 +271,6 @@
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

@@ -270,6 +270,12 @@
 <dd><p>Tie the lifetime of objects in the return value/argument spec together, where the arguments (<code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>) are integers indicating the order of the arguments to tie together (0 refers to the return value).  This is another way of specifying memory policies, similar to <a class="reference internal" href="#returnpolicy">returnpolicy</a>.  Carefully read the pybind11 discussion of the <code class="docutils literal notranslate"><span class="pre">keep_alive</span></code> directive in <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#call-policies" title="(in pybind11 v2.2)"><span>Additional call policies</span></a>.</p>
 </dd></dl>
 
+<span class="target" id="call-guard"></span><dl class="function">
+<dt id="PYB11call_guard">
+<code class="descclassname">&#64;</code><code class="descname">PYB11call_guard</code><span class="sig-paren">(</span><em>&quot;val&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11call_guard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify a pybind11 call_guard for a function or method.  See the discussion of <cite>pybind11:call_policies</cite> for examples of call_guards.</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="PYB11module">
 <code class="descclassname">&#64;</code><code class="descname">PYB11module</code><span class="sig-paren">(</span><em>&quot;val&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PYB11module" title="Permalink to this definition">¶</a></dt>
@@ -323,7 +329,6 @@
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   
