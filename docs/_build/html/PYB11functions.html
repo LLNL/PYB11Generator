@@ -191,24 +191,34 @@
 
 <dl class="function">
 <dt id="PYB11readwrite">
-<code class="descname">PYB11readwrite</code><span class="sig-paren">(</span><span class="optional">[</span><em>static=False</em>, <em>pyname=None</em>, <em>cppname=None</em>, <em>doc=None</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#PYB11readwrite" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define a readwrite class attribute; corresponds to pybind11 <code class="docutils literal notranslate"><span class="pre">def_readwrite</span></code>.</p>
+<code class="descname">PYB11readwrite</code><span class="sig-paren">(</span><span class="optional">[</span><em>static=False</em>, <em>pyname=None</em>, <em>cppname=None</em>, <em>returnpolicy=None</em>, <em>doc=None</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#PYB11readwrite" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Define a readwrite class attribute; corresponds to pybind11 <code class="docutils literal notranslate"><span class="pre">def_readwrite</span></code>.</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">static</span></code>: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, specifies the bound attribute is static.</li>
 <li><code class="docutils literal notranslate"><span class="pre">pyname</span></code>: Optionally specify the Python name of the attribute.  If <code class="docutils literal notranslate"><span class="pre">None</span></code>, assumes the Python name is the name of Python variable instance.</li>
 <li><code class="docutils literal notranslate"><span class="pre">cppname</span></code>: Optionally specify the C++ name of the attribute.  If <code class="docutils literal notranslate"><span class="pre">None</span></code>, assumes the C++ name is the name of Python variable instance.</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">returnpolicy</span></code>: Specify a special return policy for how to handle the memory of the return value.  Read pybind11 documentation at <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>.</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">doc</span></code>: Optionally give a docstring.</li>
 </ul>
+</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="PYB11readonly">
-<code class="descname">PYB11readonly</code><span class="sig-paren">(</span><span class="optional">[</span><em>static=False</em>, <em>pyname=None</em>, <em>cppname=None</em>, <em>doc=None</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#PYB11readonly" title="Permalink to this definition">¶</a></dt>
+<code class="descname">PYB11readonly</code><span class="sig-paren">(</span><span class="optional">[</span><em>static=False</em>, <em>pyname=None</em>, <em>cppname=None</em>, <em>returnpolicy=None</em>, <em>doc=None</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#PYB11readonly" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define a readonly class attribute; corresponds to pybind11 <code class="docutils literal notranslate"><span class="pre">def_readonly</span></code>.</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">static</span></code>: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, specifies the bound attribute is static.</li>
 <li><code class="docutils literal notranslate"><span class="pre">pyname</span></code>: Optionally specify the Python name of the attribute.  If <code class="docutils literal notranslate"><span class="pre">None</span></code>, assumes the Python name is the name of Python variable instance.</li>
 <li><code class="docutils literal notranslate"><span class="pre">cppname</span></code>: Optionally specify the C++ name of the attribute.  If <code class="docutils literal notranslate"><span class="pre">None</span></code>, assumes the C++ name is the name of Python variable instance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">returnpolicy</span></code>: Specify a special return policy for how to handle the memory of the return value.  Read pybind11 documentation at <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>.</li>
 <li><code class="docutils literal notranslate"><span class="pre">doc</span></code>: Optionally give a docstring.</li>
 </ul>
 </dd></dl>
@@ -227,7 +237,7 @@
 <li><code class="docutils literal notranslate"><span class="pre">getterconst</span></code>: Specify if <code class="docutils literal notranslate"><span class="pre">getter</span></code> is a const method.</li>
 <li><code class="docutils literal notranslate"><span class="pre">setterconst</span></code>: Specify if <code class="docutils literal notranslate"><span class="pre">setter</span></code> is a const method.</li>
 <li><code class="docutils literal notranslate"><span class="pre">static</span></code>: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make this a static property.</li>
-<li><code class="docutils literal notranslate"><span class="pre">returnPolicy</span></code>: Specify a special return policy for how to handle the memory of the return value.  Read pybind11 documentation at <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">returnpolicy</span></code>: Specify a special return policy for how to handle the memory of the return value.  Read pybind11 documentation at <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies" title="(in pybind11 v2.2)"><span>Return value policies</span></a>.</li>
 </ul>
 </dd></dl>
 
