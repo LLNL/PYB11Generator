@@ -8,7 +8,9 @@ Note, since PYB11Generator blindly generates C++ pybind11 code, it is essential 
 Documentation
 -------------
 
-PYB11Generator is documented at readthedocs.org.  Note the source for this documentation is embedded in the PYB11Generator repository under docs/.
+PYB11Generator is documented at [readthedocs](https://pyb11generator.readthedocs.io/en/latest/).
+
+Note the source for this documentation is embedded in the PYB11Generator repository under docs/.
 
 Contributions
 -------------
@@ -18,6 +20,6 @@ Although a great deal of the functionality of pybind11 is available via PYB11Gen
 License
 -------
 
-PYB11Generator is released under the BSD license.
+PYB11Generator is released under the [BSD license](https://github.com/jmikeowen/PYB11Generator/blob/master/LICENSE).
 
 LLNL-CODE-767799
