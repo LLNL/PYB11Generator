@@ -24,11 +24,12 @@ Wherever possible we try to use ordinary python syntax to correspond to pybind11
 Installation
 ------------
 
-PYB11Generator uses the Python Package Index `PyPI <https://pypi.org/>`_ to simplify installation of PYB11Generator, so installing PYB11Generator is simply a matter of requesting it using `pip <https://packaging.python.org/tutorials/installing-packages/>`_::
+PYB11Generator uses the Python Package Index `PyPI <https://pypi.org/>`_ to simplify installation of PYB11Generator, so installing PYB11Generator is simply a matter of requesting it using `pip <https://packaging.python.org/tutorials/installing-packages/>`_ (note here we also explicitly install pybind11 as well)::
 
+  $ pip install pybind11
   $ pip install PYB11Generator
 
-This command installs PYB11Generator as a package in the python you are using (i.e., the associated with the ``pip`` command).  pybind11 should automatically be installed by ``pip`` as a dependency of PYB11Generator, so after this command you are ready to try out pybind11 and PYB11Generator.
+These commands installs pybind11 and PYB11Generator as packages in the python you are using (i.e., the associated with the ``pip`` command).
 
 For those curious, the source for PYB11Generator is hosted on `github <https://github.com/jmikeowen/pyb11generator>`_.
 
