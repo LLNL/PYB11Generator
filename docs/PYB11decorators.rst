@@ -93,6 +93,11 @@ PYB11 decorators
   Mark a class method as static.
 
 .. #############################################################################
+.. decorator:: PYB11noconvert
+
+  Applies ``py::noconvert`` to all the arguments of a method to prevent automatic conversion.  See `pybind11 discussion of py:: <https://pybind11.readthedocs.io/en/stable/advanced/functions.html?highlight=noconvert#non-converting-arguments>`_.
+
+.. #############################################################################
 .. decorator:: PYB11implementation("val")
 
   Give an implementation for the bound function or method.  This is typically used to specify lambda function implementations, or explicitly call a helper method.
