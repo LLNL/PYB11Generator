@@ -148,6 +148,13 @@ def PYB11static(f):
     return f
 
 #-------------------------------------------------------------------------------
+# noconvert (applies to arguments of method)
+#-------------------------------------------------------------------------------
+def PYB11noconvert(f):
+    f.PYB11noconvert = True
+    return f
+
+#-------------------------------------------------------------------------------
 # implementation -- provide an inline implementation in C++ (only for experts!)
 #-------------------------------------------------------------------------------
 class PYB11implementation:
