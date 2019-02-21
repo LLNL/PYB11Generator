@@ -32,10 +32,6 @@ This command installs PYB11Generator as a package in the python you are using (i
 
 For those curious, the source for PYB11Generator is hosted on `github <https://github.com/jmikeowen/pyb11generator>`_.
 
-.. todo::
-
-   Don't forget to get this stuff installed on PyPI!
-
 .. _the-basics:
 
 The basics: how to generate pybind11 code using PYB11Generator
