@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="PYB11Generator",
-    version="1.0",
+    version="1.0.0",
     author="J. Michael Owen",
     author_email="mikeowen@llnl.gov",
     description="A code generator for the pybind11 C++ <-> Python language binding tool",
@@ -17,7 +17,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 2",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],
 )
