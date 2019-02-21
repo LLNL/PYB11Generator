@@ -147,6 +147,7 @@ Preventing automatic casting of arguments
 In C++ automatic casting of arguments which are implicitly convertible to a different type (such as calling a function that accepts a ``double`` argument with an ``int``) is usually allowed.  In pybind11 it is possible to prevent this behavior using the ``.noconvert()`` option to a Python argument, such as ``py::arg().noconvert()``.  PYB11Generator supports the idea of ``noconvert`` as well, though in a less granular fashion currently as it is used to decorate an entire function signature rather than individual arguments.  For instance, if we wanted to bind the following method and ensure automatic conversions of the argument are prevented:
 
 .. code-block:: cpp
+
   double munge_my_double(double x);
 
 we can accomplish this using the ``@PYB11noconvert`` decorator::
