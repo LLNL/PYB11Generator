@@ -63,6 +63,12 @@ class PYB11TemplateClass:
                     raise RuntimeError, "Template parameter dictionary spec error: %s is missing from %s" % (key, template_parameters)
             self.template_parameters = template_parameters
             
+        # Check for any explicit template dictionaries
+        if klassattrs["template_dict"]:
+            for key in klassattrs["template_dict"]:
+                if not key in self.template_parameters:
+                    self.template_parameters[key] = klassattrs["template_dict"][key]
+
         # Record the order of instantiations
         self.order = PYB11TemplateClass.__order + 1
         PYB11TemplateClass.__order += 1
@@ -397,6 +403,9 @@ def PYB11generateClass(klass, klassattrs, ssout):
     # Check for base classes.
     cppname = "%(namespace)s%(cppname)s" % klassattrs
     bklasses = PYB11getBaseClasses(klass)
+    Tdict = PYB11parseTemplates(klassattrs)
+    for key in klassattrs["template_dict"]:
+        Tdict[key] = klassattrs["template_dict"][key]
     for bklass in bklasses[klass]:
         bklassattrs = PYB11attrs(bklass)
         bcppname = "%(namespace)s%(cppname)s" % bklassattrs
@@ -408,7 +417,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
                     bcppname += ("%(" + t + ")s, ")
                 else:
                     bcppname += ("%(" + t + ")s>")
-            bcppname = bcppname % klassattrs["template_dict"]
+            bcppname = bcppname % Tdict
         if bcppname != cppname:
             ss(", " + bcppname)
 
