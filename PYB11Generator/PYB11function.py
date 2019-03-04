@@ -56,8 +56,7 @@ class PYB11TemplateFunction:
         # Do some template mangling (and magically put the template parameters in scope).
         template_ext = "<"
         doc_ext = ""
-        for key, val in self.template_parameters:
-            name = key.split()[1]
+        for name, val in self.template_parameters:
             exec("%s = '%s'" % (name, val))
             template_ext += "%s, " % val
             doc_ext += "_%s_" % val.replace("::", "_").replace("<", "_").replace(">", "_")
