@@ -66,11 +66,7 @@ def PYB11generateTrampoline(klass, ssout):
     ss = fs.write
 
     # Build the dictionary of template substitutions.
-    Tdict = {key:key for key in klassattrs["template"]}
-    if klassattrs["template_dict"]:
-        for key in klassattrs["template_dict"]:
-            if not key in Tdict:
-                Tdict[key] = klassattrs["template_dict"][key]
+    Tdict = PYB11parseTemplates(klassattrs)
 
     # Compiler guard.
     ss("""//------------------------------------------------------------------------------
@@ -89,9 +85,9 @@ def PYB11generateTrampoline(klass, ssout):
         ss("template<")
         for i, name in enumerate(klassattrs["template"]):
             if i < len(klassattrs["template"]) - 1:
-                ss("typename %s, " % name)
+                ss("%s, " % name)
             else:
-                ss("typename %s>\n" % name)
+                ss("%s>\n" % name)
 
     # Build the base class hierarchy names
     bklassnames = []
@@ -101,12 +97,14 @@ def PYB11generateTrampoline(klass, ssout):
         if len(bklassattrs["template"]) > 0:
             bklassname += "<"
             for i, name in enumerate(bklassattrs["template"]):
+                assert len(name.split()) == 2
+                nameval = name.split()[1]
                 if name in klassattrs["template"]:
-                    bklassname += name
+                    bklassname += nameval
                 else:
-                    if not name in klassattrs["template_dict"]:
-                        raise RuntimeError, "Trampoline template base class error: %s is missing from specified template parameters %s\n  (class, base) = (%s, %s)" % (name, klassattrs["template_dict"], klass, bklass)
-                    bklassname += klassattrs["template_dict"][name]
+                    if not nameval in klassattrs["template_dict"]:
+                        raise RuntimeError, "Trampoline template base class error: %s is missing from specified template parameters %s\n  (class, base) = (%s, %s)" % (nameval, klassattrs["template_dict"], klass, bklass)
+                    bklassname += klassattrs["template_dict"][nameval]
                 if i < len(bklassattrs["template"]) - 1:
                     bklassname += ", "
             bklassname += ">"
@@ -155,8 +153,9 @@ public:
         bklasssubs = {}
         for name in bklassattrs["template"]:
             if not name in klassattrs["template"]:
-                assert name in klassattrs["template_dict"]
-                bklasssubs[name] = klassattrs["template_dict"][name]
+                nameval = name.split()[1]
+                assert nameval in klassattrs["template_dict"]
+                bklasssubs[name] = klassattrs["template_dict"][nameval]
 
         for mname, meth in methods:
             

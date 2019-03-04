@@ -43,9 +43,7 @@ def PYB11generatePublicist(klass, ssout):
     ss = fs.write
 
     # Build the dictionary of template substitutions.
-    Tdict = {}
-    for p in klassattrs["template"]:
-        Tdict[p] = p
+    Tdict = PYB11parseTemplates(klassattrs)
 
     # Compiler guard.
     ss("""//------------------------------------------------------------------------------
@@ -64,9 +62,9 @@ def PYB11generatePublicist(klass, ssout):
         ss("template<")
         for i, name in enumerate(klassattrs["template"]):
             if i < len(klassattrs["template"]) - 1:
-                ss("typename %s, " % name)
+                ss("%s, " % name)
             else:
-                ss("typename %s>\n" % name)
+                ss("%s>\n" % name)
 
     # Class name
     ss("""class PYB11Publicist%(cppname)s: public %(full_cppname)s {

@@ -17,7 +17,13 @@ def PYB11ignore(thing):
 #-------------------------------------------------------------------------------
 class PYB11template:
     def __init__(self, *args):
-        self.template = tuple(args)
+        self.template = []
+        for t in args:
+            assert len(t.split()) in (1,2)
+            if len(t.split()) == 1:
+                self.template.append("typename %s" % t)
+            else:
+                self.template.append(t)
         return
     def __call__(self, thing):
         if self.template:

@@ -246,6 +246,19 @@ def PYB11parseArgs(meth):
     return result
 
 #-------------------------------------------------------------------------------
+# PYB11parseTemplates
+#
+# Examine the attributes dictionary and return the template arg information.
+#-------------------------------------------------------------------------------
+def PYB11parseTemplates(attrs):
+    Tdict = {key.split()[1]:key.split()[1] for key in attrs["template"]}
+    if attrs["template_dict"]:
+        for key in attrs["template_dict"]:
+            if not key in Tdict:
+                Tdict[key] = attrs["template_dict"][key]
+    return Tdict
+
+#-------------------------------------------------------------------------------
 # PYB11virtualClass
 #
 # Test if the given class has virtual methods.
@@ -320,6 +333,7 @@ def PYB11cppname_exts(templateargs):
     if templateargs:
         tt = "<"
         for i, arg in enumerate(templateargs):
+            arg = arg.split()[1]
             if i < len(templateargs) - 1:
                 tt += "%s," % arg
             else:

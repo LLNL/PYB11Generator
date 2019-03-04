@@ -50,14 +50,15 @@ class PYB11TemplateClass:
         klassattrs = PYB11attrs(self.klass_template)
         if isinstance(template_parameters, str):
             assert len(klassattrs["template"]) == 1
-            self.template_parameters[klassattrs["template"][0]] = template_parameters
+            self.template_parameters[klassattrs["template"][0]].split()[1] = template_parameters
         elif isinstance(template_parameters, tuple):
             assert len(klassattrs["template"]) == len(template_parameters)
             for name, val in zip(klassattrs["template"], template_parameters):
-                self.template_parameters[name] = val
+                self.template_parameters[name.split()[1]] = val
         else:
             assert isinstance(template_parameters, dict)
-            for key in klassattrs["template"]:
+            for arg in klassattrs["template"]:
+                key = arg.split()[1]
                 if not key in template_parameters:
                     raise RuntimeError, "Template parameter dictionary spec error: %s is missing from %s" % (key, template_parameters)
             self.template_parameters = template_parameters
@@ -88,8 +89,9 @@ class PYB11TemplateClass:
         template_ext = "<"
         doc_ext = ""
         for name in klassattrs["template"]:
-            val = self.template_parameters[name]
-            exec("%s = '%s'" % (name, val))
+            key = name.split()[1]
+            val = self.template_parameters[key]
+            exec("%s = '%s'" % (key, val))
             template_ext += "%s, " % val
             doc_ext += "_%s_" % val.replace("::", "_").replace("<", "_").replace(">", "_")
         template_ext = template_ext[:-2] + ">"
@@ -122,7 +124,7 @@ class PYB11TemplateMethod:
         self.func_template = func_template
         funcattrs = PYB11attrs(self.func_template)
         assert len(funcattrs["template"]) == len(template_parameters)
-        self.template_parameters = [(name, val) for (name, val) in zip(funcattrs["template"], template_parameters)]
+        self.template_parameters = [(name.split()[1], val) for (name, val) in zip(funcattrs["template"], template_parameters)]
         self.cppname = cppname
         self.pyname = pyname
         self.docext = docext
@@ -133,7 +135,8 @@ class PYB11TemplateMethod:
         template_ext = "<"
         doc_ext = ""
 
-        for name, val in self.template_parameters:
+        for key, val in self.template_parameters:
+            name = key.split()[1]
             exec("%s = '%s'" % (name, val))
             template_ext += "%s, " % val
             doc_ext += "_%s_" % val.replace("::", "_").replace("<", "_").replace(">", "_")
@@ -400,7 +403,8 @@ def PYB11generateClass(klass, klassattrs, ssout):
         bcppname = "%(namespace)s%(cppname)s" % bklassattrs
         if bklassattrs["template"]:
             bcppname += "<"
-            for i, t in enumerate(bklassattrs["template"]):
+            for i, arg in enumerate(bklassattrs["template"]):
+                t = arg.split()[1]
                 if i < len(bklassattrs["template"]) - 1:
                     bcppname += ("%(" + t + ")s, ")
                 else:
@@ -520,6 +524,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
             if bklassattrs["template"]:
                 bcppname += "<"
                 for i, t in enumerate(bklassattrs["template"]):
+                    t = t.split()[1]
                     if i < len(bklassattrs["template"]) - 1:
                         bcppname += ("%(" + t + ")s, ")
                     else:

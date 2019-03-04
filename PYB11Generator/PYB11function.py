@@ -45,7 +45,7 @@ class PYB11TemplateFunction:
         self.func_template = func_template
         funcattrs = PYB11attrs(self.func_template)
         assert len(funcattrs["template"]) == len(template_parameters)
-        self.template_parameters = [(name, val) for (name, val) in zip(funcattrs["template"], template_parameters)]
+        self.template_parameters = [(name.split()[1], val) for (name, val) in zip(funcattrs["template"], template_parameters)]
         self.cppname = cppname
         self.pyname = pyname
         self.docext = docext
@@ -56,7 +56,8 @@ class PYB11TemplateFunction:
         # Do some template mangling (and magically put the template parameters in scope).
         template_ext = "<"
         doc_ext = ""
-        for name, val in self.template_parameters:
+        for key, val in self.template_parameters:
+            name = key.split()[1]
             exec("%s = '%s'" % (name, val))
             template_ext += "%s, " % val
             doc_ext += "_%s_" % val.replace("::", "_").replace("<", "_").replace(">", "_")
