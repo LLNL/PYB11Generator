@@ -50,7 +50,7 @@ class PYB11TemplateClass:
         klassattrs = PYB11attrs(self.klass_template)
         if isinstance(template_parameters, str):
             assert len(klassattrs["template"]) == 1
-            self.template_parameters[klassattrs["template"][0]].split()[1] = template_parameters
+            self.template_parameters[klassattrs["template"][0].split()[1]] = template_parameters
         elif isinstance(template_parameters, tuple):
             assert len(klassattrs["template"]) == len(template_parameters)
             for name, val in zip(klassattrs["template"], template_parameters):
@@ -135,8 +135,7 @@ class PYB11TemplateMethod:
         template_ext = "<"
         doc_ext = ""
 
-        for key, val in self.template_parameters:
-            name = key.split()[1]
+        for name, val in self.template_parameters:
             exec("%s = '%s'" % (name, val))
             template_ext += "%s, " % val
             doc_ext += "_%s_" % val.replace("::", "_").replace("<", "_").replace(">", "_")
