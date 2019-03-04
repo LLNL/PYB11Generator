@@ -98,6 +98,21 @@ Because we have decorated the ``transmogrify`` function with ``@PYB11template``,
 
 For a full description of ``PYB11TemplateFunction`` see :func:`PYB11TemplateFunction`.
 
+.. Note::
+
+   In this example we have used the common case of C++ templates declared with ``typename`` (as in ``template<typename T1, typename T2>``).  However, for C++ templates can also use specialized parameters, such as
+
+   .. code-block:: cpp
+
+      template<int T1, double T2> func(const double x);
+
+   In such cases we need  need to specify these template parameters appropriately to PYB11Generator.  This is done by explictly declaring the types of the template parameters in ``PYB11template``::
+
+     @PYB11template("int T1", "double T2")
+     def func(x = "const double"):
+         "What does this function do?"
+         return
+
 .. _functions-implementation:
 
 -------------------------------------------------------------
