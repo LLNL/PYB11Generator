@@ -781,3 +781,5 @@ We can create PYB11Generator instantiations of this class for ``double`` and ``f
   DoubleVector = PYB11TemplateClass(Vector, template_parameters="double")
 
 Just as is the case with template functions, classes decorated with ``@PYB11template`` are implicitly ignored by PYB11Generator until an instantiation is created with :func:`PYB11TemplateClass`.  Additionally, template parameters specified in ``@PYB11template`` become named patterns which can be substituted with the types used to instantiate the templates.  So, in the ``Vector`` example above, ``%(Scalar)s`` becomes ``float`` in the first instantiation and ``double`` in the second.  See :func:`PYB11template` and :func:`PYB11TemplateClass` for further details.
+
+Complications can arise with inheritance of templated classes, particularly if the template parameters change between the base and descendant types.  See the discussion in :ref:`non-template-to-template-inheritance` and :ref:`template_class_inheritance_changes` for further details.
