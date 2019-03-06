@@ -69,6 +69,8 @@ class PYB11TemplateClass:
                 if not key in self.template_parameters:
                     self.template_parameters[key] = klassattrs["template_dict"][key]
 
+        self.template_parameters = PYB11recurseTemplateDict(self.template_parameters)
+
         # Record the order of instantiations
         self.order = PYB11TemplateClass.__order + 1
         PYB11TemplateClass.__order += 1
@@ -166,7 +168,7 @@ class PYB11TemplateMethod:
             self.func_template.__doc__ += self.docext
         fs = StringIO.StringIO()
         PYB11generic_class_method(klass, klassattrs, self.func_template, funcattrs, fs.write)
-        ss(fs.getvalue() % PYB11union_dict(klassattrs["template_dict"], funcattrs["template_dict"]))
+        ss(fs.getvalue() % PYB11recurseTemplateDict(PYB11union_dict(klassattrs["template_dict"], funcattrs["template_dict"])))
         fs.close()
         if self.func_template.__doc__:
             self.func_template.__doc__ = doc0

@@ -246,6 +246,26 @@ def PYB11parseArgs(meth):
     return result
 
 #-------------------------------------------------------------------------------
+# PYB11recurseTemplateDict
+#
+# Recursively iterate over a dictionary of template parameters until all value
+# parameters have been resolved.
+#-------------------------------------------------------------------------------
+def PYB11recurseTemplateDict(Tdict):
+    done = False
+    itcount = 0
+    while not done and itcount < 100:
+        done = True
+        itcount += 1
+        for key, val in Tdict.iteritems():
+            if "%(" in val:
+                done = False
+                Tdict[key] = val % Tdict
+    if itcount == 100:
+        raise RuntimeError, "PYB11recurseTemplate failed to resolve all values in ", Tdict
+    return Tdict
+
+#-------------------------------------------------------------------------------
 # PYB11parseTemplates
 #
 # Examine the attributes dictionary and return the template arg information.
@@ -256,6 +276,10 @@ def PYB11parseTemplates(attrs):
         for key in attrs["template_dict"]:
             if not key in Tdict:
                 Tdict[key] = attrs["template_dict"][key]
+
+    # Recursively apply the Tdict to itself until all %()s patterns have been resolved
+    Tdict = PYB11recurseTemplateDict(Tdict)
+
     return Tdict
 
 #-------------------------------------------------------------------------------
