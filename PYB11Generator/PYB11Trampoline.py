@@ -67,7 +67,13 @@ def PYB11generateTrampoline(klass, ssout):
 
     # Build the dictionary of template substitutions.
     Tdict = PYB11parseTemplates(klassattrs)
-
+    for bklass in inspect.getmro(klass):
+        bklassattrs = PYB11attrs(bklass)
+        if bklassattrs["template_dict"]:
+            for key, value in bklassattrs["template_dict"].items():
+                Tdict[key] = value
+    Tdict = PYB11recurseTemplateDict(Tdict)
+    
     # Compiler guard.
     ss("""//------------------------------------------------------------------------------
 // Trampoline class for %(cppname)s
@@ -102,9 +108,9 @@ def PYB11generateTrampoline(klass, ssout):
                 if name in klassattrs["template"]:
                     bklassname += nameval
                 else:
-                    if not nameval in klassattrs["template_dict"]:
-                        raise RuntimeError, "Trampoline template base class error: %s is missing from specified template parameters %s\n  (class, base) = (%s, %s)" % (nameval, klassattrs["template_dict"], klass, bklass)
-                    bklassname += klassattrs["template_dict"][nameval]
+                    if not nameval in Tdict:
+                        raise RuntimeError, "Trampoline template base class error: %s is missing from specified template parameters %s\n  (class, base) = (%s, %s)" % (nameval, Tdict, klass, bklass)
+                    bklassname += Tdict[nameval]
                 if i < len(bklassattrs["template"]) - 1:
                     bklassname += ", "
             bklassname += ">"
@@ -154,8 +160,8 @@ public:
         for name in bklassattrs["template"]:
             if not name in klassattrs["template"]:
                 nameval = name.split()[1]
-                assert nameval in klassattrs["template_dict"]
-                bklasssubs[name] = klassattrs["template_dict"][nameval]
+                assert nameval in Tdict
+                bklasssubs[name] = Tdict[nameval]
 
         for mname, meth in methods:
             

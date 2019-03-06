@@ -65,10 +65,15 @@ class PYB11TemplateClass:
             
         # Check for any explicit template dictionaries
         if klassattrs["template_dict"]:
-            for key in klassattrs["template_dict"]:
+            for key, value in klassattrs["template_dict"].items():
                 if not key in self.template_parameters:
-                    self.template_parameters[key] = klassattrs["template_dict"][key]
-
+                    self.template_parameters[key] = value
+        for bklass in PYB11getBaseClasses(self.klass_template):
+            bklassattrs = PYB11attrs(bklass)
+            if bklassattrs["template_dict"]:
+                for key, value in bklassattrs["template_dict"].items():
+                    if not key in self.template_parameters:
+                        self.template_parameters[key] = value
         self.template_parameters = PYB11recurseTemplateDict(self.template_parameters)
 
         # Record the order of instantiations
