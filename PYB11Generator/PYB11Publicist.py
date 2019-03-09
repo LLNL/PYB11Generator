@@ -44,6 +44,12 @@ def PYB11generatePublicist(klass, ssout):
 
     # Build the dictionary of template substitutions.
     Tdict = PYB11parseTemplates(klassattrs)
+    for bklass in inspect.getmro(klass):
+        bklassattrs = PYB11attrs(bklass)
+        if bklassattrs["template_dict"]:
+            for key, value in bklassattrs["template_dict"].items():
+                Tdict[key] = value
+    Tdict = PYB11recurseTemplateDict(Tdict)
 
     # Compiler guard.
     ss("""//------------------------------------------------------------------------------
