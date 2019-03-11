@@ -40,29 +40,52 @@ class PYB11TemplateFunction:
                  cppname = None,
                  pyname = None,
                  docext = ""):
-        if isinstance(template_parameters, str):
-            template_parameters = (template_parameters,)
         self.func_template = func_template
-        funcattrs = PYB11attrs(self.func_template)
-        assert len(funcattrs["template"]) == len(template_parameters)
-        self.template_parameters = [(name.split()[1], val) for (name, val) in zip(funcattrs["template"], template_parameters)]
         self.cppname = cppname
         self.pyname = pyname
         self.docext = docext
+
+        # Create the template parameter dictionary
+        self.template_parameters = {}
+        funcattrs = PYB11attrs(self.func_template)
+        if isinstance(template_parameters, str):
+            assert len(funcattrs["template"]) == 1
+            self.template_parameters[funcattrs["template"][0].split()[1]] = template_parameters
+        elif isinstance(template_parameters, tuple):
+            assert len(funcattrs["template"]) == len(template_parameters)
+            for name, val in zip(funcattrs["template"], template_parameters):
+                self.template_parameters[name.split()[1]] = val
+        else:
+            assert isinstance(template_parameters, dict)
+            for arg in funcattrs["template"]:
+                key = arg.split()[1]
+                if not key in template_parameters:
+                    raise RuntimeError, "Template parameter dictionary spec error: %s is missing from %s" % (key, template_parameters)
+            self.template_parameters = template_parameters
+            
+        # Check for any explicit template dictionaries
+        if funcattrs["template_dict"]:
+            for key in funcattrs["template_dict"]:
+                if not key in self.template_parameters:
+                    self.template_parameters[key] = funcattrs["template_dict"][key]
+
+        self.template_parameters = PYB11recurseTemplateDict(self.template_parameters)
         return
 
     def __call__(self, pyname, ss):
+        funcattrs = PYB11attrs(self.func_template)
 
         # Do some template mangling (and magically put the template parameters in scope).
         template_ext = "<"
         doc_ext = ""
-        for name, val in self.template_parameters:
+        for name in funcattrs["template"]:
+            name = name.split()[1]
+            val = self.template_parameters[name]
             exec("%s = '%s'" % (name, val))
             template_ext += "%s, " % val
             doc_ext += "_%s_" % val.replace("::", "_").replace("<", "_").replace(">", "_")
         template_ext = template_ext[:-2] + ">"
 
-        funcattrs = PYB11attrs(self.func_template)
         if self.cppname:
             funcattrs["cppname"] = self.cppname
         else:
@@ -73,7 +96,7 @@ class PYB11TemplateFunction:
             funcattrs["pyname"] = pyname
 
         funcattrs["template_dict"] = {}
-        for name, val in self.template_parameters:
+        for name, val in self.template_parameters.iteritems():
             funcattrs["template_dict"][name] = val
 
         if self.func_template.__doc__:
