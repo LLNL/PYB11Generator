@@ -410,9 +410,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
     # Check for base classes.
     cppname = "%(namespace)s%(cppname)s" % klassattrs
     bklasses = PYB11getBaseClasses(klass)
-    Tdict = PYB11parseTemplates(klassattrs)
-    for key in klassattrs["template_dict"]:
-        Tdict[key] = klassattrs["template_dict"][key]
+    Tdict = PYB11parseTemplates(klassattrs, bklasses)
     for bklass in bklasses[klass]:
         bklassattrs = PYB11attrs(bklass)
         bcppname = "%(namespace)s%(cppname)s" % bklassattrs
