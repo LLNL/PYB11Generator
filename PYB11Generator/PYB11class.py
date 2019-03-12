@@ -415,7 +415,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
         Tdict[key] = klassattrs["template_dict"][key]
     for bklass in bklasses[klass]:
         bklassattrs = PYB11attrs(bklass)
-        bcppname = "%(namespace)s%(cppname)s" % bklassattrs
+        bcppname = "%(namespace)s%(cppname)s" % bklassattrs 
         if bklassattrs["template"]:
             bcppname += "<"
             for i, arg in enumerate(bklassattrs["template"]):

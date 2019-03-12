@@ -43,8 +43,8 @@ def PYB11generatePublicist(klass, ssout):
     ss = fs.write
 
     # Build the dictionary of template substitutions.
-    Tdict = PYB11parseTemplates(klassattrs)
-
+    Tdict = PYB11parseTemplates(klassattrs, inspect.getmro(klass))
+    
     # Compiler guard.
     ss("""//------------------------------------------------------------------------------
 // Publicist class for %(cppname)s

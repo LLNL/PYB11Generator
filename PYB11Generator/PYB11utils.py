@@ -270,16 +270,28 @@ def PYB11recurseTemplateDict(Tdict):
 #
 # Examine the attributes dictionary and return the template arg information.
 #-------------------------------------------------------------------------------
-def PYB11parseTemplates(attrs):
+def PYB11parseTemplates(attrs, bklasses = None):
+    # Get original attributes
     Tdict = {key.split()[1]:key.split()[1] for key in attrs["template"]}
+
+    # Add user-specified attributes
     if attrs["template_dict"]:
-        for key in attrs["template_dict"]:
+        for key, value in attrs["template_dict"].items():
             if not key in Tdict:
-                Tdict[key] = attrs["template_dict"][key]
+                Tdict[key] = value
+
+    # Add user-specified attributes from base classes
+    if bklasses is not None:
+        for bklass in bklasses:
+            bklassattrs = PYB11attrs(bklass)
+            if bklassattrs["template_dict"]:
+                for key, value in bklassattrs["template_dict"].items():
+                    if key not in Tdict:
+                        Tdict[key] = value
 
     # Recursively apply the Tdict to itself until all %()s patterns have been resolved
     Tdict = PYB11recurseTemplateDict(Tdict)
-
+    
     return Tdict
 
 #-------------------------------------------------------------------------------
@@ -326,7 +338,7 @@ def PYB11badchars(name):
 # Mangle a string to a safe C++ variable name.
 #-------------------------------------------------------------------------------
 def PYB11mangle(name):
-    result = name.replace("<", "__").replace(">", "__").replace("::", "_").replace(", ", "_").replace(",", "_")
+    result = name.replace("<", "__").replace(">", "__").replace("::", "_").replace(", ", "_").replace(",", "_").replace("*", "_ptr_")
     return result
 
 #-------------------------------------------------------------------------------
