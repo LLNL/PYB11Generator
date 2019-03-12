@@ -52,6 +52,9 @@ PYB11preamble = "..."
 
   and now our generated code will include this function.
 
+PYB11modulepreamble = "..."
+  PYB11modulepreamble is used to specify a string of arbitrary C++ code that will be inserted following the ``PYBIND11_MODULE`` statement, so inside module scope.  A typical use of this variable is to insert macros such as ``PYBIND11_NUMPY_DTYPE(...)```, for native support of user definted types with Numpy. 
+
 PYB11opaque = [...]
   A list of C++ types we want to be treated as opaque: typically STL types declared as opaque and global in another module.  See :ref:`stl` for further information.  As an example, to declare that ``std::vector<int>`` and ``std::vector<std::string>`` are declared as opaque in another module::
 
