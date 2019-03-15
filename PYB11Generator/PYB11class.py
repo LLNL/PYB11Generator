@@ -410,9 +410,9 @@ def PYB11generateClass(klass, klassattrs, ssout):
     # Check for base classes.
     cppname = "%(namespace)s%(cppname)s" % klassattrs
     bklasses = PYB11getBaseClasses(klass)
-    Tdict = PYB11parseTemplates(klassattrs)
-    for key in klassattrs["template_dict"]:
-        Tdict[key] = klassattrs["template_dict"][key]
+    Tdict = PYB11parseTemplates(klassattrs, bklasses)
+    # for key in klassattrs["template_dict"]:
+    #     Tdict[key] = klassattrs["template_dict"][key]
     for bklass in bklasses[klass]:
         bklassattrs = PYB11attrs(bklass)
         bcppname = "%(namespace)s%(cppname)s" % bklassattrs 
@@ -514,7 +514,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
             result = [x[0] for x in PYB11parseArgs(mmeth)]
             for i in xrange(len(result)):
                 try:
-                    result[i] = result[i] % klassattrs["template_dict"]
+                    result[i] = result[i] % Tdict
                 except:
                     pass
             return result
@@ -544,7 +544,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
                         bcppname += ("%(" + t + ")s, ")
                     else:
                         bcppname += ("%(" + t + ")s>")
-                bcppname = bcppname % klassattrs["template_dict"]
+                bcppname = bcppname % Tdict
                 bklassattrs["cppname"] = bcppname
             for mname, meth in PYB11ThisClassMethods(bklass):
                 if ((not PYB11attrs(meth)["ignore"]) and                # Ignore the method?
@@ -589,10 +589,10 @@ def PYB11generateClass(klass, klassattrs, ssout):
         nklassattrs = PYB11attrs(nklass)
         nklassattrs["pyname"] = klassattrs["pyname"] + "_" + nklassattrs["pyname"]
         nklassattrs["cppname"] = klassattrs["cppname"] + "::" + nklassattrs["cppname"]
-        nklassattrs["template_dict"].update(klassattrs["template_dict"])
+        nklassattrs["template_dict"].update(Tdict)
         PYB11generateClass(nklass, nklassattrs, ss)
 
-    ssout(fs.getvalue() % klassattrs["template_dict"])
+    ssout(fs.getvalue() % Tdict)
     fs.close()
 
     return
