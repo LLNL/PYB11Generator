@@ -338,7 +338,7 @@ def PYB11badchars(name):
 # Mangle a string to a safe C++ variable name.
 #-------------------------------------------------------------------------------
 def PYB11mangle(name):
-    result = name.replace("<", "__").replace(">", "__").replace("::", "_").replace(", ", "_").replace(",", "_").replace("*", "_ptr_").replace("&", "_ampsnd_")
+    result = name.replace("<", "__").replace(">", "__").replace("::", "_").replace(", ", "_").replace(",", "_").replace("*", "_ptr_").replace("&", "_ampsnd_").replace(" ", "_")
     return result
 
 #-------------------------------------------------------------------------------
