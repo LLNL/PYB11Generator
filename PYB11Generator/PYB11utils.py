@@ -262,7 +262,7 @@ def PYB11recurseTemplateDict(Tdict):
                 done = False
                 Tdict[key] = val % Tdict
     if itcount == 100:
-        raise RuntimeError, "PYB11recurseTemplate failed to resolve all values in ", Tdict
+        raise RuntimeError, "PYB11recurseTemplate failed to resolve all values in %s" % Tdict
     return Tdict
 
 #-------------------------------------------------------------------------------
