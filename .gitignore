@@ -1,4 +1,5 @@
 *~
+*.pyc
 build/*
 dist/*
 PYB11Generator.egg-info
