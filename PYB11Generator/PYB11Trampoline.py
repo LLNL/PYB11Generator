@@ -196,6 +196,16 @@ public:
                         typedefs += typedefstring
                     methattrs["returnType"] = returnType
 
+                # Check if we need to work around any reference arguments due to the pybind11 bug discussed in
+                # https://stackoverflow.com/questions/59330279/problems-passing-a-stdvector-by-reference-though-virtual-functions-using-pybin/59331026?noredirect=1#comment104861677_59331026
+                altered = False
+                for i, (argType, argName, default) in enumerate(args):
+                    if "&" in argType:
+                        altered = True
+                        fms.write("\n    py::object dummy%i = py::cast(&%s);\n" % (i, argName))
+                if altered:
+                    fms.write("    ")
+
                 if methattrs["pure_virtual"]:
                     fms.write("PYBIND11_OVERLOAD_PURE(%(returnType)s, PYB11self, %(cppname)s, " % methattrs)
                 else:
@@ -214,7 +224,10 @@ public:
                         fms.write(argName + ", ")
                     else:
                         fms.write(argName)
-                fms.write("); }\n")
+                if altered:
+                    fms.write(");\n  }\n")
+                else:
+                    fms.write("); }\n")
 
                 # Write to the method overloading stream.
                 methfms.write(fms.getvalue())
