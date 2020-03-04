@@ -26,7 +26,8 @@ def PYB11inject(fromcls, tocls,
     assert not (virtual and pure_virtual), "PYB11inject: cannot specify both virtual and pure_virtual as True!"
 
     # Methods
-    names = [x for x in dir(fromcls) if (inspect.ismethod(eval('fromcls.%s' % x)))]
+    globs, locs = globals(), locals()
+    names = [x for x in dir(fromcls) if (inspect.ismethod(eval('fromcls.%s' % x, globs, locs)))]
     for name in names:
         exec('''tocls.%(name)s = PYB11copy_func(fromcls.%(name)s)''' % {"name": name})
         #exec('''tocls.%(name)s = copy_func(eval("fromcls.__dict__['%(name)s']"))''' % {"name": name})
@@ -37,7 +38,7 @@ def PYB11inject(fromcls, tocls,
 
     # Properties
     from .PYB11class import PYB11TemplateMethod
-    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x), PYB11TemplateMethod)]
+    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x, globs, locs), PYB11TemplateMethod)]
     for name in names:
         exec('''tocls.%(name)s = PYB11TemplateMethod(func_template = fromcls.%(name)s.func_template,
                                                      template_parameters = [x[1] for x in fromcls.%(name)s.template_parameters],
@@ -47,7 +48,7 @@ def PYB11inject(fromcls, tocls,
 
     # Properties
     from .PYB11property import PYB11property
-    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x), PYB11property)]
+    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x, globs, locs), PYB11property)]
     for name in names:
         exec('''tocls.%(name)s = PYB11property(returnType = fromcls.%(name)s.returnType,
                                                getter = fromcls.%(name)s.getter,
@@ -62,7 +63,7 @@ def PYB11inject(fromcls, tocls,
 
     # Attributes
     from .PYB11ClassAttribute import PYB11ClassAttribute
-    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x), PYB11ClassAttribute)]
+    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x, globs, locs), PYB11ClassAttribute)]
     for name in names:
         exec('''tocls.%(name)s = PYB11ClassAttribute(static = fromcls.%(name)s.static,
                                                      pyname = fromcls.%(name)s.pyname,
@@ -183,8 +184,9 @@ def PYB11othermods(modobj):
 #-------------------------------------------------------------------------------
 def PYB11classTemplateInsts(modobj):
     from .PYB11class import PYB11TemplateClass
-    result = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x), PYB11TemplateClass)]
-    result = [(x, eval("modobj.%s" % x)) for x in result]
+    globs, locs = globals(), locals()
+    result = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11TemplateClass)]
+    result = [(x, eval("modobj.%s" % x, globs, locs)) for x in result]
     return sorted(result, key = PYB11sort_by_line)
 
 #-------------------------------------------------------------------------------

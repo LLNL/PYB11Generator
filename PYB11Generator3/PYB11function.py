@@ -23,7 +23,8 @@ def PYB11generateModuleFunctions(modobj, ss):
                 PYB11generateFunction(meth, methattrs, ss)
 
     # Now look for any template function instantiations.
-    func_templates = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x), PYB11TemplateFunction)]
+    globs, locs = globals(), locals()
+    func_templates = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11TemplateFunction)]
     for ftname in func_templates:
         func_template = eval("modobj.%s" % ftname)
         func_template(ftname, ss)

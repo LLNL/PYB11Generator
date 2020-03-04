@@ -10,7 +10,8 @@ import sys, inspect
 def PYB11generateModuleEnums(modobj, ss):
     
     # Module enums
-    enums = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x), PYB11enum)]
+    globs, locs = globals(), locals()
+    enums = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11enum)]
     if enums:
         ss("  //..............................................................................\n")
         ss("  // enum types\n")

@@ -501,7 +501,8 @@ def PYB11generateClass(klass, klassattrs, ssout):
     PYB11GenerateClassProperties(klass, klassinst, klassattrs, ss)
 
     # Bind any templated methods
-    templates = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x), PYB11TemplateMethod) and x in klass.__dict__]
+    globs, locs = globals(), locals()
+    templates = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x, globs, locs), PYB11TemplateMethod) and x in klass.__dict__]
     if templates:
         ss("\n    // %(cppname)s template methods\n" % klassattrs)
         for tname in templates:
@@ -554,7 +555,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
                     PYB11generic_class_method(bklass, bklassattrs, meth, methattrs, ss)
 
             # Same thing with any base templated methods
-            templates = [x for x in dir(bklass) if isinstance(eval("bklass.%s" % x), PYB11TemplateMethod) and x in bklass.__dict__]
+            templates = [x for x in dir(bklass) if isinstance(eval("bklass.%s" % x, globs, locs), PYB11TemplateMethod) and x in bklass.__dict__]
             if templates:
                 for tname in templates:
                     inst = eval("bklass.%s" % tname)
@@ -569,7 +570,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
                             raise RuntimeError("ERROR encountered processing (%s, %s) template instantiation\n    ERROR was: %s %s %s " % (tname, meth, excpt, type(excpt), excpt.args))
 
     # Look for any class scope enums and bind them
-    enums = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x), PYB11enum) and x in klass.__dict__]
+    enums = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x, globs, locs), PYB11enum) and x in klass.__dict__]
     if enums:
         ss("\n    // %(cppname)s enums\n  " % klassattrs)
         ssenum = PYB11indentedIO("  ")
@@ -582,7 +583,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
     ss("  }\n\n")
 
     # Look for any class scope classes and bind them
-    klasses = [(x, eval("klass.%s" % x)) for x in dir(klassinst) if (inspect.isclass(eval("klass.%s" % x)) and x in klass.__dict__)]
+    klasses = [(x, eval("klass.%s" % x, globs, locs)) for x in dir(klassinst) if (inspect.isclass(eval("klass.%s" % x, globs, locs)) and x in klass.__dict__)]
     klasses = sorted(klasses, key=PYB11sort_by_inheritance(klasses))
     for (kname, nklass) in klasses:
         #nklass = eval("klassinst.%s" % kname)
