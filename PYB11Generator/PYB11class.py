@@ -508,16 +508,18 @@ def PYB11generateClass(klass, klassattrs, ssout):
             inst = eval("klassinst.%s" % tname)
             inst(tname, klass, klassattrs, ss)
 
+    # Fill in the argument string for a method
+    def extractArgs(mmeth):
+        result = [x[0] for x in PYB11parseArgs(mmeth)]
+        for i in xrange(len(result)):
+            try:
+                result[i] = result[i] % Tdict
+            except:
+                pass
+        return result
+
     # Helper method to check if the given method spec is already in allmethods
     def newOverloadedMethod(meth, allmethods, klassattrs):
-        def extractArgs(mmeth):
-            result = [x[0] for x in PYB11parseArgs(mmeth)]
-            for i in xrange(len(result)):
-                try:
-                    result[i] = result[i] % Tdict
-                except:
-                    pass
-            return result
         methattrs = PYB11attrs(meth)
         args = extractArgs(meth)
         overload = False
@@ -529,6 +531,21 @@ def PYB11generateClass(klass, klassattrs, ssout):
                 if otherargs == args:
                     return False
         return overload
+
+    # Helper method to check if the given method spec is a new virtual method
+    def newVirtualMethod(mname, meth, allmethods, klassattrs):
+        methattrs = PYB11attrs(meth)
+        args = extractArgs(meth)
+        new_virtual = methattrs["virtual"]
+        if new_virtual:
+            for (othername, othermeth) in allmethods:
+                othermethattrs = PYB11attrs(othermeth)
+                otherargs = extractArgs(othermeth)
+                if (othermethattrs["virtual"] and
+                    methattrs["cppname"] == othermethattrs["cppname"] and
+                    otherargs == args):
+                    return False
+        return new_virtual
 
     # If we're choosing to expose base hidden methods, check for those too.
     if klassattrs["exposeBaseOverloads"]:
@@ -567,6 +584,28 @@ def PYB11generateClass(klass, klassattrs, ssout):
                             #import sys
                             #sys.stderr.write("Encountered ERROR: %s\n" % excpt)
                             raise RuntimeError, "ERROR encountered processing (%s, %s) template instantiation\n    ERROR was: %s %s %s " % (tname, meth, excpt, type(excpt), excpt.args)
+
+    # Look for any base virtual methods that have not been overridden
+    ss("\n    // Base virtual methods\n")
+    for bklass in inspect.getmro(klass)[1:]:
+        bklassattrs = PYB11attrs(bklass)
+        bcppname = "%(cppname)s" % bklassattrs
+        if bklassattrs["template"]:
+            bcppname += "<"
+            for i, t in enumerate(bklassattrs["template"]):
+                t = t.split()[1]
+                if i < len(bklassattrs["template"]) - 1:
+                    bcppname += ("%(" + t + ")s, ")
+                else:
+                    bcppname += ("%(" + t + ")s>")
+            bcppname = bcppname % Tdict
+            bklassattrs["cppname"] = bcppname
+        for mname, meth in PYB11ThisClassMethods(bklass):
+            if ((not PYB11attrs(meth)["ignore"]) and                      # Ignore the method?
+                newVirtualMethod(mname, meth, allmethods, klassattrs)):   # new virtual?
+                methattrs = PYB11attrs(meth)
+                PYB11generic_class_method(bklass, bklassattrs, meth, methattrs, ss)
+                allmethods.append((mname, meth))
 
     # Look for any class scope enums and bind them
     enums = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x), PYB11enum) and x in klass.__dict__]
