@@ -536,7 +536,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
     def newVirtualMethod(mname, meth, allmethods, klassattrs):
         methattrs = PYB11attrs(meth)
         args = extractArgs(meth)
-        new_virtual = methattrs["virtual"]
+        new_virtual = methattrs["virtual"] and (not methattrs["protected"])
         if new_virtual:
             for (othername, othermeth) in allmethods:
                 othermethattrs = PYB11attrs(othermeth)
