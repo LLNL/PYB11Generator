@@ -45,7 +45,7 @@ class PYB11property:
 
         if self.static:
             if self.setter:
-                proptype = "_readwrite_static"
+                proptype = "_static"
             else:
                 proptype = "_readonly_static"
         else:
@@ -125,7 +125,7 @@ def PYB11GenerateProperty(propname,
     # What kind of property do we have (readwrite, readonly, static, etc.)?
     if getterattrs["static"]:
         if setter:
-            proptype = "_readwrite_static"
+            proptype = "_static"
         else:
             proptype = "_readonly_static"
     else:
