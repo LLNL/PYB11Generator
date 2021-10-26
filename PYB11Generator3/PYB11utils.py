@@ -87,7 +87,9 @@ def PYB11getBaseClasses(klass):
             for val in s:
                 s = flatten(val, result)
         else:
-            result.append(s)
+            assert len(s) == 2    # pair
+            if not s[0] is object:
+                result.append((s[0], tuple([x for x in s[1] if not x is object])))
     flatstuff = []
     flatten(stuff, flatstuff)
     result = { k[0] : k[1] for k in flatstuff }
