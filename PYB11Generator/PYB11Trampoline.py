@@ -216,7 +216,8 @@ public:
                     # workaround.
                     #fms.write("PYBIND11_OVERLOAD(%(returnType)s, PYB11self, %(cppname)s, " % methattrs)
                     fms.write("PYBIND11_OVERLOAD(%(returnType)s, " % methattrs)
-                    fms.write(PYB11mangle(bklassname) + ", ")
+                    fms.write("PYB11self, ")
+                    #fms.write(PYB11mangle(bklassname) + ", ")
                     fms.write("%(cppname)s, " % methattrs)
 
                 for i, (argType, argName, default) in enumerate(args):
