@@ -4,7 +4,7 @@
 # Thin wrappers to generate the pybind11 STL functions.
 #-------------------------------------------------------------------------------
 import inspect
-from PYB11utils import *
+from .PYB11utils import *
 
 #-------------------------------------------------------------------------------
 # std::vector

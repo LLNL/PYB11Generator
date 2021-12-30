@@ -3,9 +3,9 @@
 #-------------------------------------------------------------------------------
 import inspect
 import sys
-import StringIO
+import io
 
-from PYB11utils import *
+from .PYB11utils import *
 
 #-------------------------------------------------------------------------------
 # PYB11generateModulePublicists
@@ -39,7 +39,7 @@ def PYB11generatePublicist(klass, ssout):
         return
 
     # Prepare in case there are templates lurking in here.
-    fs = StringIO.StringIO()
+    fs = io.StringIO()
     ss = fs.write
 
     # Build the dictionary of template substitutions.

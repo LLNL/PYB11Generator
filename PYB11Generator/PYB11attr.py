@@ -1,4 +1,4 @@
-from PYB11utils import *
+from .PYB11utils import *
 
 import sys, inspect
 
@@ -10,7 +10,8 @@ import sys, inspect
 def PYB11generateModuleAttrs(modobj, ss):
     
     # Module attrs
-    stuff = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x), PYB11attr)]
+    globs, locs = globals(), locals()
+    stuff = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11attr)]
     if stuff:
         ss('\n  // module attributes\n')
         for pyname in stuff:

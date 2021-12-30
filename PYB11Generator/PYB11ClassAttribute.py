@@ -1,4 +1,4 @@
-from PYB11utils import *
+from .PYB11utils import *
 import sys, inspect
 
 #-------------------------------------------------------------------------------
@@ -8,7 +8,8 @@ import sys, inspect
 #-------------------------------------------------------------------------------
 def PYB11GenerateClassAttributes(klass, klassinst, klassattrs, ss):
 
-    PYB11attrs = [x for x in dir(klass) if isinstance(eval("klass.%s" % x), PYB11ClassAttribute) and x in klass.__dict__]
+    globs, locs = globals(), locals()
+    PYB11attrs = [x for x in dir(klass) if isinstance(eval("klass.%s" % x, globs, locs), PYB11ClassAttribute) and x in klass.__dict__]
     if PYB11attrs:
         ss("\n    // Properties\n")
 

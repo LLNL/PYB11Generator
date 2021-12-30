@@ -1,4 +1,4 @@
-from PYB11utils import *
+from .PYB11utils import *
 
 import sys, inspect
 
@@ -10,7 +10,8 @@ import sys, inspect
 def PYB11generateModuleEnums(modobj, ss):
     
     # Module enums
-    enums = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x), PYB11enum)]
+    globs, locs = globals(), locals()
+    enums = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11enum)]
     if enums:
         ss("  //..............................................................................\n")
         ss("  // enum types\n")
@@ -92,4 +93,4 @@ class PYB11enum:
             thing = eval("scope.%s" % name)
             if isinstance(thing, PYB11enum) and thing == self:
                 return name
-        raise RuntimeError, "PYB11enum: unable to find myself!"
+        raise RuntimeError("PYB11enum: unable to find myself!")

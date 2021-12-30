@@ -3,9 +3,9 @@
 #-------------------------------------------------------------------------------
 import inspect
 import sys
-import StringIO
+import io
 
-from PYB11utils import *
+from .PYB11utils import *
 
 #-------------------------------------------------------------------------------
 # PYB11generateModuleTrampolines
@@ -62,7 +62,7 @@ def PYB11generateTrampoline(klass, ssout):
     #     return
 
     # Prepare in case there are templates lurking in here.
-    fs = StringIO.StringIO()
+    fs = io.StringIO()
     ss = fs.write
 
     # Build the dictionary of template substitutions.
@@ -103,7 +103,7 @@ def PYB11generateTrampoline(klass, ssout):
                     bklassname += nameval
                 else:
                     if not nameval in Tdict:
-                        raise RuntimeError, "Trampoline template base class error: %s is missing from specified template parameters %s\n  (class, base) = (%s, %s)" % (nameval, Tdict, klass, bklass)
+                        raise RuntimeError("Trampoline template base class error: %s is missing from specified template parameters %s\n  (class, base) = (%s, %s)" % (nameval, Tdict, klass, bklass))
                     bklassname += Tdict[nameval]
                 if i < len(bklassattrs["template"]) - 1:
                     bklassname += ", "
@@ -138,7 +138,7 @@ public:
     # Bind the (unique) virtual methods for all classes up the inheritance tree.
     # We use an independent StringIO object for this, since we may have some new typedefs that
     # need to be added before this stuff is output to the source.
-    methfms = StringIO.StringIO()
+    methfms = io.StringIO()
     boundMethods = []
     for (bklass, bklassname) in zip(inspect.getmro(klass), bklassnames):
 
@@ -161,7 +161,7 @@ public:
             
             # We build this method string up independent of the output stream
             # until we determine if it's already been generated.
-            fms = StringIO.StringIO()
+            fms = io.StringIO()
 
             methattrs = PYB11attrs(meth)
             methattrs["returnType"] = eval("bklassinst." + mname + "()")
@@ -183,7 +183,7 @@ public:
             try:
                 thpt = fms.getvalue() % Tdict
             except:
-                raise RuntimeError, "Unable to generate call descriptor for %s in %s->%s" % (mname, str(klass), bklassname)
+                raise RuntimeError("Unable to generate call descriptor for %s in %s->%s" % (mname, str(klass), bklassname))
             if not thpt in boundMethods:
                 boundMethods.append(fms.getvalue() % Tdict)
 
