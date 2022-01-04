@@ -8,6 +8,7 @@ set(PYTHON_EXE ${Python3_EXECUTABLE})
 find_package(pybind11 CONFIG)
 
 set(PYB11GENERATOR_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(pybind11_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/pybind11)
 include(${PYB11GENERATOR_ROOT_DIR}/cmake/PYB11Generator.cmake)
 
 add_subdirectory(tests/cross_module)

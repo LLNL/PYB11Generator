@@ -20,7 +20,7 @@
 #-----------------------------------------------------------------------------------
 
 macro(PYB11_GENERATE_BINDINGS PYB11_MODULE_NAME)
-  set(PYB11_SOURCE "${PYB11_MODULE_NAME}mod.py")
+  set(PYB11_SOURCE "${PYB11_MODULE_NAME}_PYB11.py")
   set(PYB11_GENERATED_SOURCE "${PYB11_MODULE_NAME}.cc")
 
   # Place we need in the Python path
@@ -30,6 +30,7 @@ macro(PYB11_GENERATE_BINDINGS PYB11_MODULE_NAME)
 
   # Format list into a one line shell friendly format
   STRING(REPLACE ";" "<->" PYTHON_ENV_STR ${PYTHON_ENV})
+  string(APPEND PYTHON_ENV_STR ":${CMAKE_CURRENT_SOURCE_DIR}")
 
   # Generating python stamp files to detect changes in PYB11_SOURCE and
   # its included modules
@@ -64,8 +65,8 @@ macro(PYB11_GENERATE_BINDINGS PYB11_MODULE_NAME)
                      COMMAND env PYTHONPATH=\"${PYTHON_ENV_STR}\"
                      ${PYTHON_EXE} -c
                      'from PYB11Generator import * \; 
-                     import ${PYB11_MODULE_NAME}mod \;
-                     PYB11generateModule(${PYB11_MODULE_NAME}mod, \"${PYB11_MODULE_NAME}\") '
+                     import ${PYB11_MODULE_NAME}_PYB11 \;
+                     PYB11generateModule(${PYB11_MODULE_NAME}_PYB11, \"${PYB11_MODULE_NAME}\") '
                      DEPENDS ${PYB11_MODULE_NAME}_stamp ${${PYB11_MODULE_NAME}_DEPENDS} ${PYB11_SOURCE}
                      )
 
@@ -78,13 +79,13 @@ endmacro()
 #
 # package_name : *name* of package to make into a library
 #
-# Variables that must be set before valling spheral_add_cxx_library:
+# Variables that must be set before calling PYB11Generator_add_module:
 #     <package_name>_ADDITIONAL_INCLUDES
 #         - List of addition includes needed by a given package
 #     <package_name>_ADDITIONAL_SOURCE
 #         - List of additional sources to build library with
 #     <package_name>_CXX_LIBS
-#         - List of items that are required to build the python portion of spheral
+#         - List of link libraries that are required
 #     <package_name>_depends
 #         - List of targets the library depends on
 #-----------------------------------------------------------------------------------
@@ -95,6 +96,8 @@ function(PYB11Generator_add_module package_name)
   PYB11_GENERATE_BINDINGS(${package_name})
 
   # Now the normal pybind11 build can proceed
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_ADDITIONAL_DEPENDS})
   pybind11_add_module(${package_name} ${package_name}.cc)
+  set_target_properties(${package_name} PROPERTIES SUFFIX ".so")
 
 endfunction()
