@@ -14,3 +14,4 @@ include(${PYB11GENERATOR_ROOT_DIR}/cmake/PYB11Generator.cmake)
 
 add_subdirectory(tests/cross_module)
 add_subdirectory(tests/inheritance)
+# add_subdirectory(tests/numpy)    # Not ready yet -- need to augment PYB11 to support the buffer protocol to do correctly
