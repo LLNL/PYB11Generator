@@ -1,0 +1,4 @@
+PYB11Generator_add_module(change_templates)
+PYB11Generator_add_module(inherit_base_virtual_methods)
+PYB11Generator_add_module(nontemplate_inherit_from_template)
+

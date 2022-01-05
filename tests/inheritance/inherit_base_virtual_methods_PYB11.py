@@ -1,18 +1,20 @@
 from PYB11Generator import *
 
 PYB11preamble = """
-#include <stdio>
+#include <cstdio>
 
 class A {
-  A()                  { printf("A::A()\\n"); }
-  virtual ~A()         { printf("A::~A()\\n"); }
-  virtual void Afunc() { printf("A::Afunc()\\n"); }
+public:
+  A()                   { printf("A::A()\\n"); }    
+  virtual ~A()          { printf("A::~A()\\n"); }   
+  virtual void Afunc()  { printf("A::Afunc()\\n"); }
 };
 
 class B: public A {
-  B()                  { printf("B::B()\\n"); }
-  virtual ~B()         { printf("B::~B()\\n"); }
-  virtual void Bfunc() { printf("B::Bfunc()\\n"); }
+public:
+  B()                   { printf("B::B()\\n"); }
+  virtual ~B()          { printf("B::~B()\\n"); }
+  virtual void Bfunc()  { printf("B::Bfunc()\\n"); }
 };
 """
 

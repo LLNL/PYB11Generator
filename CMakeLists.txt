@@ -13,3 +13,4 @@ set(PYB11GENERATOR_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 include(${PYB11GENERATOR_ROOT_DIR}/cmake/PYB11Generator.cmake)
 
 add_subdirectory(tests/cross_module)
+add_subdirectory(tests/inheritance)

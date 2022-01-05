@@ -159,7 +159,7 @@ Another variation on the above is the templated class inheritance where the temp
   ...
   };
 
-In this case the descendant ``B`` class inherits from ``A``, but specializes one of the template arguments to ``unsigned``.  Binding instantiations of ``A`` is straightforward using the methods described in :ref:`class-templates`, but how should we create instantiations of ``B``?  There are two choices: we can use ``PYB11template_dict`` as above to specify the ``Value1`` template parameter for ``B``, or we can explicitly give a dictionary for the template parameters in the instantiation of ``B``, including the definition for ``Value1``.  The first pattern can be written as::
+In this case the descendant ``B`` class inherits from ``A``, but specializes one of the template arguments to ``unsigned``.  Binding instantiations of ``A`` is straightforward using the methods described in :ref:`class-templates`, but how should we create instantiations of ``B``?  The solution here is to use ``PYB11template_dict`` as above to specify the ``Value1`` template parameter for ``B``::
 
   @PYB11template("Value2", "Value3")
   @PYB11template_dict({"Value1" : "unsigned"})
@@ -167,17 +167,3 @@ In this case the descendant ``B`` class inherits from ``A``, but specializes one
      ...
 
   B_double_int = PYB11TemplateClass(B, template_parameters=("double", "int")
-
-Alternatively, we could choose to specify the exact same instantiation of ``B_double_int`` using an explicit dictionary for ``template_parameters`` in the instantiation::
-
-  @PYB11template("Value2", "Value3")
-  class B(A):
-     ...
-
-  B_double_int = PYB11TemplateClass(B, template_parameters=({"Value1" : "unsigned",
-                                                             "Value2" : "double",
-                                                             "Value3" : "int"})
-
-The end result for binding ``B_double_int`` is identical, so the choice of which pattern to use is up to the developer and their preference.
-
-
