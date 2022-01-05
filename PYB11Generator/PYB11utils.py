@@ -197,7 +197,8 @@ def PYB11classTemplateInsts(modobj):
 # Get the methods to bind from a class
 #-------------------------------------------------------------------------------
 def PYB11ClassMethods(obj):
-    result = inspect.getmembers(obj, predicate=inspect.ismethod)
+    result = inspect.getmembers(obj, predicate=inspect.isfunction)
+    #result = inspect.getmembers(obj, predicate=inspect.ismethod)
     # It's nice to sort in the same order the user created, but not necessary
     try:
         result.sort(key = PYB11sort_by_line)

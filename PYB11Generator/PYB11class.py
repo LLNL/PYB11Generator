@@ -512,7 +512,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
     # Fill in the argument string for a method
     def extractArgs(mmeth):
         result = [x[0] for x in PYB11parseArgs(mmeth)]
-        for i in xrange(len(result)):
+        for i in range(len(result)):
             try:
                 result[i] = result[i] % Tdict
             except:
