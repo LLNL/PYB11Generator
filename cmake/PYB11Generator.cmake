@@ -88,6 +88,8 @@ endmacro()
 #         - List of link libraries that are required
 #     <package_name>_depends
 #         - List of targets the library depends on
+#     <package_name>_INSTALL_PATH
+#         - Path to install extension module -- defaults to ${Python_SITEARCH}/${package_name}
 #-----------------------------------------------------------------------------------
 
 function(PYB11Generator_add_module package_name)
@@ -99,5 +101,11 @@ function(PYB11Generator_add_module package_name)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_ADDITIONAL_DEPENDS})
   pybind11_add_module(${package_name} ${package_name}.cc)
   set_target_properties(${package_name} PROPERTIES SUFFIX ".so")
+
+  # Installation
+  if (NOT ${package_name}_INSTALL_PATH)
+    set(${package_name}_INSTALL_PATH ${Python3_SITEARCH}/${package_name})
+  endif()
+  install(TARGETS ${package_name} DESTINATION ${${package_name}_INSTALL_PATH})
 
 endfunction()
