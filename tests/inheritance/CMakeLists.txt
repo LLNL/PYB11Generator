@@ -1,8 +1,4 @@
-set(change_template_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/tests/inheritance)
-set(inherit_base_virtual_methods_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/tests/inheritance)
-set(nontemplate_inherit_from_template_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/tests/inheritance)
-
-PYB11Generator_add_module(change_templates)
-PYB11Generator_add_module(inherit_base_virtual_methods)
-PYB11Generator_add_module(nontemplate_inherit_from_template)
+PYB11Generator_add_module(change_templates INSTALL ${CMAKE_INSTALL_PREFIX}/tests/inheritance)
+PYB11Generator_add_module(inherit_base_virtual_methods INSTALL ${CMAKE_INSTALL_PREFIX}/tests/inheritance)
+PYB11Generator_add_module(nontemplate_inherit_from_template INSTALL ${CMAKE_INSTALL_PREFIX}/tests/inheritance)
 
