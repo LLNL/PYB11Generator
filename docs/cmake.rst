@@ -87,4 +87,4 @@ PYBIND11_OPTIONS <arg1> <arg2> ... : (optional)
 
 .. Note::
 
-   ``PYB11Generator_add_module`` only looks at the SOURCE Python file (default ``<package_name>_PYB11.py``.  However, that file may in turn import as many other Python files as desired to expose more interface as part of the module, so the user should feel free to organize their PYB11Generator bindings as desired for clarity.  A typical pattern would be to have the top-level module ``<package_name>_PYB11.py`` import individual class bindings from separate Python files for each bound class, for instance.
+   ``PYB11Generator_add_module`` only looks at the ``SOURCE`` Python file (default ``<package_name>_PYB11.py``.  However, that file may in turn import as many other Python files as desired to expose more interface as part of the module, so the user should feel free to organize their PYB11Generator bindings as desired for clarity.  A typical pattern would be to have the top-level module ``<package_name>_PYB11.py`` import individual class bindings from separate Python files for each bound class, for instance.
