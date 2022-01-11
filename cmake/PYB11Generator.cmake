@@ -12,7 +12,7 @@
 # Important CMake variables:
 #   PYB11GENERATOR_ROOT_DIR : (required)
 #       - Top-level director for PYB11Generator installation
-#   PYBDIND11_ROOT_DIR : (optional)
+#   PYBIND11_ROOT_DIR : (optional)
 #       - Location of the pybind11 install
 #       - defaults to ${PYB11GENERATOR_ROOT_DIR}/extern/pybind11
 #   PYTHON_EXE : (optional)
@@ -20,7 +20,8 @@
 #       - if not set, we use CMake's find_package to search for Python3
 #
 # Usage:
-#   PYB11Generator_add_module(<package_name>
+#   PYB11Generator_add_module(<target_name>
+#                             MODULE           ...
 #                             SOURCE           ...
 #                             INSTALL          ...
 #                             INCLUDES         ...
@@ -31,6 +32,9 @@
 #       <package_name> (required)
 #           The base name of the Python module being generated.  Results in a module
 #           which can be imported in Python as "import <package_name>".
+#       MODULE ... (optional)
+#           default: <target_name>
+#           Specify the name of the Python module to be imported and bound
 #       SOURCE ... (optional)
 #           default: <package_name>_PYB11.py
 #           Specify the name of the Python file holding the PYB11Generator description
@@ -64,44 +68,51 @@ if (NOT DEFINED PYTHON_EXE)
   set(PYTHON_EXE ${Python3_EXECUTABLE})
 endif()
 if (DEFINED PYBIND11_ROOT_DIR)
-  add_subdirectory(${PYBIND11_ROOT_DIR})
+  add_subdirectory(${PYBIND11_ROOT_DIR} ${CMAKE_BINARY_DIR}/external)
 else()
-  add_subdirectory(${PYB11GENERATOR_ROOT_DIR}/extern/pybind11)
+  add_subdirectory(${PYB11GENERATOR_ROOT_DIR}/extern/pybind11 ${CMAKE_BINARY_DIR}/external)
 endif()
 
-function(PYB11Generator_add_module package_name)
+function(PYB11Generator_add_module target_name)
 
   # Define our arguments
   set(options )
-  set(oneValueArgs   SOURCE INSTALL)
+  set(oneValueArgs   MODULE SOURCE INSTALL)
   set(multiValueArgs INCLUDES LINKS DEPENDS PYBIND11_OPTIONS)
-  cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-  # message("-- SOURCE: ${${package_name}_SOURCE}")
-  # message("-- INSTALL: ${${package_name}_INSTALL}")
-  # message("-- INCLUDES: ${${package_name}_INCLUDES}")
-  # message("-- LINKS: ${${package_name}_LINKS}")
-  # message("-- DEPENDS: ${${package_name}_DEPENDS}")
-  # message("-- PYBIND11_OPTIONS: ${${package_name}_PYBIND11_OPTIONS}")
+  cmake_parse_arguments(${target_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  # message("-- MODULE: ${${taget_name}_MODULE}")
+  # message("-- SOURCE: ${${target_name}_SOURCE}")
+  # message("-- INSTALL: ${${target_name}_INSTALL}")
+  # message("-- INCLUDES: ${${target_name}_INCLUDES}")
+  # message("-- LINKS: ${${target_name}_LINKS}")
+  # message("-- DEPENDS: ${${target_name}_DEPENDS}")
+  # message("-- PYBIND11_OPTIONS: ${${target_name}_PYBIND11_OPTIONS}")
+
+  # Set our names and paths
+  if (NOT DEFINED ${target_name}_MODULE)
+    set(${target_name}_MODULE ${target_name})
+  endif()
+  if (NOT DEFINED ${target_name}_SOURCE)
+    set(${target_name}_SOURCE "${${target_name}_MODULE}_PYB11.py")
+  endif()
+  # message("-- ${target_name}_MODULE: ${${target_name}_MODULE}")
+  # message("-- ${target_name}_SOURCE: ${${target_name}_SOURCE}")
 
   # Generate the pybind11 C++ source file
-  if ("${${package_name}_SOURCE} " STREQUAL " ")
-    set(${package_name}_SOURCE "${package_name}_PYB11.py")
-  endif()
-  # message("-- ${package_name}_SOURCE: ${${package_name}_SOURCE}")
-  PYB11_GENERATE_BINDINGS(${package_name} ${${package_name}_SOURCE}
-                          DEPENDS ${${package_name}_DEPENDS})
+  PYB11_GENERATE_BINDINGS(${target_name} ${${target_name}_MODULE} ${${target_name}_SOURCE}
+                          DEPENDS ${${target_name}_DEPENDS})
 
   # Now the normal pybind11 build can proceed
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_INCLUDES})
-  pybind11_add_module(${package_name} ${${package_name}_PYBIND11_OPTIONS} ${package_name}.cc)
-  set_target_properties(${package_name} PROPERTIES SUFFIX ".so")
-  target_link_libraries(${package_name} ${${package_name}_LINKS})
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${target_name}_INCLUDES})
+  pybind11_add_module(${target_name} ${${target_name}_PYBIND11_OPTIONS} ${target_name}.cc)
+  set_target_properties(${target_name} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${target_name}_MODULE})
+  target_link_libraries(${target_name} PRIVATE ${${target_name}_LINKS})
 
   # Installation
-  if ("${${package_name}_INSTALL} " STREQUAL " ")
-    set(${package_name}_INSTALL ${Python3_SITEARCH}/${package_name})
+  if ("${${target_name}_INSTALL} " STREQUAL " ")
+    set(${target_name}_INSTALL ${Python3_SITEARCH}/${target_name})
   endif()
-  install(TARGETS ${package_name} DESTINATION ${${package_name}_INSTALL})
+  install(TARGETS ${target_name} DESTINATION ${${target_name}_INSTALL})
 
 endfunction()
 
@@ -112,14 +123,16 @@ endfunction()
 #       detecting changes in the pyb11 python files at build time
 #
 # Usage:
-#   PYB11_GENERATE_BINDINGS(<package_name> <PYB11_SOURCE>
+#   PYB11_GENERATE_BINDINGS(<target_name> <module_name> <PYB11_SOURCE>
 #                           DEPENDS    ...
 #                           PYTHONPATH ...)
 #   where the arguments are:
-#       <package_name> (required)
-#           The base name for the Python module.
+#       <target_name> (required)
+#           The CMake target name
+#       <module_name> (required)
+#           The base name for the Python module
 #       <PYB11_SOURCE> (required)
-#           Source file containing the PYB11Generator bindings description.
+#           Source file containing the PYB11Generator bindings description
 #       DEPENDS ... (optional)
 #           Any CMake targets this package should depend on being built first
 #       PYTHONPATH ... (optional)
@@ -129,64 +142,62 @@ endfunction()
 # use: ${PYB11_GENERATED_SOURCE}
 #-----------------------------------------------------------------------------------
 
-macro(PYB11_GENERATE_BINDINGS package_name PYB11_SOURCE)
-  set(PYB11_GENERATED_SOURCE "${package_name}.cc")
+macro(PYB11_GENERATE_BINDINGS target_name module_name PYB11_SOURCE)
+  set(PYB11_GENERATED_SOURCE "${target_name}.cc")
 
   # Define our arguments
   set(options )
   set(oneValueArgs )
   set(multiValueArgs DEPENDS PYTHONPATH)
-  cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-  # message("** package_name: ${package_name}")
+  cmake_parse_arguments(${target_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  # message("** target_name: ${target_name}")
+  # message("** module_name: ${module_name}")
   # message("** PYB11_SOURCE: ${PYB11_SOURCE}")
-  # message("** DEPENDS: ${${package_name}_DEPENDS}")
-  # message("** PYTHONPATH: ${${package_name}_PYTHONPATH}")
+  # message("** DEPENDS: ${${target_name}_DEPENDS}")
+  # message("** PYTHONPATH: ${${target_name}_PYTHONPATH}")
 
-  # Place we need in the Python path
-  set(PYTHON_ENV 
-      ${PYB11GENERATOR_ROOT_DIR}
-      ${${package_name}_PYTHONPATH})
+  # Places we need in the Python path
+  set(PYTHON_ENV "${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_CURRENT_SOURCE_DIR}:${PYB11GENERATOR_ROOT_DIR}:${${target_name}_PYTHONPATH}")
 
-  # Format list into a one line shell friendly format
-  STRING(REPLACE ";" "<->" PYTHON_ENV_STR ${PYTHON_ENV})
-  string(APPEND PYTHON_ENV_STR ":${CMAKE_CURRENT_SOURCE_DIR}")
+  # Extract the name of PYB11 generating source code without the .py extension
+  string(REGEX REPLACE "\\.[^.]*$" "" pyb11_module ${PYB11_SOURCE})
 
   # Generating python stamp files to detect changes in PYB11_SOURCE and
   # its included modules
   if(EXISTS ${PYTHON_EXE})
     # Python must exist to generate at config time
-    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${package_name}_stamp.cmake")
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${module_name}_stamp.cmake")
       # Generate stamp files at config time
-      execute_process(COMMAND env PYTHONPATH=\"${PYTHON_ENV_STR}\"
+      execute_process(COMMAND env PYTHONPATH=\"${PYTHON_ENV}\"
                       ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py 
-                      ${package_name}
+                      ${module_name}
                       ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       )
     endif()
 
     # Include list of dependent python files
-    include(${CMAKE_CURRENT_BINARY_DIR}/${package_name}_stamp.cmake)
+    include(${CMAKE_CURRENT_BINARY_DIR}/${module_name}_stamp.cmake)
   endif()
 
   # Always regenerate the stamp files at build time. Any change in the stamp file
   # will trigger a rebuild of the target pyb11 module
-  add_custom_target(${package_name}_stamp ALL
-                    COMMAND env PYTHONPATH=\"${PYTHON_ENV_STR}\"
+  add_custom_target(${module_name}_stamp ALL
+                    COMMAND env PYTHONPATH=\"${PYTHON_ENV}\"
                     ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py
-                    ${package_name}
+                    ${pyb11_module}
                     ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE}
                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                     )
 
   # Generate the actual pyb11 module cpp source file
   add_custom_command(OUTPUT ${PYB11_GENERATED_SOURCE}
-                     COMMAND env PYTHONPATH=\"${PYTHON_ENV_STR}\"
+                     COMMAND env PYTHONPATH=\"${PYTHON_ENV}\"
                      ${PYTHON_EXE} -c
                      'from PYB11Generator import * \; 
-                     import ${package_name}_PYB11 \;
-                     PYB11generateModule(${package_name}_PYB11, \"${package_name}\") '
-                     DEPENDS ${package_name}_stamp ${${package_name}_DEPENDS} ${PYB11_SOURCE}
+                     import ${pyb11_module} \;
+                     PYB11generateModule(${pyb11_module}, \"${target_name}\") '
+                     DEPENDS ${module_name}_stamp ${${target_name}_DEPENDS} ${PYB11_SOURCE}
                      )
 
 endmacro()
