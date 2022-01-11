@@ -27,7 +27,7 @@ def PYB11inject(fromcls, tocls,
 
     # Methods
     globs, locs = globals(), locals()
-    names = [x for x in dir(fromcls) if (inspect.ismethod(eval('fromcls.%s' % x, globs, locs)))]
+    names = [x for x in dir(fromcls) if (inspect.isfunction(eval('fromcls.%s' % x, globs, locs)))]  # Replaced ismethod -> isfunction in Python 3 conversion
     for name in names:
         exec('''tocls.%(name)s = PYB11copy_func(fromcls.%(name)s)''' % {"name": name})
         #exec('''tocls.%(name)s = copy_func(eval("fromcls.__dict__['%(name)s']"))''' % {"name": name})
