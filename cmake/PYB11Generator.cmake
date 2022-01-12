@@ -104,7 +104,7 @@ function(PYB11Generator_add_module target_name)
 
   # Now the normal pybind11 build can proceed
   include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${target_name}_INCLUDES})
-  pybind11_add_module(${target_name} ${${target_name}_PYBIND11_OPTIONS} ${target_name}.cc)
+  pybind11_add_module(${target_name} ${${target_name}_PYBIND11_OPTIONS} ${${target_name}_MODULE}.cc)
   set_target_properties(${target_name} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${target_name}_MODULE})
   target_link_libraries(${target_name} PRIVATE ${${target_name}_LINKS})
 
@@ -196,7 +196,7 @@ macro(PYB11_GENERATE_BINDINGS target_name module_name PYB11_SOURCE)
                      ${PYTHON_EXE} -c
                      'from PYB11Generator import * \; 
                      import ${pyb11_module} \;
-                     PYB11generateModule(${pyb11_module}, \"${target_name}\") '
+                     PYB11generateModule(${pyb11_module}, \"${module_name}\") '
                      DEPENDS ${module_name}_stamp ${${target_name}_DEPENDS} ${PYB11_SOURCE}
                      )
 
