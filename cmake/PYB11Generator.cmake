@@ -143,7 +143,7 @@ endfunction()
 #-----------------------------------------------------------------------------------
 
 macro(PYB11_GENERATE_BINDINGS target_name module_name PYB11_SOURCE)
-  set(PYB11_GENERATED_SOURCE "${target_name}.cc")
+  set(PYB11_GENERATED_SOURCE "${module_name}.cc")
 
   # Define our arguments
   set(options )
