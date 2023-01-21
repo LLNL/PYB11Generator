@@ -1,0 +1,4 @@
+PYB11Generator_add_module(change_templates INSTALL ${CMAKE_INSTALL_PREFIX}/tests/inheritance)
+PYB11Generator_add_module(inherit_base_virtual_methods INSTALL ${CMAKE_INSTALL_PREFIX}/tests/inheritance)
+PYB11Generator_add_module(nontemplate_inherit_from_template INSTALL ${CMAKE_INSTALL_PREFIX}/tests/inheritance)
+

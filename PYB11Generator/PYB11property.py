@@ -3,8 +3,8 @@
 #
 # Stuff for handling properties in pybind11
 #--------------------------------------------------------------------------------
-from PYB11Decorators import *
-from PYB11utils import *
+from .PYB11Decorators import *
+from .PYB11utils import *
 import inspect, types
 
 #--------------------------------------------------------------------------------
@@ -184,8 +184,9 @@ def PYB11GenerateProperty(propname,
 #-------------------------------------------------------------------------------
 def PYB11GenerateClassProperties(klass, klassinst, klassattrs, ss):
 
-    props = [x for x in dir(klass) if isinstance(eval("klass.%s" % x), property) and x in klass.__dict__]
-    PYB11props = [x for x in dir(klass) if isinstance(eval("klass.%s" % x), PYB11property) and x in klass.__dict__]
+    globs, locs = globals(), locals()
+    props = [x for x in dir(klass) if isinstance(eval("klass.%s" % x, globs, locs), property) and x in klass.__dict__]
+    PYB11props = [x for x in dir(klass) if isinstance(eval("klass.%s" % x, globs, locs), PYB11property) and x in klass.__dict__]
     if props or PYB11props:
         ss("\n    // Properties\n")
 

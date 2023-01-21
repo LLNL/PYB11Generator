@@ -3,9 +3,9 @@
 #
 # Handle functions in pybind11
 #-------------------------------------------------------------------------------
-from PYB11utils import *
-from PYB11property import *
-import copy, StringIO
+from .PYB11utils import *
+from .PYB11property import *
+import copy, io
 
 #-------------------------------------------------------------------------------
 # PYB11generateModuleFunctions
@@ -23,7 +23,8 @@ def PYB11generateModuleFunctions(modobj, ss):
                 PYB11generateFunction(meth, methattrs, ss)
 
     # Now look for any template function instantiations.
-    func_templates = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x), PYB11TemplateFunction)]
+    globs, locs = globals(), locals()
+    func_templates = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11TemplateFunction)]
     for ftname in func_templates:
         func_template = eval("modobj.%s" % ftname)
         func_template(ftname, ss)
@@ -60,7 +61,7 @@ class PYB11TemplateFunction:
             for arg in funcattrs["template"]:
                 key = arg.split()[1]
                 if not key in template_parameters:
-                    raise RuntimeError, "Template parameter dictionary spec error: %s is missing from %s" % (key, template_parameters)
+                    raise RuntimeError("Template parameter dictionary spec error: %s is missing from %s" % (key, template_parameters))
             self.template_parameters = template_parameters
             
         # Check for any explicit template dictionaries
@@ -96,7 +97,7 @@ class PYB11TemplateFunction:
             funcattrs["pyname"] = pyname
 
         funcattrs["template_dict"] = {}
-        for name, val in self.template_parameters.iteritems():
+        for name, val in self.template_parameters.items():
             funcattrs["template_dict"][name] = val
 
         if self.func_template.__doc__:
@@ -111,7 +112,7 @@ class PYB11TemplateFunction:
 # Generate a function definition
 #-------------------------------------------------------------------------------
 def PYB11generateFunction(meth, methattrs, ssout):
-    fs = StringIO.StringIO()
+    fs = io.StringIO()
     ss = fs.write
 
     # Arguments

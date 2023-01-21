@@ -3,14 +3,14 @@
 #-------------------------------------------------------------------------------
 import inspect
 import sys
-from PYB11utils import *
-from PYB11Decorators import *
-from PYB11STLmethods import *
-from PYB11function import *
-from PYB11class import *
-from PYB11Publicist import *
-from PYB11enum import *
-from PYB11attr import *
+from .PYB11utils import *
+from .PYB11Decorators import *
+from .PYB11STLmethods import *
+from .PYB11function import *
+from .PYB11class import *
+from .PYB11Publicist import *
+from .PYB11enum import *
+from .PYB11attr import *
 
 #-------------------------------------------------------------------------------
 # PYB11generateModule

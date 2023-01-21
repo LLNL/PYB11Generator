@@ -20,13 +20,13 @@
 # -- Project information -----------------------------------------------------
 
 project = u'PYB11Generator'
-copyright = u'2018, J. Michael Owen'
+copyright = u'2018, LLNS'
 author = u'J. Michael Owen'
 
 # The short X.Y version
 version = u''
 # The full version, including alpha/beta/rc tags
-release = u'1.0'
+release = u'2.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -88,7 +88,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

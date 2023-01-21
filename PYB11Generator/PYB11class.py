@@ -3,12 +3,12 @@
 #
 # Stuff for handling classes in pybind11
 #--------------------------------------------------------------------------------
-from PYB11utils import *
-from PYB11property import *
-from PYB11ClassAttribute import *
-from PYB11Trampoline import *
-from PYB11enum import PYB11enum
-import copy, StringIO, inspect
+from .PYB11utils import *
+from .PYB11property import *
+from .PYB11ClassAttribute import *
+from .PYB11Trampoline import *
+from .PYB11enum import PYB11enum
+import copy, io, inspect
 
 #-------------------------------------------------------------------------------
 # PYB11generateModuleClasses
@@ -60,18 +60,18 @@ class PYB11TemplateClass:
             for arg in klassattrs["template"]:
                 key = arg.split()[1]
                 if not key in template_parameters:
-                    raise RuntimeError, "Template parameter dictionary spec error: %s is missing from %s" % (key, template_parameters)
+                    raise RuntimeError("Template parameter dictionary spec error: %s is missing from %s" % (key, template_parameters))
             self.template_parameters = template_parameters
             
         # Check for any explicit template dictionaries
         if klassattrs["template_dict"]:
-            for key, value in klassattrs["template_dict"].items():
+            for key, value in list(klassattrs["template_dict"].items()):
                 if not key in self.template_parameters:
                     self.template_parameters[key] = value
         for bklass in PYB11getBaseClasses(self.klass_template):
             bklassattrs = PYB11attrs(bklass)
             if bklassattrs["template_dict"]:
-                for key, value in bklassattrs["template_dict"].items():
+                for key, value in list(bklassattrs["template_dict"].items()):
                     if not key in self.template_parameters:
                         self.template_parameters[key] = value
         self.template_parameters = PYB11recurseTemplateDict(self.template_parameters)
@@ -171,7 +171,7 @@ class PYB11TemplateMethod:
         if self.func_template.__doc__:
             doc0 = copy.deepcopy(self.func_template.__doc__)
             self.func_template.__doc__ += self.docext
-        fs = StringIO.StringIO()
+        fs = io.StringIO()
         PYB11generic_class_method(klass, klassattrs, self.func_template, funcattrs, fs.write)
         ss(fs.getvalue() % PYB11recurseTemplateDict(PYB11union_dict(klassattrs["template_dict"], funcattrs["template_dict"])))
         fs.close()
@@ -260,7 +260,7 @@ def PYB11generic_class_method(klass, klassattrs, meth, methattrs, ss):
 def PYB11generateClass(klass, klassattrs, ssout):
     klassinst = klass()
 
-    fs = StringIO.StringIO()
+    fs = io.StringIO()
     ss = fs.write
 
     #...........................................................................
@@ -501,7 +501,8 @@ def PYB11generateClass(klass, klassattrs, ssout):
     PYB11GenerateClassProperties(klass, klassinst, klassattrs, ss)
 
     # Bind any templated methods
-    templates = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x), PYB11TemplateMethod) and x in klass.__dict__]
+    globs, locs = globals(), locals()
+    templates = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x, globs, locs), PYB11TemplateMethod) and x in klass.__dict__]
     if templates:
         ss("\n    // %(cppname)s template methods\n" % klassattrs)
         for tname in templates:
@@ -511,7 +512,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
     # Fill in the argument string for a method
     def extractArgs(mmeth):
         result = [x[0] for x in PYB11parseArgs(mmeth)]
-        for i in xrange(len(result)):
+        for i in range(len(result)):
             try:
                 result[i] = result[i] % Tdict
             except:
@@ -571,7 +572,8 @@ def PYB11generateClass(klass, klassattrs, ssout):
                     PYB11generic_class_method(bklass, bklassattrs, meth, methattrs, ss)
 
             # Same thing with any base templated methods
-            templates = [x for x in dir(bklass) if isinstance(eval("bklass.%s" % x), PYB11TemplateMethod) and x in bklass.__dict__]
+            #templates = [x for x in dir(bklass) if isinstance(eval("bklass.%s" % x, globs, locs), PYB11TemplateMethod) and x in bklass.__dict__]
+            templates = [x for x in dir(bklass) if isinstance(getattr(bklass, x, locs), PYB11TemplateMethod) and x in bklass.__dict__]
             if templates:
                 for tname in templates:
                     inst = eval("bklass.%s" % tname)
@@ -583,7 +585,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
                         except Exception as excpt:
                             #import sys
                             #sys.stderr.write("Encountered ERROR: %s\n" % excpt)
-                            raise RuntimeError, "ERROR encountered processing (%s, %s) template instantiation\n    ERROR was: %s %s %s " % (tname, meth, excpt, type(excpt), excpt.args)
+                            raise RuntimeError("ERROR encountered processing (%s, %s) template instantiation\n    ERROR was: %s %s %s " % (tname, meth, excpt, type(excpt), excpt.args))
 
     # Look for any base virtual methods that have not been overridden
     ss("\n    // Base virtual methods\n")
@@ -608,7 +610,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
                 allmethods.append((mname, meth))
 
     # Look for any class scope enums and bind them
-    enums = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x), PYB11enum) and x in klass.__dict__]
+    enums = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x, globs, locs), PYB11enum) and x in klass.__dict__]
     if enums:
         ss("\n    // %(cppname)s enums\n  " % klassattrs)
         ssenum = PYB11indentedIO("  ")
@@ -621,7 +623,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
     ss("  }\n\n")
 
     # Look for any class scope classes and bind them
-    klasses = [(x, eval("klass.%s" % x)) for x in dir(klassinst) if (inspect.isclass(eval("klass.%s" % x)) and x in klass.__dict__)]
+    klasses = [(x, eval("klass.%s" % x, globs, locs)) for x in dir(klassinst) if (inspect.isclass(eval("klass.%s" % x, globs, locs)) and x in klass.__dict__)]
     klasses = sorted(klasses, key=PYB11sort_by_inheritance(klasses))
     for (kname, nklass) in klasses:
         #nklass = eval("klassinst.%s" % kname)

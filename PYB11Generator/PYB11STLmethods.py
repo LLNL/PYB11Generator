@@ -4,7 +4,7 @@
 # Thin wrappers to generate the pybind11 STL functions.
 #-------------------------------------------------------------------------------
 import inspect
-from PYB11utils import *
+from .PYB11utils import *
 
 #-------------------------------------------------------------------------------
 # std::vector
@@ -55,7 +55,7 @@ class PYB11_bind_map:
     def preamble(self, modobj, ss, name):
         if self.opaque:
             cppname = "std::map<" + self.key + "," + self.value + ">"
-            ss("PYBIND11_MAKE_OPAQUE(" + PYB11CPPsafe(cppname) + ");\n")
+            ss("PYBIND11_MAKE_OPAQUE(" + PYB11CPPsafe(cppname) + ")\n")
         return
 
     def __call__(self, modobj, ss, name):

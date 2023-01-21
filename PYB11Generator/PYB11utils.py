@@ -1,5 +1,5 @@
-from PYB11Decorators import *
-import inspect, StringIO, types, itertools
+from .PYB11Decorators import *
+import inspect, io, types, itertools
 
 #-------------------------------------------------------------------------------
 # PYB11inject
@@ -26,7 +26,8 @@ def PYB11inject(fromcls, tocls,
     assert not (virtual and pure_virtual), "PYB11inject: cannot specify both virtual and pure_virtual as True!"
 
     # Methods
-    names = [x for x in dir(fromcls) if (inspect.ismethod(eval('fromcls.%s' % x)))]
+    globs, locs = globals(), locals()
+    names = [x for x in dir(fromcls) if (inspect.isfunction(eval('fromcls.%s' % x, globs, locs)))]  # Replaced ismethod -> isfunction in Python 3 conversion
     for name in names:
         exec('''tocls.%(name)s = PYB11copy_func(fromcls.%(name)s)''' % {"name": name})
         #exec('''tocls.%(name)s = copy_func(eval("fromcls.__dict__['%(name)s']"))''' % {"name": name})
@@ -36,8 +37,8 @@ def PYB11inject(fromcls, tocls,
             exec('tocls.%s.__dict__["PYB11pure_virtual"] = %s' % (name, pure_virtual))
 
     # Properties
-    from PYB11class import PYB11TemplateMethod
-    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x), PYB11TemplateMethod)]
+    from .PYB11class import PYB11TemplateMethod
+    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x, globs, locs), PYB11TemplateMethod)]
     for name in names:
         exec('''tocls.%(name)s = PYB11TemplateMethod(func_template = fromcls.%(name)s.func_template,
                                                      template_parameters = [x[1] for x in fromcls.%(name)s.template_parameters],
@@ -46,8 +47,8 @@ def PYB11inject(fromcls, tocls,
                                                      docext = fromcls.%(name)s.docext)''' % {"name": name})
 
     # Properties
-    from PYB11property import PYB11property
-    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x), PYB11property)]
+    from .PYB11property import PYB11property
+    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x, globs, locs), PYB11property)]
     for name in names:
         exec('''tocls.%(name)s = PYB11property(returnType = fromcls.%(name)s.returnType,
                                                getter = fromcls.%(name)s.getter,
@@ -61,8 +62,8 @@ def PYB11inject(fromcls, tocls,
                                                returnpolicy = fromcls.%(name)s.returnpolicy)''' % {"name": name})
 
     # Attributes
-    from PYB11ClassAttribute import PYB11ClassAttribute
-    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x), PYB11ClassAttribute)]
+    from .PYB11ClassAttribute import PYB11ClassAttribute
+    names = [x for x in dir(fromcls) if isinstance(eval('fromcls.%s' % x, globs, locs), PYB11ClassAttribute)]
     for name in names:
         exec('''tocls.%(name)s = PYB11ClassAttribute(static = fromcls.%(name)s.static,
                                                      pyname = fromcls.%(name)s.pyname,
@@ -86,7 +87,9 @@ def PYB11getBaseClasses(klass):
             for val in s:
                 s = flatten(val, result)
         else:
-            result.append(s)
+            assert len(s) == 2    # pair
+            if not s[0] is object:
+                result.append((s[0], tuple([x for x in s[1] if not x is object])))
     flatstuff = []
     flatten(stuff, flatstuff)
     result = { k[0] : k[1] for k in flatstuff }
@@ -96,21 +99,21 @@ def PYB11getBaseClasses(klass):
 # Key function to sort lists by source code order.
 #-------------------------------------------------------------------------------
 def PYB11sort_by_line(stuff):
-    from PYB11class import PYB11TemplateClass
+    from .PYB11class import PYB11TemplateClass
     name, obj = stuff
     if isinstance(obj, PYB11TemplateClass):
         #return obj.order + 0
         try:
             source, lineno = inspect.findsource(obj.klass_template)
         except:
-            raise RuntimeError, "Cannot find source for %s?" % name
+            raise RuntimeError("Cannot find source for %s?" % name)
         #print " **> ", name, lineno
         return lineno
     else:
         try:
             source, lineno = inspect.findsource(obj)
         except:
-            raise RuntimeError, "Cannot find source for %s?" % name
+            raise RuntimeError("Cannot find source for %s?" % name)
         #print " ==> ", name, lineno
         return lineno
 
@@ -121,7 +124,7 @@ def PYB11sort_by_line(stuff):
 #-------------------------------------------------------------------------------
 class PYB11sort_by_inheritance:
     def __init__(self, klasses):
-        from PYB11class import PYB11TemplateClass
+        from .PYB11class import PYB11TemplateClass
 
         # First pass, order by line number
         self.keys = {}
@@ -147,7 +150,7 @@ class PYB11sort_by_inheritance:
                         changed = True
 
     def __call__(self, stuff):
-        from PYB11class import PYB11TemplateClass
+        from .PYB11class import PYB11TemplateClass
         obj = stuff[1]
         if isinstance(obj, PYB11TemplateClass):
             klass = obj.klass_template
@@ -182,9 +185,10 @@ def PYB11othermods(modobj):
 # Get the template class instantiations to bind from a module
 #-------------------------------------------------------------------------------
 def PYB11classTemplateInsts(modobj):
-    from PYB11class import PYB11TemplateClass
-    result = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x), PYB11TemplateClass)]
-    result = [(x, eval("modobj.%s" % x)) for x in result]
+    from .PYB11class import PYB11TemplateClass
+    globs, locs = globals(), locals()
+    result = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11TemplateClass)]
+    result = [(x, eval("modobj.%s" % x, globs, locs)) for x in result]
     return sorted(result, key = PYB11sort_by_line)
 
 #-------------------------------------------------------------------------------
@@ -193,7 +197,8 @@ def PYB11classTemplateInsts(modobj):
 # Get the methods to bind from a class
 #-------------------------------------------------------------------------------
 def PYB11ClassMethods(obj):
-    result = inspect.getmembers(obj, predicate=inspect.ismethod)
+    result = inspect.getmembers(obj, predicate=inspect.isfunction)
+    #result = inspect.getmembers(obj, predicate=inspect.ismethod)
     # It's nice to sort in the same order the user created, but not necessary
     try:
         result.sort(key = PYB11sort_by_line)
@@ -257,12 +262,12 @@ def PYB11recurseTemplateDict(Tdict):
     while not done and itcount < 100:
         done = True
         itcount += 1
-        for key, val in Tdict.iteritems():
+        for key, val in Tdict.items():
             if "%(" in val:
                 done = False
                 Tdict[key] = val % Tdict
     if itcount == 100:
-        raise RuntimeError, "PYB11recurseTemplate failed to resolve all values in %s" % Tdict
+        raise RuntimeError("PYB11recurseTemplate failed to resolve all values in %s" % Tdict)
     return Tdict
 
 #-------------------------------------------------------------------------------
@@ -276,7 +281,7 @@ def PYB11parseTemplates(attrs, bklasses = None):
 
     # Add user-specified attributes
     if attrs["template_dict"]:
-        for key, value in attrs["template_dict"].items():
+        for key, value in list(attrs["template_dict"].items()):
             if not key in Tdict:
                 Tdict[key] = value
 
@@ -285,7 +290,7 @@ def PYB11parseTemplates(attrs, bklasses = None):
         for bklass in bklasses:
             bklassattrs = PYB11attrs(bklass)
             if bklassattrs["template_dict"]:
-                for key, value in bklassattrs["template_dict"].items():
+                for key, value in list(bklassattrs["template_dict"].items()):
                     if key not in Tdict:
                         Tdict[key] = value
 
@@ -385,7 +390,7 @@ def PYB11cppname_exts(templateargs):
 class PYB11indentedIO:
     def __init__(self, prefix):
         self.prefix = prefix
-        self.fs = StringIO.StringIO()
+        self.fs = io.StringIO()
         return
     def __call__(self, stuff):
         newstuff = stuff.replace("\n", "\n" + self.prefix)

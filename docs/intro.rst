@@ -32,6 +32,8 @@ This command installs PYB11Generator (and pybind11 since it is a dependency of P
 
 For those curious, the source for PYB11Generator is hosted on `github <https://github.com/jmikeowen/pyb11generator>`_.
 
+Another approach (if you are using git for source code control) is to include PYB11Generator as a submodule of your project, in which case PYB11Generator and pybind11 (which is a submodule of PYB11Generator) will be available for use in your project directly.  See the `Git documentation on submodules <https://git-scm.com/book/en/v2/Git-Tools-Submodules>`_ for more information.  This can also simplify building if you are using `CMake <https://cmake.org/>`_ as your build system, since this makes the PYB11Generator CMake extensions available as well.  Use of CMake to build PYB11Generator generated modules is discussed :ref:`cmake`.
+
 .. _the-basics:
 
 The basics: how to generate pybind11 code using PYB11Generator
