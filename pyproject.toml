@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PYB11Generator"
+authors = [{name = "J. Michael Owen", email="mikeowen@llnl.gov"}]
+description = "PYB11Generator is a code generation tool which generates pybind11 code for binding C++ to Python. Documentation is available at https://pyb11generator.readthedocs.io/"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers=[
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
+dependencies = ["pybind11", "decorator"]
+#dynamic = ["version"]
+version = "2.0.0"
+
+[project.urls]
+"Homepage" = "https://github.com/LLNL/PYB11Generator"
+"Bug Tracker" = "https://github.com/LLNL/PYB11Generator/issues"
