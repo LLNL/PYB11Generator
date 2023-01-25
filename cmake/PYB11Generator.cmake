@@ -158,6 +158,9 @@ macro(PYB11_GENERATE_BINDINGS target_name module_name PYB11_SOURCE)
 
   # Places we need in the Python path
   set(PYTHON_ENV "${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_CURRENT_SOURCE_DIR}:${PYB11GENERATOR_ROOT_DIR}:${${target_name}_PYTHONPATH}")
+  if (DEFINED ENV{PYTHONPATH})
+    set(PYTHON_ENV "${PYTHON_ENV}:$ENV{PYTHONPATH}")
+  endif()
 
   # Extract the name of PYB11 generating source code without the .py extension
   string(REGEX REPLACE "\\.[^.]*$" "" pyb11_module ${PYB11_SOURCE})
