@@ -27,7 +27,9 @@
 #                             INCLUDES         ...
 #                             LINKS            ...
 #                             DEPENDS          ...
-#                             PYBIND11_OPTIONS ...)
+#                             PYBIND11_OPTIONS ...
+#                             COMPILE_OPTIONS  ...
+#                             USE_BLT          ON/OFF)
 #   where arguments are:
 #       <package_name> (required)
 #           The base name of the Python module being generated.  Results in a module
@@ -39,6 +41,8 @@
 #           default: <package_name>_PYB11.py
 #           Specify the name of the Python file holding the PYB11Generator description
 #           of the bindings.
+#       EXTRA_SOURCE ... (optional)
+#           Any additional source files we want to compile into the library
 #       INSTALL ... (optional)
 #           default: ${Python3_SITEARCH}/${package_name}
 #           Path to install the final Python module to
@@ -53,6 +57,14 @@
 #           Any flags that should be bassed to the pybind11 CMake function
 #           pybind11_add_module.  See documentation at
 #           https://pybind11.readthedocs.io/en/stable/compiling.html#pybind11-add-module
+#       COMPILE_OPTIONS ... (optional)
+#           Any additional flags that should be passed during the compile stage.  See
+#           CMake documentation for TARGET_COMPILE_OPTIONS.
+#       USE_BLT ON/OFF (optional, default OFF)
+#           For those using the BLT Cmake extension (https://llnl-blt.readthedocs.io/),
+#           which does not play well with standard CMake add_library options.
+#           Note, using this option skips using pybind11's own add_module CMake logic,
+#           and therefore may make some pybind11 options no-ops.
 #
 # This is the function users should call directly.  The macro PYB11_GENERATE_BINDINGS
 # defined next is primarily for internal use.
@@ -77,8 +89,8 @@ function(PYB11Generator_add_module target_name)
 
   # Define our arguments
   set(options )
-  set(oneValueArgs   MODULE SOURCE INSTALL)
-  set(multiValueArgs INCLUDES LINKS DEPENDS PYBIND11_OPTIONS)
+  set(oneValueArgs   MODULE SOURCE INSTALL USE_BLT)
+  set(multiValueArgs INCLUDES LINKS DEPENDS PYBIND11_OPTIONS COMPILE_OPTIONS EXTRA_SOURCE)
   cmake_parse_arguments(${target_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   # message("-- MODULE: ${${taget_name}_MODULE}")
   # message("-- SOURCE: ${${target_name}_SOURCE}")
@@ -87,6 +99,9 @@ function(PYB11Generator_add_module target_name)
   # message("-- LINKS: ${${target_name}_LINKS}")
   # message("-- DEPENDS: ${${target_name}_DEPENDS}")
   # message("-- PYBIND11_OPTIONS: ${${target_name}_PYBIND11_OPTIONS}")
+  # message("-- COMPILE_OPTIONS: ${${target_name}_COMPILE_OPTIONS}")
+  # message("-- USE_BLT: ${target_name}_USE_BLT")
+  # message("-- EXTRA_SOURCE: ${target_name}_EXTRA_SOURCE")
 
   # Set our names and paths
   if (NOT DEFINED ${target_name}_MODULE)
@@ -97,16 +112,29 @@ function(PYB11Generator_add_module target_name)
   endif()
   # message("-- ${target_name}_MODULE: ${${target_name}_MODULE}")
   # message("-- ${target_name}_SOURCE: ${${target_name}_SOURCE}")
-
+  
   # Generate the pybind11 C++ source file
   PYB11_GENERATE_BINDINGS(${target_name} ${${target_name}_MODULE} ${${target_name}_SOURCE}
                           DEPENDS ${${target_name}_DEPENDS})
 
-  # Now the normal pybind11 build can proceed
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${target_name}_INCLUDES})
-  pybind11_add_module(${target_name} ${${target_name}_PYBIND11_OPTIONS} ${${target_name}_MODULE}.cc)
-  set_target_properties(${target_name} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${target_name}_MODULE})
-  target_link_libraries(${target_name} PRIVATE ${${target_name}_LINKS})
+  if (${${target_name}_USE_BLT}) 
+    # Build using BLT macros -- assumes you've already included BLT CMake rules
+    blt_add_library(NAME         ${target_name}
+                    SOURCES      ${${target_name}_MODULE} ${${target_name}_SOURCE} ${${target_name}_EXTRA_SOURCE}
+                    DEPENDS_ON   Spheral_CXX ${spheral_blt_depends} ${spheral_blt_py_depends} ${${package_name}_DEPENDS}
+                    INCLUDES     ${${package_name}_INCLUDES}
+                    OUTPUT_NAME  ${${target_name}_MODULE}
+                    CLEAR_PREFIX TRUE
+                    SHARED       TRUE)
+  else()
+    # Build using the normal pybind11 rules
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${target_name}_INCLUDES})
+    pybind11_add_module(${target_name} ${${target_name}_PYBIND11_OPTIONS} ${${target_name}_MODULE}.cc ${${target_name}_EXTRA_SOURCE})
+    set_target_properties(${target_name} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${target_name}_MODULE})
+    target_link_libraries(${target_name} PRIVATE ${${target_name}_LINKS})
+  endif()    
+
+  target_compile_options(${target_name} PRIVATE ${${target_name}_COMPILE_OPTIONS})
 
   # Installation
   if ("${${target_name}_INSTALL} " STREQUAL " ")
