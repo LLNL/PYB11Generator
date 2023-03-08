@@ -193,42 +193,16 @@ macro(PYB11_GENERATE_BINDINGS target_name module_name PYB11_SOURCE)
   # Extract the name of PYB11 generating source code without the .py extension
   string(REGEX REPLACE "\\.[^.]*$" "" pyb11_module ${PYB11_SOURCE})
 
-  # Generating python stamp files to detect changes in PYB11_SOURCE and
-  # its included modules
-  if(EXISTS ${PYTHON_EXE})
-    # Python must exist to generate at config time
-    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${module_name}_stamp.cmake")
-      # Generate stamp files at config time
-      execute_process(COMMAND env PYTHONPATH=\"${PYTHON_ENV}\"
-                      ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py 
-                      ${module_name}
-                      ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE}
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                      )
-    endif()
-
-    # Include list of dependent python files
-    include(${CMAKE_CURRENT_BINARY_DIR}/${module_name}_stamp.cmake)
-  endif()
-
-  # Always regenerate the stamp files at build time. Any change in the stamp file
+  # Always generate cpp files at build time. Any change in the cpp file
   # will trigger a rebuild of the target pyb11 module
-  add_custom_target(${module_name}_stamp ALL
-                    COMMAND env PYTHONPATH=\"${PYTHON_ENV}\"
-                    ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py
-                    ${pyb11_module}
-                    ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE}
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                    )
-
-  # Generate the actual pyb11 module cpp source file
-  add_custom_command(OUTPUT ${PYB11_GENERATED_SOURCE}
-                     COMMAND env PYTHONPATH=\"${PYTHON_ENV}\"
-                     ${PYTHON_EXE} -c
-                     'from PYB11Generator import * \; 
-                     import ${pyb11_module} \;
-                     PYB11generateModule(${pyb11_module}, \"${module_name}\") '
-                     DEPENDS ${module_name}_stamp ${${target_name}_DEPENDS} ${PYB11_SOURCE}
-                     )
+  add_custom_target(
+    ${module_name}_src ALL
+    COMMAND env PYTHONPATH=\"${PYTHON_ENV}\"
+    ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py
+    ${pyb11_module}
+    ${module_name}
+    BYPRODUCTS ${PYB11_GENERATED_SOURCE}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
 
 endmacro()
