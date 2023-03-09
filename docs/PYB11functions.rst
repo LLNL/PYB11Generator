@@ -6,13 +6,15 @@ PYB11 special functions and classes
 This section describes the special functions and classes defined in PYB11Generator for use in createing python bindings.  Note we use the convention that PYB11 internals always start with the ``PYB11`` prefix.
 
 .. #############################################################################
-.. py:function:: PYB11generateModule(pymodule[, basename=None])
+.. py:function:: PYB11generateModule(pymodule[, modname=None, filename=None])
 
   Inspect the function and class definitions in ``pymodule``, and write a C++ file containing pybind11 statements to bind those interfaces.
 
   * ``pymodule``: the module to be introspected for the interface
 
-  * ``"basename"``: a basename for the generated C++ file.  If specified, the output is written to ``basename.cc``, otherwise output will be written to ``pymodule.cc``
+  * ``modname``: optionally specify a different name for the generated Python module to be imported under.  Defaults to ``pymodule``.
+
+  * ``filename``: a file name for the generated C++ file.  If specified, the output is written to the given name, otherwise output will be written to ``pymodule.cc``
 
 .. #############################################################################
 .. py:function:: PYB11TemplateFunction(func_template, template_parameters[, cppname = None, pyname = None, docext = ""])

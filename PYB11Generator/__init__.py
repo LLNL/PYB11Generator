@@ -15,13 +15,15 @@ from .PYB11attr import *
 #-------------------------------------------------------------------------------
 # PYB11generateModule
 #-------------------------------------------------------------------------------
-def PYB11generateModule(modobj, name=None):
-    if name is None:
-        name = modobj.__name__
-    modobj.PYB11modulename = name
-    with open(name + ".cc", "w") as f:
+def PYB11generateModule(modobj, modname=None, filename=None):
+    if modname is None:
+        modname = modobj.__name__
+    modobj.PYB11modulename = modname
+    if filename is None:
+        filename = modname + ".cc"
+    with open(filename, "w") as f:
         ss = f.write
-        PYB11generateModuleStart(modobj, ss, name)
+        PYB11generateModuleStart(modobj, ss, modname)
 
         # enums
         PYB11generateModuleEnums(modobj, ss)
