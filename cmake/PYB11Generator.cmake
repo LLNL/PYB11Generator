@@ -134,6 +134,7 @@ function(PYB11Generator_add_module target_name)
     target_link_libraries(${target_name} PRIVATE ${${target_name}_LINKS})
   endif()    
 
+  add_dependencies(${target_name} ${${target_name}_MODULE}_src)
   target_compile_options(${target_name} PRIVATE ${${target_name}_COMPILE_OPTIONS})
 
   # Installation
