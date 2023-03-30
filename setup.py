@@ -21,7 +21,7 @@ if base and not base.endswith("/"):
 
 setuptools.setup(
     name = "PYB11Generator",
-    version = "2.0.2",
+    version = "2.0.3",
     author = "J. Michael Owen",
     author_email = "mikeowen@llnl.gov",
     description = "A code generator for the pybind11 C++ <-> Python language binding tool",
