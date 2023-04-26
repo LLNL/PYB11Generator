@@ -93,6 +93,11 @@ PYB11 decorators
   Mark a class method as static.
 
 .. #############################################################################
+.. decorator:: PYB11operator
+
+  Mark a class method as an operator.  See `pybind11 discussion of py::is_operator in the discussion of operator overloading<https://pybind11.readthedocs.io/en/stable/advanced/classes.html?highlight=is_operator#operator-overloading>`_.
+
+.. #############################################################################
 .. decorator:: PYB11noconvert
 
   Applies ``py::noconvert`` to all the arguments of a method to prevent automatic conversion.  See `pybind11 discussion of py:: <https://pybind11.readthedocs.io/en/stable/advanced/functions.html?highlight=noconvert#non-converting-arguments>`_.

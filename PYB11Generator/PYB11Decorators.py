@@ -217,3 +217,10 @@ class PYB11module:
             thing.PYB11module = {}
         thing.PYB11module[thing] = self.val
         return thing
+
+#-------------------------------------------------------------------------------
+# operator (method)
+#-------------------------------------------------------------------------------
+def PYB11operator(f):
+    f.PYB11operator = True
+    return f

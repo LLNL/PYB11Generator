@@ -250,6 +250,12 @@ def PYB11generic_class_method(klass, klassattrs, meth, methattrs, ss):
     if doc:
         ss(", ")
         PYB11docstring(doc, ss)
+
+    # Is this an operator method?
+    if methattrs["operator"]:
+        ss(", py::is_operator()")
+        
+    # Done
     ss(");\n")
 
 #-------------------------------------------------------------------------------
@@ -361,7 +367,8 @@ def PYB11generateClass(klass, klassattrs, ssout):
                           "__add__" : (binary_operator, "+"),
                           "__sub__" : (binary_operator, "-"),
                           "__mul__" : (binary_operator, "*"),
-                          "__div__" : (binary_operator, "/"),
+                          "__truediv__" : (binary_operator, "/"),
+                          "__floordiv__" : (binary_operator, "//"),
                           "__mod__" : (binary_operator, "%"),
                           "__and__" : (binary_operator, "&"),
                           "__xor__" : (binary_operator, "^"),
@@ -370,7 +377,8 @@ def PYB11generateClass(klass, klassattrs, ssout):
                           "__radd__" : (reverse_binary_operator, "+"),
                           "__rsub__" : (reverse_binary_operator, "-"),
                           "__rmul__" : (reverse_binary_operator, "*"),
-                          "__rdiv__" : (reverse_binary_operator, "/"),
+                          "__rtruediv__" : (reverse_binary_operator, "/"),
+                          "__rfloordiv__" : (reverse_binary_operator, "//"),
                           "__rmod__" : (reverse_binary_operator, "%"),
                           "__rand__" : (reverse_binary_operator, "&"),
                           "__rxor__" : (reverse_binary_operator, "^"),
@@ -379,7 +387,8 @@ def PYB11generateClass(klass, klassattrs, ssout):
                           "__iadd__" : (binary_operator, "+="),
                           "__isub__" : (binary_operator, "-="),
                           "__imul__" : (binary_operator, "*="),
-                          "__idiv__" : (binary_operator, "/="),
+                          "__itruediv__" : (binary_operator, "/="),
+                          "__ifloordiv__" : (binary_operator, "//="),
                           "__imod__" : (binary_operator, "%="),
                           "__iand__" : (binary_operator, "&="),
                           "__ixor__" : (binary_operator, "^="),
@@ -480,7 +489,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
         methattrs = PYB11attrs(meth)
         methattrs["returnType"] = eval("klassinst." + mname + "()")
         args = PYB11parseArgs(meth)
-        if methattrs["pyname"] in special_operators:
+        if methattrs["pyname"] in special_operators and not methattrs["implementation"]:
             func, op = special_operators[methattrs["pyname"]]
             func(meth, methattrs, args, op)
             kills.append(i)

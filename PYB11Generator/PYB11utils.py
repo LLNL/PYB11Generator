@@ -445,7 +445,8 @@ def PYB11attrs(obj):
          "call_guard"            : None,
          "template"              : (),
          "template_dict"         : {},
-         "module"                : {}}
+         "module"                : {},
+         "operator"              : False}
     for key in d:
         if hasattr(obj, "PYB11" + key):
             d[key] = eval("obj.PYB11%s" % key)
