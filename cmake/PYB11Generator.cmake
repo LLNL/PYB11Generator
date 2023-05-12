@@ -120,7 +120,7 @@ function(PYB11Generator_add_module target_name)
   if (${${target_name}_USE_BLT}) 
     # Build using BLT macros -- assumes you've already included BLT CMake rules
     blt_add_library(NAME         ${target_name}
-                    SOURCES      ${${target_name}_MODULE} ${${target_name}_SOURCE} ${${target_name}_EXTRA_SOURCE}
+                    SOURCES      ${${target_name}_MODULE}.cc ${${target_name}_SOURCE} ${${target_name}_EXTRA_SOURCE}
                     DEPENDS_ON   Spheral_CXX ${spheral_blt_depends} ${spheral_blt_py_depends} ${${package_name}_DEPENDS}
                     INCLUDES     ${${package_name}_INCLUDES}
                     OUTPUT_NAME  ${${target_name}_MODULE}
