@@ -138,10 +138,12 @@ function(PYB11Generator_add_module target_name)
   target_compile_options(${target_name} PRIVATE ${${target_name}_COMPILE_OPTIONS})
 
   # Installation
-  if ("${${target_name}_INSTALL} " STREQUAL " ")
-    set(${target_name}_INSTALL ${Python3_SITEARCH}/${target_name})
+  if (NOT ${${target_name}_INSTALL} STREQUAL "OFF")
+    if ("${${target_name}_INSTALL} " STREQUAL " ")
+      set(${target_name}_INSTALL ${Python3_SITEARCH}/${target_name})
+    endif()
+    install(TARGETS ${target_name} DESTINATION ${${target_name}_INSTALL})
   endif()
-  install(TARGETS ${target_name} DESTINATION ${${target_name}_INSTALL})
 
 endfunction()
 
