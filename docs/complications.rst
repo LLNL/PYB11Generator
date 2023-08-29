@@ -167,3 +167,39 @@ In this case the descendant ``B`` class inherits from ``A``, but specializes one
      ...
 
   B_double_int = PYB11TemplateClass(B, template_parameters=("double", "int")
+
+--------------------------------
+Binding ``constexpr`` statements
+--------------------------------
+
+In C++ ``constexpr`` denotes quantities that are known at compile time and therefore can be entirely optimized away during the compilation phase.  Python does not really have this concept, but nonetheless we can expose ``constexpr`` definitions in our Python modules.  There are two cases we might want to consider.
+
+* If we have a constexpr defined outside the scope of class or struct, we can simply use the :func:`PYB11attr` command to bind it.  So for example the following C++ declaration:
+
+  .. code-block:: cpp
+
+     static constexpr unsigned square_of_two = 2u*2u;
+
+  can be bound using the PYB11Generator statement::
+
+    square_of_two = PYB11attr()
+
+* If we have a constexpr statment defined inside a class scope we can use the :func:`PYB11property` method with the special ``constexpr`` flag instead.  So a class such as:
+
+  .. code-block:: cpp
+
+     class A {
+     public:
+       A()                                       { printf("A::A()\\n"); } 
+       ~A()                                      { printf("A::~A()\\n"); }
+       static constexpr double square_of_pi = M_PI*M_PI;
+       static constexpr size_t size_of_something = 24u;
+     };
+
+  can have its nested ``constexpr`` variables exposed with the bindings::
+
+    class A:
+        def pyinit(self):
+            "Default A()"
+        square_of_pi = PYB11property(constexpr=True)
+        size_of_something = PYB11property(constexpr=True)
