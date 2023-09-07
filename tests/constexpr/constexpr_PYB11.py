@@ -24,5 +24,5 @@ class A:
     def pyinit(self):
         "Default A()"
 
-    square_of_pi = PYB11property(constexpr=True)
-    size_of_something = PYB11property(constexpr=True)
+    square_of_pi = PYB11property("double", constexpr=True, static=True)
+    size_of_something = PYB11property("unsigned", constexpr=True, static=True)
