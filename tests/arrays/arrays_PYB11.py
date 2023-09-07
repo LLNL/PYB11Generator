@@ -3,6 +3,10 @@ from PYB11Generator import *
 PYB11includes = ['"MyArray.hh"', '"GeomThirdRankTensor.hh"']
 #PYB11includes = ['"GeomThirdRankTensor.hh"']
 
+PYB11namespaces = ["Spheral"]
+
+from ThirdRankTensor import *
+
 @PYB11template("Value")
 class MyArray:
     "Thin wrapper around a native C++ array type"

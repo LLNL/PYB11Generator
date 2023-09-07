@@ -1,10 +1,3 @@
-set(chai_DIR "/usr/WS2/davis291/LLNLSPHERAL/LLNLSpheral/spheral-spack-tpls/spack/opt/spack/__spack_path_placeholder__/__spack_path_placeholder/linux-rhel7-ppc64le/gcc-8.3.1/chai-2022.03.0-if33a7qge6lecy2om7mvtja2fkzbvway")
-set(umpire_DIR "/usr/WS2/davis291/LLNLSPHERAL/LLNLSpheral/spheral-spack-tpls/spack/opt/spack/__spack_path_placeholder__/__spack_path_placeholder/linux-rhel7-ppc64le/gcc-8.3.1/umpire-2022.03.0-ohbhodhj7k5nnxl5up7qnojcdrnbskgh")
-set(raja_DIR "/usr/WS2/davis291/LLNLSPHERAL/LLNLSpheral/spheral-spack-tpls/spack/opt/spack/__spack_path_placeholder__/__spack_path_placeholder/linux-rhel7-ppc64le/gcc-8.3.1/raja-2022.10.4-bnec6qgj7baxyivofosz5jmaagqp3qvc")
-set(camp_DIR "/usr/WS2/davis291/LLNLSPHERAL/LLNLSpheral/spheral-spack-tpls/spack/opt/spack/__spack_path_placeholder__/__spack_path_placeholder/linux-rhel7-ppc64le/gcc-8.3.1/camp-2022.10.0-k5lkomxt5a6ei4pk67dwfe47q7t64byr")
-set(lvarray_DIR "/usr/WS2/davis291/LLNLSPHERAL/LLNLSpheral/spheral-spack-tpls/spack/opt/spack/__spack_path_placeholder__/__spack_path_placeholder/linux-rhel7-ppc64le/gcc-8.3.1/lvarray-develop-qphvahymkzsf6ytbykz3hbnwggibyaja")
-set(spharray_DIR "/usr/WS2/davis291/LLNLSPHERAL/LLNLSpheral/spheral/src/Field/")
-
 set(chai_libs libchai.a)
 set(umpire_libs libumpire.a)
 set(raja_libs -L${raja_DIR}/lib -lRAJA -ldesul_atomics)
