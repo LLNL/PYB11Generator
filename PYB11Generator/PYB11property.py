@@ -66,7 +66,16 @@ class PYB11property:
 
             # If this is a constexpr, just hardwire a lambda function accessor
             if self.constexpr:
-                ss(('[](const %(namespace)s%(cppname)s& self) { return self.' % klassattrs) + self.getter + '; }')
+                if self.static:
+                    ss(('[](py::object)' % klassattrs))
+                else:
+                    ss(('[](const %(namespace)s%(cppname)s& self)' % klassattrs))
+                if self.returnType:
+                    ss(' -> ' + self.returnType)
+                if self.static:
+                    ss((' { return %(namespace)s%(cppname)s::' % klassattrs) + self.getter + '; }')
+                else:
+                    ss((' { return self.' % klassattrs) + self.getter + '; }')
 
             else:
                 if self.returnType:
