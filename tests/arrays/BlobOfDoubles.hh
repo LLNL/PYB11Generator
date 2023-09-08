@@ -7,9 +7,9 @@ public:
   using const_iterator = const double*;
   static constexpr size_t numElements = 1u;
 
-  BlobOfDoubles()                    { std::cerr << "BlobOfDoubles()\n"; for (auto i = 0u; i < numElements; ++i) mData[i] = 0.0; }
-  BlobOfDoubles(const double x)      { std::cerr << "BlobOfDoubles(double)\n"; for (auto i = 0u; i < numElements; ++i) mData[i] = x; }
-  virtual ~BlobOfDoubles()           { std::cerr << "~BlobOfDoubles()\n"; }
+  BlobOfDoubles()                    { std::cerr << "BlobOfDoubles() : " << this << "\n"; for (auto i = 0u; i < numElements; ++i) mData[i] = 0.0; }
+  BlobOfDoubles(const double x)      { std::cerr << "BlobOfDoubles(double) : " << this << "\n"; for (auto i = 0u; i < numElements; ++i) mData[i] = x; }
+  virtual ~BlobOfDoubles()           { std::cerr << "~BlobOfDoubles() : " << this << "\n"; }
   double& operator[](const size_t i) { std::cerr << "BlobOfDoubles[" << i << "]\n"; if (i >= numElements) throw pybind11::index_error(); return mData[i]; }
   const_iterator begin() const       { std::cerr << "BlobOfDoubles::begin()\n"; return &mData[0]; }
   const_iterator end() const         { std::cerr << "BlobOfDoubles::end()\n"; return &mData[numElements]; }

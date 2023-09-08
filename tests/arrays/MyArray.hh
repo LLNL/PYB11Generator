@@ -8,23 +8,23 @@ template<typename Value>
 class MyArray {
 
 public:
-  using ContainerType = chai::ManagedArray<Value>;
-  using iterator = Value*;
-  using const_iterator = const Value*;
+  // using ContainerType = chai::ManagedArray<Value>;
+  // using iterator = Value*;
+  // using const_iterator = const Value*;
 
   // using ContainerType = Spheral::ManagedVector<Value>;
   // using iterator = typename ContainerType::iterator;
   // using const_iterator = typename ContainerType::const_iterator;
 
-  // using ContainerType = std::vector<Value>;
-  // using iterator = typename ContainerType::iterator;
-  // using const_iterator = typename ContainerType::const_iterator;
+  using ContainerType = std::vector<Value>;
+  using iterator = typename ContainerType::iterator;
+  using const_iterator = typename ContainerType::const_iterator;
 
-  MyArray(): mContainer()                      { std::cerr << "MyArray()\n"; }
-  MyArray(const size_t size): mContainer(size) { std::cerr << "MyArray(" << size << ")\n"; }
+  MyArray(): mContainer()                      { std::cerr << "MyArray() : " << this << "\n"; }
+  MyArray(const size_t size): mContainer(size) { std::cerr << "MyArray(" << size << ") : " << this << "\n"; }
   MyArray(const size_t size,
-          const Value& x): mContainer(size)    { std::cerr << "MyArray(" << size << ", x)\n"; for (auto i = 0u; i < size; ++i) mContainer[i] = x; }
-  ~MyArray()                                   { std::cerr << "~MyArray()\n"; }
+          const Value& x): mContainer(size)    { std::cerr << "MyArray(" << size << ", x) : " << this << "\n"; for (auto i = 0u; i < size; ++i) mContainer[i] = x; }
+  ~MyArray()                                   { std::cerr << "~MyArray() : " << this << "\n"; }
   size_t size() const                          { std::cerr << "MyArray::size\n"; return mContainer.size(); }
   Value& operator[](const size_t index)        { std::cerr << "MyArray[" << index << "]\n"; return mContainer[index]; }
   iterator begin()                             { std::cerr << "MyArray::begin()\n"; return mContainer.begin(); }
