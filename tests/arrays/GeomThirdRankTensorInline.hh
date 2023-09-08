@@ -3,24 +3,39 @@
 #include <string>
 
 #include "GeomThirdRankTensor.hh"
+// //#include "Utilities/SpheralFunctions.hh"
+// //#include "Utilities/DBC.hh"
 
-#include "pybind11/pybind11.h"
-//#include "Utilities/SpheralFunctions.hh"
-//#include "Utilities/DBC.hh"
-namespace PYBIND11_NAMESPACE {
-    template<int nDim> struct polymorphic_type_hook<Spheral::GeomThirdRankTensor<nDim>> {
-        static const void *get(const Spheral::GeomThirdRankTensor<nDim> *src, const std::type_info*& type) {
-            // note that src may be nullptr
-            if (src) {
-                type = &typeid(Spheral::GeomThirdRankTensor<nDim>);
-                //type = &typeid(*src);
-                return static_cast<const Spheral::GeomThirdRankTensor<nDim>*>(src);
-            }
-            return src;
-        }
-    };
-} // namespace PYBIND11_NAMESPACE
+// #include "pybind11/pybind11.h"
+// namespace PYBIND11_NAMESPACE {
+//     template<int nDim> struct polymorphic_type_hook<Spheral::GeomThirdRankTensor<nDim>> {
+//         static const void *get(const Spheral::GeomThirdRankTensor<nDim> *src, const std::type_info*& type) {
+//             // note that src may be nullptr
+//             if (src) {
+//                 type = &typeid(Spheral::GeomThirdRankTensor<nDim>);
+//                 //type = &typeid(*src);
+//                 return static_cast<const Spheral::GeomThirdRankTensor<nDim>*>(src);
+//             }
+//             return src;
+//         }
+//     };
+// } // namespace PYBIND11_NAMESPACE
 
+// #include "pybind11/pybind11.h"
+// namespace PYBIND11_NAMESPACE {
+//   template<int nDim> struct polymorphic_type_hook<Spheral:RankNTensor<nDim, 3, Spheral::GeomThirdRankTensor<nDim>>> {
+//     static const void *get(const Spheral::RankNTensor<nDim, 3, Spheral::GeomThirdRankTensor<1>> *src, const std::type_info*& type) {
+//       // note that src may be nullptr
+//       if (src and dynamic_cast<Spheral::GeomThirdRankTensor<nDim>*(src) != nullptr) {
+//         type = &typeid(Spheral::GeomThirdRankTensor<nDim>);
+//         //type = &typeid(*src);
+//         return static_cast<const Spheral::GeomThirdRankTensor<nDim>*>(src);
+//       }
+//       return src;
+//     }
+//   };
+// } // namespace PYBIND11_NAMESPACE
+ 
 namespace Spheral {
 
 //------------------------------------------------------------------------------

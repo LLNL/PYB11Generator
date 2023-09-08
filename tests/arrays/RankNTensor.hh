@@ -44,12 +44,14 @@ public:
   // Destructor.
   virtual ~RankNTensor();
 
+  // virtual int blago() const = 0;
+
   // Assignment.
   RankNTensor& operator=(const RankNTensor& rhs);
   RankNTensor& operator=(const double rhs);
 
   // More C++ style indexing.
-  double operator[](size_type index) const;
+  // double operator[](size_type index) const;
   double& operator[](size_type index);
 
   // Iterator access to the raw data.

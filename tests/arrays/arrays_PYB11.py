@@ -1,11 +1,24 @@
 from PYB11Generator import *
 
-PYB11includes = ['"MyArray.hh"', '"GeomThirdRankTensor.hh"']
-#PYB11includes = ['"GeomThirdRankTensor.hh"']
+PYB11includes = ['"MyArray.hh"', '"GeomThirdRankTensor.hh"', '"BlobOfDoubles.hh"']
 
 PYB11namespaces = ["Spheral"]
 
+PYB11preamble = """
+void setChaiStuff() {
+  auto* rm = chai::ArrayManager::getInstance();
+  std::cerr << "Starting CHAI execution space: " << rm->getExecutionSpace() << std::endl;
+  std::cerr << "Starting CHAI allocation space: " << rm->getDefaultAllocationSpace() << std::endl;
+  rm->setExecutionSpace(chai::CPU);
+  rm->setDefaultAllocationSpace(chai::CPU);
+  std::cerr << "New CHAI execution space: " << rm->getExecutionSpace() << std::endl;
+  std::cerr << "New CHAI allocation space: " << rm->getDefaultAllocationSpace() << std::endl;
+}
+"""
+
+from RankNTensor import *
 from ThirdRankTensor import *
+from BlobOfDoubles import *
 
 @PYB11template("Value")
 class MyArray:
@@ -42,12 +55,13 @@ class MyArray:
 
     @PYB11cppname("operator[]")
     @PYB11returnpolicy("reference_internal")
-    @PYB11implementation('[](MyArrayType& self, int i) { const int n = self.size(); if (i >= n) throw py::index_error(); return &self[(i %% n + n) %% n]; }')
-    def __getitem__(self):
-        return
-    #@PYB11cppname("operator[]")
-    #@PYB11returnpolicy("reference_internal")
-    #def __getitem__(self,
+    @PYB11implementation('[](MyArrayType& self, const size_t i) -> %(Value)s& { const int n = self.size(); if (i >= n) throw py::index_error(); return self[(i %% n + n) %% n]; }')
+    def __getitem__(self, i = "const size_t"):
+        return "%(Value)s&"
+
+    # @PYB11cppname("operator[]")
+    # @PYB11returnpolicy("reference_internal")
+    # def __getitem__(self,
     #                index = "const size_t"):
     #    return "%(Value)s&"
 
@@ -67,6 +81,12 @@ class MyArray:
         "Python iteration through MyArray."
 
 MyArray_double = PYB11TemplateClass(MyArray, template_parameters="double")
-MyArray_TRT = PYB11TemplateClass(MyArray, template_parameters="Spheral::GeomThirdRankTensor<1>")
-MyArray_of_vec_double = PYB11TemplateClass(MyArray, template_parameters="std::vector<double>")
-MyArray_of_MyArray_double = PYB11TemplateClass(MyArray, template_parameters="MyArray<double>")
+MyArray_BlobOfDoubles = PYB11TemplateClass(MyArray, template_parameters="BlobOfDoubles")
+
+# MyArray_TRT = PYB11TemplateClass(MyArray, template_parameters="Spheral::GeomThirdRankTensor<1>")
+# #MyArray_of_vec_double = PYB11TemplateClass(MyArray, template_parameters="std::vector<double>")
+# #MyArray_of_MyArray_double = PYB11TemplateClass(MyArray, template_parameters="MyArray<double>")
+
+def setChaiStuff():
+    "A bunch of chai initialization"
+    return "void"

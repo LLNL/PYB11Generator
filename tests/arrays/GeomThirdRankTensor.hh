@@ -34,7 +34,9 @@ public:
   GeomThirdRankTensor(const GeomThirdRankTensor& rhs);
 
   // Destructor.
-  ~GeomThirdRankTensor();
+  virtual ~GeomThirdRankTensor();
+
+  // virtual int blago() const { return 3; }
 
   // Assignment.
   GeomThirdRankTensor& operator=(const GeomThirdRankTensor& rhs);
