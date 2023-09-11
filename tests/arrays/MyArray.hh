@@ -48,7 +48,7 @@ private:
     auto* buf = mContainer.data();
     const auto size = mContainer.size();
     std::cerr << "MyArray::destroy " << size << " --> " << newSize << "\n";
-    if (true) { // (newSize < size and not std::is_trivially_destructible<Value>::value) {
+    if (newSize < size and not std::is_trivially_destructible<Value>::value) {
       for (auto i = newSize; i < size; ++i) buf[i].~Value();
     }
     mContainer.reallocate(newSize);
@@ -67,7 +67,7 @@ private:
     } else {
       // Increasing the size of the array, so construct the new objects at the end
       mContainer.reallocate(newSize);
-      if (true) { // (not std::is_trivially_default_constructible<Value>::value) {
+      if (not std::is_trivially_default_constructible<Value>::value) {
         auto* buf = mContainer.data();
         for (size_t i = size; i < size_t(newSize); ++i) new (buf + i) Value();
       }
