@@ -6,7 +6,7 @@ class BlobOfDoubles {
 public:
   using iterator = double*;
   using const_iterator = const double*;
-  static constexpr size_t numElements = 1u;
+  static constexpr size_t numElements = 15u;
 
   BlobOfDoubles()                    { std::cerr << "BlobOfDoubles() : " << this << "\n"; for (auto i = 0u; i < numElements; ++i) mData[i] = 0.0; }
   BlobOfDoubles(const double x)      { std::cerr << "BlobOfDoubles(double) : " << this << "\n"; for (auto i = 0u; i < numElements; ++i) mData[i] = x; }
