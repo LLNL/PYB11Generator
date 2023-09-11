@@ -3,27 +3,29 @@
 
 #include <vector>
 #include <iostream>
+#include <memory>
 
 template<typename Value>
 class MyArray {
 
 public:
-  // using ContainerType = chai::ManagedArray<Value>;
-  // using iterator = Value*;
-  // using const_iterator = const Value*;
+  using ContainerType = chai::ManagedArray<Value>;
+  using iterator = Value*;
+  using const_iterator = const Value*;
 
   // using ContainerType = Spheral::ManagedVector<Value>;
   // using iterator = typename ContainerType::iterator;
   // using const_iterator = typename ContainerType::const_iterator;
 
-  using ContainerType = std::vector<Value>;
-  using iterator = typename ContainerType::iterator;
-  using const_iterator = typename ContainerType::const_iterator;
+  // using ContainerType = std::vector<Value>;
+  // using iterator = typename ContainerType::iterator;
+  // using const_iterator = typename ContainerType::const_iterator;
 
   MyArray(): mContainer()                      { std::cerr << "MyArray() : " << this << "\n"; }
-  MyArray(const size_t size): mContainer(size) { std::cerr << "MyArray(" << size << ") : " << this << "\n"; }
+  MyArray(const size_t size): mContainer(size) { std::cerr << "MyArray(" << size << ") : " << this << "\n"; Value x; for (auto i = 0u; i < size; ++i) mContainer[i] = x; }
   MyArray(const size_t size,
-          const Value& x): mContainer(size)    { std::cerr << "MyArray(" << size << ", x) : " << this << "\n"; for (auto i = 0u; i < size; ++i) mContainer[i] = x; }
+          const Value& x): mContainer(size)    { std::cerr << "MyArray(" << size << ", x) : " << this << "\n";
+    for (iterator cptr = mContainer.begin(); cptr < mContainer.end(); ++cptr) *cptr = x; }
   ~MyArray()                                   { std::cerr << "~MyArray() : " << this << "\n"; }
   size_t size() const                          { std::cerr << "MyArray::size\n"; return mContainer.size(); }
   Value& operator[](const size_t index)        { std::cerr << "MyArray[" << index << "]\n"; return mContainer[index]; }

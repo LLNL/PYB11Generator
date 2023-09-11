@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "pybind11/pybind11.h"
 
 class BlobOfDoubles {
@@ -9,6 +10,7 @@ public:
 
   BlobOfDoubles()                    { std::cerr << "BlobOfDoubles() : " << this << "\n"; for (auto i = 0u; i < numElements; ++i) mData[i] = 0.0; }
   BlobOfDoubles(const double x)      { std::cerr << "BlobOfDoubles(double) : " << this << "\n"; for (auto i = 0u; i < numElements; ++i) mData[i] = x; }
+  BlobOfDoubles& operator=(const BlobOfDoubles& rhs) { std::cerr << "BlobOfDoubles::operator=(rhs)\n"; if (this != &rhs) std::copy(rhs.mData, rhs.mData + numElements, mData); return *this; }
   virtual ~BlobOfDoubles()           { std::cerr << "~BlobOfDoubles() : " << this << "\n"; }
   double& operator[](const size_t i) { std::cerr << "BlobOfDoubles[" << i << "]\n"; if (i >= numElements) throw pybind11::index_error(); return mData[i]; }
   const_iterator begin() const       { std::cerr << "BlobOfDoubles::begin()\n"; return &mData[0]; }
