@@ -79,10 +79,12 @@ if (NOT DEFINED PYTHON_EXE)
   find_package(Python3 COMPONENTS Interpreter Development)
   set(PYTHON_EXE ${Python3_EXECUTABLE})
 endif()
-if (DEFINED PYBIND11_ROOT_DIR)
-  add_subdirectory(${PYBIND11_ROOT_DIR} ${CMAKE_CURRENT_BINARY_DIR}/external)
-else()
-  add_subdirectory(${PYB11GENERATOR_ROOT_DIR}/extern/pybind11 ${CMAKE_CURRENT_BINARY_DIR}/external)
+if (NOT TARGET pybind11_headers)
+  if (DEFINED PYBIND11_ROOT_DIR)
+    add_subdirectory(${PYBIND11_ROOT_DIR} ${CMAKE_CURRENT_BINARY_DIR}/external)
+  else()
+    add_subdirectory(${PYB11GENERATOR_ROOT_DIR}/extern/pybind11 ${CMAKE_CURRENT_BINARY_DIR}/external)
+  endif()
 endif()
 
 function(PYB11Generator_add_module target_name)
@@ -119,7 +121,7 @@ function(PYB11Generator_add_module target_name)
 
   if (${${target_name}_USE_BLT}) 
     # Build using BLT macros -- assumes you've already included BLT CMake rules
-    blt_add_library(NAME         ${target_name}
+    blt_add_library(NAME         ${${target_name}_MODULE}
                     SOURCES      ${${target_name}_MODULE}.cc ${${target_name}_SOURCE} ${${target_name}_EXTRA_SOURCE}
                     DEPENDS_ON   Spheral_CXX ${spheral_blt_depends} ${spheral_blt_py_depends} ${${package_name}_DEPENDS}
                     INCLUDES     ${${package_name}_INCLUDES}
@@ -130,19 +132,19 @@ function(PYB11Generator_add_module target_name)
     # Build using the normal pybind11 rules
     include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${target_name}_INCLUDES})
     pybind11_add_module(${target_name} ${${target_name}_PYBIND11_OPTIONS} ${${target_name}_MODULE}.cc ${${target_name}_EXTRA_SOURCE})
-    set_target_properties(${target_name} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${target_name}_MODULE})
-    target_link_libraries(${target_name} PRIVATE ${${target_name}_LINKS})
+    set_target_properties(${${target_name}_MODULE} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${target_name}_MODULE})
+    target_link_libraries(${${target_name}_MODULE} PRIVATE ${${target_name}_LINKS})
   endif()    
 
-  add_dependencies(${target_name} ${${target_name}_MODULE}_src)
-  target_compile_options(${target_name} PRIVATE ${${target_name}_COMPILE_OPTIONS})
+  add_dependencies(${${target_name}_MODULE} ${${target_name}_MODULE}_src)
+  target_compile_options(${${target_name}_MODULE} PRIVATE ${${target_name}_COMPILE_OPTIONS})
 
   # Installation
   if (NOT ${${target_name}_INSTALL} STREQUAL "OFF")
     if ("${${target_name}_INSTALL} " STREQUAL " ")
       set(${target_name}_INSTALL ${Python3_SITEARCH}/${target_name})
     endif()
-    install(TARGETS ${target_name} DESTINATION ${${target_name}_INSTALL})
+    install(TARGETS ${${target_name}_MODULE} DESTINATION ${${target_name}_INSTALL})
   endif()
 
 endfunction()
