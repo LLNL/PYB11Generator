@@ -20,7 +20,7 @@
 #       - if not set, we use CMake's find_package to search for Python3
 #
 # Usage:
-#   PYB11Generator_add_module(<target_name>
+#   PYB11Generator_add_module(<package_name>
 #                             MODULE           ...
 #                             SOURCE           ...
 #                             INSTALL          ...
@@ -35,8 +35,9 @@
 #           The base name of the Python module being generated.  Results in a module
 #           which can be imported in Python as "import <package_name>".
 #       MODULE ... (optional)
-#           default: <target_name>
+#           default: <package_name>
 #           Specify the name of the Python module to be imported and bound
+#           Also used as the corresponding CMake target name
 #       SOURCE ... (optional)
 #           default: <package_name>_PYB11.py
 #           Specify the name of the Python file holding the PYB11Generator description
@@ -87,64 +88,64 @@ if (NOT TARGET pybind11_headers)
   endif()
 endif()
 
-function(PYB11Generator_add_module target_name)
+function(PYB11Generator_add_module package_name)
 
   # Define our arguments
   set(options )
   set(oneValueArgs   MODULE SOURCE INSTALL USE_BLT)
   set(multiValueArgs INCLUDES LINKS DEPENDS PYBIND11_OPTIONS COMPILE_OPTIONS EXTRA_SOURCE)
-  cmake_parse_arguments(${target_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-  # message("-- MODULE: ${${taget_name}_MODULE}")
-  # message("-- SOURCE: ${${target_name}_SOURCE}")
-  # message("-- INSTALL: ${${target_name}_INSTALL}")
-  # message("-- INCLUDES: ${${target_name}_INCLUDES}")
-  # message("-- LINKS: ${${target_name}_LINKS}")
-  # message("-- DEPENDS: ${${target_name}_DEPENDS}")
-  # message("-- PYBIND11_OPTIONS: ${${target_name}_PYBIND11_OPTIONS}")
-  # message("-- COMPILE_OPTIONS: ${${target_name}_COMPILE_OPTIONS}")
-  # message("-- USE_BLT: ${target_name}_USE_BLT")
-  # message("-- EXTRA_SOURCE: ${target_name}_EXTRA_SOURCE")
+  cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  # message("-- MODULE: ${${package_name}_MODULE}")
+  # message("-- SOURCE: ${${package_name}_SOURCE}")
+  # message("-- INSTALL: ${${package_name}_INSTALL}")
+  # message("-- INCLUDES: ${${package_name}_INCLUDES}")
+  # message("-- LINKS: ${${package_name}_LINKS}")
+  # message("-- DEPENDS: ${${package_name}_DEPENDS}")
+  # message("-- PYBIND11_OPTIONS: ${${package_name}_PYBIND11_OPTIONS}")
+  # message("-- COMPILE_OPTIONS: ${${package_name}_COMPILE_OPTIONS}")
+  # message("-- USE_BLT: ${package_name}_USE_BLT")
+  # message("-- EXTRA_SOURCE: ${package_name}_EXTRA_SOURCE")
 
   # Set our names and paths
-  if (NOT DEFINED ${target_name}_MODULE)
-    set(${target_name}_MODULE ${target_name})
+  if (NOT DEFINED ${package_name}_MODULE)
+    set(${package_name}_MODULE ${package_name})
   endif()
-  if (NOT DEFINED ${target_name}_SOURCE)
-    set(${target_name}_SOURCE "${${target_name}_MODULE}_PYB11.py")
+  if (NOT DEFINED ${package_name}_SOURCE)
+    set(${package_name}_SOURCE "${${package_name}_MODULE}_PYB11.py")
   endif()
-  # message("-- ${target_name}_MODULE: ${${target_name}_MODULE}")
-  # message("-- ${target_name}_SOURCE: ${${target_name}_SOURCE}")
+  # message("-- ${package_name}_MODULE: ${${package_name}_MODULE}")
+  # message("-- ${package_name}_SOURCE: ${${package_name}_SOURCE}")
   
   # Generate the pybind11 C++ source file
-  PYB11_GENERATE_BINDINGS(${target_name} ${${target_name}_MODULE} ${${target_name}_SOURCE}
-                          DEPENDS ${${target_name}_DEPENDS})
+  PYB11_GENERATE_BINDINGS(${package_name} ${${package_name}_MODULE} ${${package_name}_SOURCE}
+                          DEPENDS ${${package_name}_DEPENDS})
 
-  if (${${target_name}_USE_BLT}) 
+  if (${${package_name}_USE_BLT}) 
     # Build using BLT macros -- assumes you've already included BLT CMake rules
-    blt_add_library(NAME         ${${target_name}_MODULE}
-                    SOURCES      ${${target_name}_MODULE}.cc ${${target_name}_SOURCE} ${${target_name}_EXTRA_SOURCE}
+    blt_add_library(NAME         ${${package_name}_MODULE}
+                    SOURCES      ${${package_name}_MODULE}.cc ${${package_name}_SOURCE} ${${package_name}_EXTRA_SOURCE}
                     DEPENDS_ON   Spheral_CXX ${spheral_blt_depends} ${spheral_blt_py_depends} ${${package_name}_DEPENDS}
                     INCLUDES     ${${package_name}_INCLUDES}
-                    OUTPUT_NAME  ${${target_name}_MODULE}
+                    OUTPUT_NAME  ${${package_name}_MODULE}
                     CLEAR_PREFIX TRUE
                     SHARED       TRUE)
   else()
     # Build using the normal pybind11 rules
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${target_name}_INCLUDES})
-    pybind11_add_module(${target_name} ${${target_name}_PYBIND11_OPTIONS} ${${target_name}_MODULE}.cc ${${target_name}_EXTRA_SOURCE})
-    set_target_properties(${${target_name}_MODULE} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${target_name}_MODULE})
-    target_link_libraries(${${target_name}_MODULE} PRIVATE ${${target_name}_LINKS})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_INCLUDES})
+    pybind11_add_module(${package_name} ${${package_name}_PYBIND11_OPTIONS} ${${package_name}_MODULE}.cc ${${package_name}_EXTRA_SOURCE})
+    set_target_properties(${${package_name}_MODULE} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${package_name}_MODULE})
+    target_link_libraries(${${package_name}_MODULE} PRIVATE ${${package_name}_LINKS})
   endif()    
 
-  add_dependencies(${${target_name}_MODULE} ${${target_name}_MODULE}_src)
-  target_compile_options(${${target_name}_MODULE} PRIVATE ${${target_name}_COMPILE_OPTIONS})
+  add_dependencies(${${package_name}_MODULE} ${${package_name}_MODULE}_src)
+  target_compile_options(${${package_name}_MODULE} PRIVATE ${${package_name}_COMPILE_OPTIONS})
 
   # Installation
-  if (NOT ${${target_name}_INSTALL} STREQUAL "OFF")
-    if ("${${target_name}_INSTALL} " STREQUAL " ")
-      set(${target_name}_INSTALL ${Python3_SITEARCH}/${target_name})
+  if (NOT ${${package_name}_INSTALL} STREQUAL "OFF")
+    if ("${${package_name}_INSTALL} " STREQUAL " ")
+      set(${package_name}_INSTALL ${Python3_SITEARCH}/${package_name})
     endif()
-    install(TARGETS ${${target_name}_MODULE} DESTINATION ${${target_name}_INSTALL})
+    install(TARGETS ${${package_name}_MODULE} DESTINATION ${${package_name}_INSTALL})
   endif()
 
 endfunction()
@@ -156,11 +157,11 @@ endfunction()
 #       detecting changes in the pyb11 python files at build time
 #
 # Usage:
-#   PYB11_GENERATE_BINDINGS(<target_name> <module_name> <PYB11_SOURCE>
+#   PYB11_GENERATE_BINDINGS(<package_name> <module_name> <PYB11_SOURCE>
 #                           DEPENDS    ...
 #                           PYTHONPATH ...)
 #   where the arguments are:
-#       <target_name> (required)
+#       <package_name> (required)
 #           The CMake target name
 #       <module_name> (required)
 #           The base name for the Python module
@@ -175,22 +176,22 @@ endfunction()
 # use: ${PYB11_GENERATED_SOURCE}
 #-----------------------------------------------------------------------------------
 
-macro(PYB11_GENERATE_BINDINGS target_name module_name PYB11_SOURCE)
+macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE)
   set(PYB11_GENERATED_SOURCE "${module_name}.cc")
 
   # Define our arguments
   set(options )
   set(oneValueArgs )
   set(multiValueArgs DEPENDS PYTHONPATH)
-  cmake_parse_arguments(${target_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-  # message("** target_name: ${target_name}")
+  cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  # message("** package_name: ${package_name}")
   # message("** module_name: ${module_name}")
   # message("** PYB11_SOURCE: ${PYB11_SOURCE}")
-  # message("** DEPENDS: ${${target_name}_DEPENDS}")
-  # message("** PYTHONPATH: ${${target_name}_PYTHONPATH}")
+  # message("** DEPENDS: ${${package_name}_DEPENDS}")
+  # message("** PYTHONPATH: ${${package_name}_PYTHONPATH}")
 
   # Places we need in the Python path
-  set(PYTHON_ENV "${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_CURRENT_SOURCE_DIR}:${PYB11GENERATOR_ROOT_DIR}:${${target_name}_PYTHONPATH}")
+  set(PYTHON_ENV "${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_CURRENT_SOURCE_DIR}:${PYB11GENERATOR_ROOT_DIR}:${${package_name}_PYTHONPATH}")
   if (DEFINED ENV{PYTHONPATH})
     set(PYTHON_ENV "${PYTHON_ENV}:$ENV{PYTHONPATH}")
   endif()
