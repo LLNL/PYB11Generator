@@ -54,7 +54,7 @@ PYTHON_EXE (optional) :
 
 The full function specification for ``PYB11Generator_add_module`` is::
 
-     PYB11Generator_add_module(<target_name>
+     PYB11Generator_add_module(<package_name>
                                MODULE           ...
                                SOURCE           ...
                                INSTALL          ...
@@ -65,17 +65,17 @@ The full function specification for ``PYB11Generator_add_module`` is::
 
 where the arguments are:
 
-<target_name> (required) : 
-  Name of the CMake target to be created.
+<package_name> (required) : 
+  Name of the package to be created.
 
 MODULE <arg> (optional) :
-  Name of the Python module to be generated.  Defaults to ``<target_name>``.
+  Name of the Python module and CMake target to be generated.  Defaults to ``<package_name>``.
 
 SOURCE <arg> (optional) :
-  Optionally specify the name of the Python source file containing the PYB11Generator bindings.  If not specified, defaults to ``<target_name>_PYB11.py``.
+  Optionally specify the name of the Python source file containing the PYB11Generator bindings.  If not specified, defaults to ``<package_name>_PYB11.py``.
 
 INSTALL <arg> (optional) :
-  Path to install extension module -- defaults to ``${Python3_SITEARCH}/${target_name}``.
+  Path to install extension module -- defaults to ``${Python3_SITEARCH}/${package_name}``.
 
 INCLUDES <arg1> <arg2> ... (optional) :
   List of addition includes needed to compile the extension module.  Note all standard Python include paths are included by default.
@@ -91,4 +91,4 @@ PYBIND11_OPTIONS <arg1> <arg2> ... (optional) :
 
 .. Note::
 
-   ``PYB11Generator_add_module`` only looks at the ``SOURCE`` Python file (default ``<target_name>_PYB11.py``.  However, that file may in turn import as many other Python files as desired to expose more interface as part of the module, so the user should feel free to organize their PYB11Generator bindings as desired for clarity.  A typical pattern would be to have the top-level module ``<target_name>_PYB11.py`` import individual class bindings from separate Python files for each bound class, for instance.
+   ``PYB11Generator_add_module`` only looks at the ``SOURCE`` Python file (default ``<package_name>_PYB11.py``.  However, that file may in turn import as many other Python files as desired to expose more interface as part of the module, so the user should feel free to organize their PYB11Generator bindings as desired for clarity.  A typical pattern would be to have the top-level module ``<package_name>_PYB11.py`` import individual class bindings from separate Python files for each bound class, for instance.
