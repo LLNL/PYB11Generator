@@ -219,7 +219,7 @@ def PYB11generic_class_method(klass, klassattrs, meth, methattrs, ss):
     else:
         ss("(%(returnType)s " % methattrs)
         if methattrs["static"]:
-            ss("(%(namespace)s*)(" % methattrs)
+            ss("(*)(")
         else:
             ss("(%(namespace)s%(cppname)s::*)(" % klassattrs)
         for i, (argType, argName, default) in enumerate(args):
