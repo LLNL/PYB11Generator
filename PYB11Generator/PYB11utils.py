@@ -237,7 +237,7 @@ def PYB11functions(modobj):
 # Return (argType, argName, <default_value>)
 #-------------------------------------------------------------------------------
 def PYB11parseArgs(meth):
-    stuff = inspect.getargspec(meth)
+    stuff = inspect.getfullargspec(meth)
     result = []
     if stuff.defaults:
         nargs = len(stuff.defaults)
