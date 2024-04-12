@@ -116,7 +116,7 @@ def PYB11generateFunction(meth, methattrs, ssout):
     ss = fs.write
 
     # Arguments
-    stuff = inspect.getargspec(meth)
+    stuff = inspect.getfullargspec(meth)
     nargs = len(stuff.args)
     argNames = stuff.args
     argTypes, argDefaults = [], []
