@@ -23,6 +23,7 @@ class PYB11property:
                  getterconst = True,
                  setterconst = False,
                  static = None,
+                 constexpr = False,
                  returnpolicy = None):
         self.returnType = returnType
         self.getter = getter
@@ -33,10 +34,12 @@ class PYB11property:
         self.getterconst = getterconst
         self.setterconst = setterconst
         self.static = static
+        self.constexpr = constexpr
         self.returnpolicy = returnpolicy
 
         assert self.getter is None or self.getterraw is None, "PYB11property: cannot specify both getter and getterraw"
         assert self.setter is None or self.setterraw is None, "PYB11property: cannot specify both setter and setterraw"
+        assert (not self.constexpr) or (self.setter is None and self.setterraw is None), "PYB11property: cannot have a setter for constexpr"
         return
 
     def __call__(self, propname, klassattrs, ss):
@@ -60,16 +63,31 @@ class PYB11property:
         if self.getterraw:
             ss(self.getterraw)
         else:
-            if self.returnType:
-                ss('(%s ' % self.returnType)
+
+            # If this is a constexpr, just hardwire a lambda function accessor
+            if self.constexpr:
                 if self.static:
-                    ss('(%(namespace)s*)()' % klassattrs)
+                    ss(('[](py::object)' % klassattrs))
                 else:
-                    ss('(%(namespace)s%(cppname)s::*)()' % klassattrs)
-                    if self.getterconst:
-                        ss(' const')
-                ss(') ')
-            ss('&%(namespace)s%(cppname)s::' % klassattrs + self.getter)
+                    ss(('[](const %(namespace)s%(cppname)s& self)' % klassattrs))
+                if self.returnType:
+                    ss(' -> ' + self.returnType)
+                if self.static:
+                    ss((' { return %(namespace)s%(cppname)s::' % klassattrs) + self.getter + '; }')
+                else:
+                    ss((' { return self.' % klassattrs) + self.getter + '; }')
+
+            else:
+                if self.returnType:
+                    ss('(%s ' % self.returnType)
+                    if self.static:
+                        ss('(%(namespace)s*)()' % klassattrs)
+                    else:
+                        ss('(%(namespace)s%(cppname)s::*)()' % klassattrs)
+                        if self.getterconst:
+                            ss(' const')
+                    ss(') ')
+                ss('&%(namespace)s%(cppname)s::' % klassattrs + self.getter)
 
         # setter, if any
         if self.setterraw:

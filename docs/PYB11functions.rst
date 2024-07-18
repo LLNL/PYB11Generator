@@ -71,7 +71,7 @@ This section describes the special functions and classes defined in PYB11Generat
   * ``doc``: Optionally give a docstring.
 
 .. #############################################################################
-.. py:function:: PYB11property([returnType = None, getter = None, setter = None, doc = None, getterraw = None, setterraw = None,  getterconst = True, setterconst = False, static = None, returnpolicy = None])
+.. py:function:: PYB11property([returnType = None, getter = None, setter = None, doc = None, getterraw = None, setterraw = None,  getterconst = True, setterconst = False, static = None, constexpr = False, returnpolicy = None])
                  
    Helper to setup a class property.
 
@@ -92,6 +92,8 @@ This section describes the special functions and classes defined in PYB11Generat
    * ``setterconst``: Specify if ``setter`` is a const method.
 
    * ``static``: If ``True``, make this a static property.
+
+   * ``constexpr``: Set to ``True`` if the property is a C++ constexpr expression.
 
    * ``returnpolicy``: Specify a special return policy for how to handle the memory of the return value.  Read pybind11 documentation at :ref:`pybind11:return_value_policies`.
 

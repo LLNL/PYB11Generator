@@ -11,7 +11,7 @@
 
 cmake_minimum_required(VERSION 3.10)
 project(PYB11Generator LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 set(PYB11GENERATOR_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_MODULE_PATH ${PYB11GENERATOR_ROOT_DIR}/cmake)
@@ -33,5 +33,7 @@ add_subdirectory(tests/cross_module)
 add_subdirectory(tests/inheritance)
 add_subdirectory(tests/protected)
 add_subdirectory(tests/inject)
+add_subdirectory(tests/constexpr)
+add_subdirectory(tests/arrays)
 # add_subdirectory(tests/numpy)    # Not ready yet -- need to augment PYB11 to support the buffer protocol to do correctly
 
