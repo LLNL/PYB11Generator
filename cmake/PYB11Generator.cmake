@@ -199,16 +199,16 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE)
   # Extract the name of PYB11 generating source code without the .py extension
   string(REGEX REPLACE "\\.[^.]*$" "" pyb11_module ${PYB11_SOURCE})
 
+  get_target_property(VENV python_build_env ACTIVATE_VENV)
+
   # Always generate cpp files at build time. Any change in the cpp file
   # will trigger a rebuild of the target pyb11 module
   add_custom_target(
     ${module_name}_src ALL
-    COMMAND env PYTHONPATH=\"${PYTHON_ENV}\"
-    ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py
-    ${pyb11_module}
-    ${module_name}
+    COMMAND ${VENV} && env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name}
     BYPRODUCTS ${PYB11_GENERATED_SOURCE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DEPENDS python_build_env
     )
 
 endmacro()
