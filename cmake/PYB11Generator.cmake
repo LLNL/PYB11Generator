@@ -210,7 +210,6 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE)
   if (DEFINED ${package_name}_VIRTUAL_ENV)
     get_target_property(ACTIVATE_VENV_CMD ${${package_name}_VIRTUAL_ENV} ACTIVATE_VENV)
     get_target_property(PYTHON_EXE ${${package_name}_VIRTUAL_ENV} EXECUTABLE)
-    message("check")
   endif()
 
   # Always generate cpp files at build time. Any change in the cpp file
