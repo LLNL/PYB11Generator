@@ -66,6 +66,10 @@
 #           which does not play well with standard CMake add_library options.
 #           Note, using this option skips using pybind11's own add_module CMake logic,
 #           and therefore may make some pybind11 options no-ops.
+#       VIRTUAL_ENV ... (optional)
+#           The name of a python virtual environment target. The target must supply
+#           target properties EXECUTABLE and ACTIVATE_VENV to define the python executable
+#           and the command to activate the environment respectively.
 #
 # This is the function users should call directly.  The macro PYB11_GENERATE_BINDINGS
 # defined next is primarily for internal use.
@@ -92,7 +96,7 @@ function(PYB11Generator_add_module package_name)
 
   # Define our arguments
   set(options )
-  set(oneValueArgs   MODULE SOURCE INSTALL USE_BLT)
+  set(oneValueArgs   MODULE SOURCE INSTALL USE_BLT VIRTUAL_ENV)
   set(multiValueArgs INCLUDES LINKS DEPENDS PYBIND11_OPTIONS COMPILE_OPTIONS EXTRA_SOURCE)
   cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   # message("-- MODULE: ${${package_name}_MODULE}")
@@ -105,6 +109,7 @@ function(PYB11Generator_add_module package_name)
   # message("-- COMPILE_OPTIONS: ${${package_name}_COMPILE_OPTIONS}")
   # message("-- USE_BLT: ${package_name}_USE_BLT")
   # message("-- EXTRA_SOURCE: ${package_name}_EXTRA_SOURCE")
+  # message("-- VIRTUAL_ENV: ${${package_name}_VIRTUAL_ENV}")
 
   # Set our names and paths
   if (NOT DEFINED ${package_name}_MODULE)
@@ -118,7 +123,8 @@ function(PYB11Generator_add_module package_name)
   
   # Generate the pybind11 C++ source file
   PYB11_GENERATE_BINDINGS(${package_name} ${${package_name}_MODULE} ${${package_name}_SOURCE}
-                          DEPENDS ${${package_name}_DEPENDS})
+                          DEPENDS ${${package_name}_DEPENDS}
+                          VIRTUAL_ENV ${${package_name}_VIRTUAL_ENV})
 
   if (${${package_name}_USE_BLT}) 
     # Build using BLT macros -- assumes you've already included BLT CMake rules
@@ -181,7 +187,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE)
 
   # Define our arguments
   set(options )
-  set(oneValueArgs )
+  set(oneValueArgs VIRTUAL_ENV)
   set(multiValueArgs DEPENDS PYTHONPATH)
   cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   # message("** package_name: ${package_name}")
@@ -199,16 +205,24 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE)
   # Extract the name of PYB11 generating source code without the .py extension
   string(REGEX REPLACE "\\.[^.]*$" "" pyb11_module ${PYB11_SOURCE})
 
-  get_target_property(VENV python_build_env ACTIVATE_VENV)
+  set(PYTHON_EXE_BAK ${PYTHON_EXE})
+
+  if (DEFINED ${package_name}_VIRTUAL_ENV)
+    get_target_property(ACTIVATE_VENV_CMD ${${package_name}_VIRTUAL_ENV} ACTIVATE_VENV)
+    get_target_property(PYTHON_EXE ${${package_name}_VIRTUAL_ENV} EXECUTABLE)
+    message("check")
+  endif()
 
   # Always generate cpp files at build time. Any change in the cpp file
   # will trigger a rebuild of the target pyb11 module
   add_custom_target(
     ${module_name}_src ALL
-    COMMAND ${VENV} && env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name}
+    COMMAND ${ACTIVATE_VENV_CMD} env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name}
     BYPRODUCTS ${PYB11_GENERATED_SOURCE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS python_build_env
+    DEPENDS ${${package_name}_VIRTUAL_ENV}
     )
+
+  set(PYTHON_EXE ${PYTHON_EXE_BAK})
 
 endmacro()
