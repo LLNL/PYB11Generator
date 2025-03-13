@@ -207,7 +207,10 @@ public:
                     fms.write("    ")
 
                 if methattrs["pure_virtual"]:
-                    fms.write("PYBIND11_OVERLOAD_PURE(%(returnType)s, PYB11self, %(cppname)s, " % methattrs)
+                    if methattrs["cppname"] == methattrs["pyname"]:
+                        fms.write("PYBIND11_OVERLOAD_PURE(%(returnType)s, PYB11self, %(cppname)s, " % methattrs)
+                    else:
+                        fms.write('PYBIND11_OVERLOAD_PURE_NAME(%(returnType)s, PYB11self, "%(pyname)s", %(cppname)s, ' % methattrs)
                 else:
                     # HACK!  To workaround what appears to be a bug in overloading virtual method callbacks
                     # in pybind11 (see https://github.com/pybind/pybind11/issues/1547), we have to give
@@ -215,10 +218,11 @@ public:
                     # should have to handle this, but since we're code generating this we can do this explicit
                     # workaround.
                     #fms.write("PYBIND11_OVERLOAD(%(returnType)s, PYB11self, %(cppname)s, " % methattrs)
-                    fms.write("PYBIND11_OVERLOAD(%(returnType)s, " % methattrs)
-                    fms.write("PYB11self, ")
+                    if methattrs["cppname"] == methattrs["pyname"]:
+                        fms.write("PYBIND11_OVERLOAD(%(returnType)s, PYB11self, %(cppname)s, " % methattrs)
+                    else:
+                        fms.write('PYBIND11_OVERLOAD_NAME(%(returnType)s, PYB11self, "%(pyname)s", %(cppname)s, ' % methattrs)
                     #fms.write(PYB11mangle(bklassname) + ", ")
-                    fms.write("%(cppname)s, " % methattrs)
 
                 for i, (argType, argName, default) in enumerate(args):
                     if i < len(args) - 1:
