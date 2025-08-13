@@ -1,8 +1,7 @@
 #-------------------------------------------------------------------------------
 # PYB11Generator
 #-------------------------------------------------------------------------------
-import inspect
-import sys
+import inspect, sys, os
 from .PYB11utils import *
 from .PYB11Decorators import *
 from .PYB11STLmethods import *
@@ -15,12 +14,24 @@ from .PYB11attr import *
 #-------------------------------------------------------------------------------
 # PYB11generateModule
 #-------------------------------------------------------------------------------
-def PYB11generateModule(modobj, modname=None, filename=None):
+def PYB11generateModule(modobj,
+                        modname = None,
+                        filename = None,
+                        multiple_files = False,                     # Optionally generate multiple pybind11 source files
+                        generatedfiles = "PYB11_generated_files"):  # file nane to create list of generated pybind11 source files if multiple_files = True
     if modname is None:
         modname = modobj.__name__
     modobj.PYB11modulename = modname
     if filename is None:
         filename = modname + ".cc"
+    if multiple_files:
+        basename, ext = os.path.splitext(filename)
+        if not ext:
+            raise RuntimeError("ERROR determining base file name and extension from " + filename)
+        basedir = os.path.dirname(filename)
+        if basedir:
+            generatedfiles = os.path.join(basedir, generatedfiles)
+
     with open(filename, "w") as f:
         ss = f.write
         PYB11generateModuleStart(modobj, ss, modname)
