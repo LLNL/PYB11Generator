@@ -49,7 +49,7 @@ class PYB11TemplateClass:
         self.template_parameters = {}
         klassattrs = PYB11attrs(self.klass_template)
         if isinstance(template_parameters, str):
-            assert len(klassattrs["template"]) == 1
+            assert len(klassattrs["template"]) == 1, f"Bad template parameters: {klass_template} : {klassattrs['template']}"
             self.template_parameters[klassattrs["template"][0].split()[1]] = template_parameters
         elif isinstance(template_parameters, tuple):
             assert len(klassattrs["template"]) == len(template_parameters)
