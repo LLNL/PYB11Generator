@@ -20,7 +20,7 @@ class PYB11_bind_vector:
         self.local = local
         return
 
-    def preamble(self, modobj, ss, name):
+    def PYB11preamble(self, modobj, ss, name):
         if self.opaque:
             ss('PYBIND11_MAKE_OPAQUE(std::vector<' + PYB11CPPsafe(self.element) + '>)\n')
         return
@@ -52,7 +52,7 @@ class PYB11_bind_map:
         self.local = local
         return
 
-    def preamble(self, modobj, ss, name):
+    def PYB11preamble(self, modobj, ss, name):
         if self.opaque:
             cppname = "std::map<" + self.key + "," + self.value + ">"
             ss("PYBIND11_MAKE_OPAQUE(" + PYB11CPPsafe(cppname) + ")\n")
@@ -81,15 +81,58 @@ def PYB11STLobjs(modobj):
              isinstance(obj, PYB11_bind_map))]
 
 #-------------------------------------------------------------------------------
+# PYB11generateModuleSTLmethod
+#
+# Generate the method that binds the STL types
+#-------------------------------------------------------------------------------
+def PYB11generateModuleSTLmethod(modobj, stlobjs):
+    filename = modobj.basename + "_STLbindings.cc"
+    modobj.generatedfiles_list.append(filename)
+    name = modobj.PYB11modulename
+    modincludefile = modobj.master_include_file
+    with open(filename, "w") as f:
+        ss = f.write
+        ss(f'''//------------------------------------------------------------------------------
+// Bind STL for {name} module
+//------------------------------------------------------------------------------
+#include "{modincludefile}"
+
+void bindModuleSTLtypes(py::module_ mod) {{
+''')
+        for (name, obj) in stlobjs:
+            ss("  ")
+            obj(modobj, ss, name)
+        ss("}\n")
+    return
+
+#-------------------------------------------------------------------------------
 # PYB11generateModuleSTL
 #
 # Bind the STL containers in the module
 #-------------------------------------------------------------------------------
-def PYB11generateModuleSTL(modobj, ss):
+def PYB11generateModuleSTL(modobj):
     stuff = PYB11STLobjs(modobj)
-    for (name, obj) in stuff:
-        ss("  ")
-        obj(modobj, ss, name)
-    ss("\n")
+    if stuff:
+        with open(modobj.filename, "a") as f:
+            ss = f.write
+            ss("  //..............................................................................\n")
+            ss("  // STL bindings\n")
+
+        if modobj.multiple_files:
+            # Multiple files
+            with open(modobj.filename, "a") as f:
+                ss = f.write
+                ss("  bindModuleSTLtypes(m);\n\n")
+            PYB11generateModuleSTLmethod(modobj, stuff)
+
+        else:
+            # Monolithic file
+            with open(modobj.filename, "a") as f:
+                ss = f.write
+                for (name, obj) in stuff:
+                    ss("  ")
+                    obj(modobj, ss, name)
+                ss("\n")
+
     return
 

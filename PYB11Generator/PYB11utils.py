@@ -420,6 +420,39 @@ def PYB11docstring(doc, ss):
     return
 
 #-------------------------------------------------------------------------------
+# Helpful diagnostic function for development
+#-------------------------------------------------------------------------------
+def PYB11output(cmd, dict=None):
+    if dict is None:
+        frame = inspect.currentframe().f_back
+        ns = {}
+        ns.update(frame.f_globals)
+        ns.update(frame.f_locals)
+    print(cmd, " : ", eval(cmd, ns))
+    return
+
+#-------------------------------------------------------------------------------
+# Find all PYB11 objects
+#-------------------------------------------------------------------------------
+def PYB11objs(modobj):
+    return [(name, obj) for (name, obj) in inspect.getmembers(modobj)
+            if name[:5] != "PYB11"]
+
+#-------------------------------------------------------------------------------
+# Find all PYB11 objects with the given attribute
+#-------------------------------------------------------------------------------
+def PYB11objsWithAttr(modobj, attrname):
+    return [(name, obj) for (name, obj) in PYB11objs(modobj)
+            if hasattr(obj, attrname)]
+
+#-------------------------------------------------------------------------------
+# Find all PYB11 objects with the given method
+#-------------------------------------------------------------------------------
+def PYB11objsWithMethod(modobj, methodname):
+    return [(name, obj) for (name, obj) in PYB11objs(modobj)
+            if (hasattr(obj, methodname) and callable(getattr(obj, methodname)))]
+
+#-------------------------------------------------------------------------------
 # PYB11attrs
 #
 # Read the possible PYB11 generation attributes from the obj

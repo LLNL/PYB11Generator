@@ -7,19 +7,20 @@ import sys, inspect
 #
 # Bind the classes in the module
 #-------------------------------------------------------------------------------
-def PYB11generateModuleEnums(modobj, ss):
-    
+def PYB11generateModuleEnums(modobj):
+
     # Module enums
     globs, locs = globals(), locals()
     enums = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11enum)]
     if enums:
-        ss("  //..............................................................................\n")
-        ss("  // enum types\n")
-    for name in enums:
-        inst = eval("modobj.%s" % name)
-        inst(modobj, ss)
-    if enums:
-        ss("\n")
+        with open(modobj.filename, "a") as f:
+            ss = f.write
+            ss("  //..............................................................................\n")
+            ss("  // enum types\n")
+            for name in enums:
+                inst = eval("modobj.%s" % name)
+                inst(modobj, ss)
+            ss("\n")
 
     return
 
