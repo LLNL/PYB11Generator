@@ -160,9 +160,9 @@ using namespace pybind11::literals;
             ss("\n")
 
         # Trampolines
-        PYB11generateModuleTrampolines(modobj, ss)
+        PYB11generateModuleTrampolines(modobj)
 
-        # Trampolines
+        # Publicists
         PYB11generateModulePublicists(modobj, ss)
 
         # Declare the module

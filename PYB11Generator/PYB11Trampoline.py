@@ -12,7 +12,7 @@ from .PYB11utils import *
 #
 # Generate trampolines for any classes with virtual methods.
 #-------------------------------------------------------------------------------
-def PYB11generateModuleTrampolines(modobj, ss):
+def PYB11generateModuleTrampolines(modobj):
     klasses = PYB11classes(modobj)
 
     # Cull to just classes with virtual methods.
@@ -34,7 +34,17 @@ def PYB11generateModuleTrampolines(modobj, ss):
 
     # Generate trampolines
     for kname, klass in klasses:
-        PYB11generateTrampoline(klass, ss)
+        if modobj.multiple_files:
+            klassattrs = PYB11attrs(klass)
+            pyname = klassattrs["pyname"]
+            filename = modobj.basename + f"_{pyname}_trampoline.hh"
+            with open(filename, "w") as f:
+                ss = f.write
+                PYB11generateTrampoline(klass, ss)
+        else:
+            with open(modobj.filename, "a") as f:
+                ss = f.write
+                PYB11generateTrampoline(klass, ss)
     return
 
 #-------------------------------------------------------------------------------
@@ -72,8 +82,8 @@ def PYB11generateTrampoline(klass, ssout):
     ss("""//------------------------------------------------------------------------------
 // Trampoline class for %(cppname)s
 //------------------------------------------------------------------------------
-#ifndef __trampoline_%(pyname)s__
-#define __trampoline_%(pyname)s__
+#ifndef PYB11_trampoline_%(pyname)s
+#define PYB11_trampoline_%(pyname)s
 
 """ % klassattrs)
 
