@@ -55,11 +55,11 @@ def PYB11generateModule(modobj,
     # Generate the class objects
     PYB11generateModuleClassObjs(modobj)
 
-    # # methods
-    # PYB11generateModuleFunctions(modobj, ss)
+    # methods
+    PYB11generateModuleFunctions(modobj)
 
-    # # Attributes
-    # PYB11generateModuleAttrs(modobj, ss)
+    # Attributes
+    PYB11generateModuleAttrs(modobj)
 
     # Close the module source
     PYB11generateModuleClose(modobj)

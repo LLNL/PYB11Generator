@@ -12,22 +12,24 @@ import copy, io
 #
 # Bind the methods in the module
 #-------------------------------------------------------------------------------
-def PYB11generateModuleFunctions(modobj, ss):
-    methods = PYB11functions(modobj)
-    if methods:
-        ss("  //...........................................................................\n")
-        ss("  // Methods\n")
-        for name, meth in methods:
-            methattrs = PYB11attrs(meth)
-            if not methattrs["ignore"]:
-                PYB11generateFunction(meth, methattrs, ss)
+def PYB11generateModuleFunctions(modobj):
+    with open(modobj.filename, "a") as f:
+        ss = f.write
+        methods = PYB11functions(modobj)
+        if methods:
+            ss("  //...........................................................................\n")
+            ss("  // Methods\n")
+            for name, meth in methods:
+                methattrs = PYB11attrs(meth)
+                if not methattrs["ignore"]:
+                    PYB11generateFunction(meth, methattrs, ss)
 
-    # Now look for any template function instantiations.
-    globs, locs = globals(), locals()
-    func_templates = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11TemplateFunction)]
-    for ftname in func_templates:
-        func_template = eval("modobj.%s" % ftname)
-        func_template(ftname, ss)
+        # Now look for any template function instantiations.
+        globs, locs = globals(), locals()
+        func_templates = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11TemplateFunction)]
+        for ftname in func_templates:
+            func_template = eval("modobj.%s" % ftname)
+            func_template(ftname, ss)
     return
 
 #--------------------------------------------------------------------------------
