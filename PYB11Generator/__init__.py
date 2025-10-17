@@ -52,17 +52,20 @@ def PYB11generateModule(modobj,
     # STL types
     PYB11generateModuleSTL(modobj)
 
-        # # classes
-        # PYB11generateModuleClasses(modobj, ss)
+    # Generate the class objects
+    PYB11generateModuleClassObjs(modobj)
 
-        # # methods
-        # PYB11generateModuleFunctions(modobj, ss)
+    # # methods
+    # PYB11generateModuleFunctions(modobj, ss)
 
-        # # Attributes
-        # PYB11generateModuleAttrs(modobj, ss)
+    # # Attributes
+    # PYB11generateModuleAttrs(modobj, ss)
 
     # Close the module source
     PYB11generateModuleClose(modobj)
+
+    # Generate the class binding functions
+    PYB11generateModuleClassFuncs(modobj)
 
     PYB11output("modobj.PYB11modulename")
     PYB11output("modobj.filename")
@@ -141,6 +144,10 @@ using namespace pybind11::literals;
 
         # Preamble
         if hasattr(modobj, "PYB11preamble"):
+            ss("""//------------------------------------------------------------------------------
+// User defined preamble
+//------------------------------------------------------------------------------
+""")
             ss(modobj.PYB11preamble + "\n")
             ss("\n")
         for objname, obj in PYB11objsWithMethod(modobj, "PYB11preamble"):
@@ -149,15 +156,22 @@ using namespace pybind11::literals;
 
         # Does anyone have any opaque types?
         if hasattr(modobj, "PYB11opaque"):
+            ss("""//------------------------------------------------------------------------------
+// Opaque type definitions
+//------------------------------------------------------------------------------
+""")
             for x in modobj.PYB11opaque:
                 ss("PYBIND11_MAKE_OPAQUE(" + x.replace(",", " PYB11COMMA ") + ")\n")
 
         # Forward declare functions we use for multiple file bindings
-        if modobj.multiple_files:
-            ss("// Forward decalare methods for providing bindings\n")
-            if PYB11STLobjs(modobj):
-                ss("void bindModuleSTLtypes(py::module_& mod);\n")
-            ss("\n")
+        ss("""//------------------------------------------------------------------------------
+// Forward decalare methods for providing bindings
+//------------------------------------------------------------------------------
+""")
+        if PYB11STLobjs(modobj):
+            ss("void bindModuleSTLtypes(py::module_& mod);\n")
+        PYB11generateClassBindingFunctionDecls(modobj, ss)
+        ss("\n")
 
         # Trampolines
         PYB11generateModuleTrampolines(modobj)
@@ -166,8 +180,7 @@ using namespace pybind11::literals;
         PYB11generateModulePublicists(modobj, ss)
 
         # Declare the module
-        ss("""
-//------------------------------------------------------------------------------
+        ss("""//------------------------------------------------------------------------------
 // Make the module
 //------------------------------------------------------------------------------
 PYBIND11_MODULE(%(name)s, m) {

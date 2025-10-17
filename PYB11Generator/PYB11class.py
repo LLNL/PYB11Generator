@@ -10,15 +10,56 @@ from .PYB11Trampoline import *
 from .PYB11enum import PYB11enum
 import copy, io, inspect
 
-#-------------------------------------------------------------------------------
-# PYB11generateModuleClasses
-#
-# Bind the classes in the module
-#-------------------------------------------------------------------------------
-def PYB11generateModuleClasses(modobj, ss):
+#--------------------------------------------------------------------------------
+# Generate binding function declarations
+#--------------------------------------------------------------------------------
+def PYB11generateClassBindingFunctionDecls(modobj, ss):
     klasses = PYB11classes(modobj) + PYB11classTemplateInsts(modobj)
     klasses = sorted(klasses, key=PYB11sort_by_inheritance(klasses))
     for kname, klass in klasses:
+        if isinstance(klass, PYB11TemplateClass):
+            klass.generateClassBindingFunctionDecl(kname, ss)
+        else:
+            klassattrs = PYB11attrs(klass)
+            mods = klassattrs["module"]
+            if ((not klassattrs["ignore"]) and                                   # ignore this class?
+                ((klass not in mods) or mods[klass] == modobj.PYB11modulename)): # is this class imported from another mod?
+                ss("void bind%(pyname)sMethods(py::object& obj);\n" % klassattrs)
+    return
+
+#-------------------------------------------------------------------------------
+# PYB11generateModuleClassObjs
+#
+# Instantiate the class objects in the module
+#-------------------------------------------------------------------------------
+def PYB11generateModuleClassObjs(modobj):
+    klasses = PYB11classes(modobj) + PYB11classTemplateInsts(modobj)
+    klasses = sorted(klasses, key=PYB11sort_by_inheritance(klasses))
+    with open(modobj.filename, "a") as f:
+        ss = f.write
+        for kname, klass in klasses:
+            if isinstance(klass, PYB11TemplateClass):
+                klass.generateObj(kname, ss)
+            else:
+                klassattrs = PYB11attrs(klass)
+                mods = klassattrs["module"]
+                if ((not klassattrs["ignore"]) and                                   # ignore this class?
+                    ((klass not in mods) or mods[klass] == modobj.PYB11modulename)): # is this class imported from another mod?
+                    PYB11generateClassObj(klass, klassattrs, ss)
+
+    return
+
+#-------------------------------------------------------------------------------
+# PYB11generateModuleClassFuncs
+#
+# Bind methods for the classes in the module
+#-------------------------------------------------------------------------------
+def PYB11generateModuleClassFuncs(modobj):
+    klasses = PYB11classes(modobj) + PYB11classTemplateInsts(modobj)
+    klasses = sorted(klasses, key=PYB11sort_by_inheritance(klasses))
+
+    # Define a local method generate the code to a stream
+    def generateKlassCode(kname, klass, ss):
         if isinstance(klass, PYB11TemplateClass):
             klass(kname, ss)
         else:
@@ -27,6 +68,18 @@ def PYB11generateModuleClasses(modobj, ss):
             if ((not klassattrs["ignore"]) and                                   # ignore this class?
                 ((klass not in mods) or mods[klass] == modobj.PYB11modulename)): # is this class imported from another mod?
                 PYB11generateClass(klass, klassattrs, ss)
+
+    for kname, klass in klasses:
+        if modobj.multiple_files:
+            filename = modobj.basename + kname + ".cc"
+            modobj.generatedfiles_list.append(filename)
+            with open(filename, "w") as f:
+                generateKlassCode(kname, klass, f.write)
+        else:
+            with open(modobj.filename, "a") as f:
+                generateKlassCode(kname, klass, f.write)
+
+    return
 
 #--------------------------------------------------------------------------------
 # Make a class template instantiation
@@ -87,6 +140,26 @@ class PYB11TemplateClass:
             doc0 = copy.deepcopy(self.klass_template.__doc__)
             self.klass_template.__doc__ += self.docext
         PYB11generateClass(self.klass_template, klassattrs, ss)
+        if self.klass_template.__doc__:
+            self.klass_template.__doc__ = doc0
+        return
+
+    def generateObj(self, pyname, ss):
+        klassattrs = self.mangleNames(pyname)
+        if self.klass_template.__doc__:
+            doc0 = copy.deepcopy(self.klass_template.__doc__)
+            self.klass_template.__doc__ += self.docext
+        PYB11generateClassObj(self.klass_template, klassattrs, ss)
+        if self.klass_template.__doc__:
+            self.klass_template.__doc__ = doc0
+        return
+
+    def generateClassBindingFunctionDecl(self, pyname, ss):
+        klassattrs = self.mangleNames(pyname)
+        if self.klass_template.__doc__:
+            doc0 = copy.deepcopy(self.klass_template.__doc__)
+            self.klass_template.__doc__ += self.docext
+        ss("void bind%(pyname)sMethods(py::object& obj);\n" % klassattrs)
         if self.klass_template.__doc__:
             self.klass_template.__doc__ = doc0
         return
@@ -194,9 +267,9 @@ def PYB11generic_class_method(klass, klassattrs, meth, methattrs, ss):
         methattrs["classcppname"] = "PYB11Publicist" + methattrs["classcppname"]
 
     if methattrs["static"]:
-        ss('    obj.def_static("%(pyname)s", ' % methattrs)
+        ss('  obj.def_static("%(pyname)s", ' % methattrs)
     else:
-        ss('    obj.def("%(pyname)s", ' % methattrs)
+        ss('  obj.def("%(pyname)s", ' % methattrs)
 
     # Check for argument specs
     argString = ""
@@ -259,6 +332,76 @@ def PYB11generic_class_method(klass, klassattrs, meth, methattrs, ss):
     ss(");\n")
 
 #-------------------------------------------------------------------------------
+# PYB11generateClassObj
+#
+# Create the module obj for a class
+#-------------------------------------------------------------------------------
+def PYB11generateClassObj(klass, klassattrs, ssout):
+    klassinst = klass()
+
+    fs = io.StringIO()
+    ss = fs.write
+
+    # Start generating.
+    ss("""
+  //............................................................................
+  // Class %(pyname)s
+  {
+    py::class_<%(namespace)s%(cppname)s""" % klassattrs)
+
+    # Check for base classes.
+    cppname = "%(namespace)s%(cppname)s" % klassattrs
+    bklasses = PYB11getBaseClasses(klass)
+    Tdict = PYB11parseTemplates(klassattrs, bklasses)
+    for key in klassattrs["template_dict"]:
+        Tdict[key] = klassattrs["template_dict"][key]
+    for bklass in bklasses[klass]:
+        bklassattrs = PYB11attrs(bklass)
+        bcppname = "%(namespace)s%(cppname)s" % bklassattrs 
+        if bklassattrs["template"]:
+            bcppname += "<"
+            for i, arg in enumerate(bklassattrs["template"]):
+                t = arg.split()[1]
+                if i < len(bklassattrs["template"]) - 1:
+                    bcppname += ("%(" + t + ")s, ")
+                else:
+                    bcppname += ("%(" + t + ")s>")
+            bcppname = bcppname % Tdict
+        if bcppname != cppname:
+            ss(", " + bcppname)
+
+    # Any trampoline?
+    if PYB11virtualClass(klass):
+        ss(", %(namespace)sPYB11Trampoline%(cppname)s" % klassattrs)
+
+    # Is this a singleton?
+    if klassattrs["singleton"]:
+        ss(", std::unique_ptr<%(namespace)s%(cppname)s, py::nodelete>" % klassattrs)
+
+    # Did we specify a holder type?
+    elif klassattrs["holder"]:
+        ss(", %(holder)s<%(namespace)s%(cppname)s>" % klassattrs)
+
+    # Close the template declaration
+    ss('> obj(m, "%(pyname)s"' % klassattrs)
+
+    # Are we allowing dynamic attributes for the class?
+    if klassattrs["dynamic_attr"]:
+        ss(", py::dynamic_attr()")
+
+    # Close the class declaration and call the function to bind all its methods
+    ss(""");
+    bind%(pyname)sMethods(obj);
+  }
+""" % klassattrs)
+
+    # Finish out the stream with any template substitutions
+    ssout(fs.getvalue() % Tdict)
+    fs.close()
+
+    return
+
+#-------------------------------------------------------------------------------
 # PYB11generateClass
 #
 # Bind the methods for the given class
@@ -269,6 +412,27 @@ def PYB11generateClass(klass, klassattrs, ssout):
     fs = io.StringIO()
     ss = fs.write
 
+    # Check for base classes.
+    cppname = "%(namespace)s%(cppname)s" % klassattrs
+    bklasses = PYB11getBaseClasses(klass)
+    Tdict = PYB11parseTemplates(klassattrs, bklasses)
+    for key in klassattrs["template_dict"]:
+        Tdict[key] = klassattrs["template_dict"][key]
+    for bklass in bklasses[klass]:
+        bklassattrs = PYB11attrs(bklass)
+        bcppname = "%(namespace)s%(cppname)s" % bklassattrs 
+        if bklassattrs["template"]:
+            bcppname += "<"
+            for i, arg in enumerate(bklassattrs["template"]):
+                t = arg.split()[1]
+                if i < len(bklassattrs["template"]) - 1:
+                    bcppname += ("%(" + t + ")s, ")
+                else:
+                    bcppname += ("%(" + t + ")s>")
+            bcppname = bcppname % Tdict
+        if bcppname != cppname:
+            ss(", " + bcppname)
+
     #...........................................................................
     # Ignore a method
     def ignore(mesh, methattrs, args):
@@ -278,9 +442,9 @@ def PYB11generateClass(klass, klassattrs, ssout):
     # pyinit<>
     def pyinit(meth, methattrs, args):
         if methattrs["implementation"]:
-            ss("    obj.def(py::init(%(implementation)s)" % methattrs)
+            ss("  obj.def(py::init(%(implementation)s)" % methattrs)
         else:
-            ss("    obj.def(py::init<")
+            ss("  obj.def(py::init<")
             argString = ""
             for i, (argType, argName, default) in enumerate(args):
                 if i < len(args) - 1:
@@ -299,7 +463,6 @@ def PYB11generateClass(klass, klassattrs, ssout):
             PYB11docstring(doc, ss)
         ss(");\n")
 
-
         return
 
     #...........................................................................
@@ -310,7 +473,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
             argType = "py::self"
         else:
             argType = args[0][0]
-        ss('    obj.def(py::self %s %s);\n' % (op, argType))
+        ss('  obj.def(py::self %s %s);\n' % (op, argType))
 
     #...........................................................................
     # Reverse binary operators
@@ -320,18 +483,18 @@ def PYB11generateClass(klass, klassattrs, ssout):
             argType = "py::self"
         else:
             argType = args[0][0]
-        ss('    obj.def(%s %s py::self);\n' % (argType, op))
+        ss('  obj.def(%s %s py::self);\n' % (argType, op))
 
     #...........................................................................
     # Unary operators
     def unary_operator(meth, methattrs, args, op):
         assert len(args) == 0
-        ss('    obj.def(%spy::self);\n' % op)
+        ss('  obj.def(%spy::self);\n' % op)
 
     #...........................................................................
     # operator()
     def call_operator(meth, methattrs, args, op):
-        ss('    obj.def("__call__", ')
+        ss('  obj.def("__call__", ')
         if methattrs["implementation"]:
             ss(methattrs["implementation"])
         elif methattrs["returnType"] is None:
@@ -405,64 +568,19 @@ def PYB11generateClass(klass, klassattrs, ssout):
                           "__ge__" : (binary_operator, ">=")}
 
     # Start generating.
-    ss("""
-  //............................................................................
-  // Class %(pyname)s
-  {
+    ss("""//------------------------------------------------------------------------------
+// Class %(pyname)s methods
+//------------------------------------------------------------------------------
+void bind%(pyname)sMethods(py::object& obj) {
 """ % klassattrs)
     # If the class has specified any typedefs, do them.
     if hasattr(klass, "PYB11typedefs"):
         ss(klass.PYB11typedefs + "\n")
 
-    ss("    py::class_<%(namespace)s%(cppname)s" % klassattrs)
-
-    # Check for base classes.
-    cppname = "%(namespace)s%(cppname)s" % klassattrs
-    bklasses = PYB11getBaseClasses(klass)
-    Tdict = PYB11parseTemplates(klassattrs, bklasses)
-    for key in klassattrs["template_dict"]:
-        Tdict[key] = klassattrs["template_dict"][key]
-    for bklass in bklasses[klass]:
-        bklassattrs = PYB11attrs(bklass)
-        bcppname = "%(namespace)s%(cppname)s" % bklassattrs 
-        if bklassattrs["template"]:
-            bcppname += "<"
-            for i, arg in enumerate(bklassattrs["template"]):
-                t = arg.split()[1]
-                if i < len(bklassattrs["template"]) - 1:
-                    bcppname += ("%(" + t + ")s, ")
-                else:
-                    bcppname += ("%(" + t + ")s>")
-            bcppname = bcppname % Tdict
-        if bcppname != cppname:
-            ss(", " + bcppname)
-
-    # Any trampoline?
-    if PYB11virtualClass(klass):
-        ss(", %(namespace)sPYB11Trampoline%(cppname)s" % klassattrs)
-
-    # Is this a singleton?
-    if klassattrs["singleton"]:
-        ss(", std::unique_ptr<%(namespace)s%(cppname)s, py::nodelete>" % klassattrs)
-
-    # Did we specify a holder type?
-    elif klassattrs["holder"]:
-        ss(", %(holder)s<%(namespace)s%(cppname)s>" % klassattrs)
-
-    # Close the template declaration
-    ss('> obj(m, "%(pyname)s"' % klassattrs)
-
-    # Are we allowing dynamic attributes for the class?
-    if klassattrs["dynamic_attr"]:
-        ss(", py::dynamic_attr()")
-
-    # Close the class declaration
-    ss(");\n")
-
     # Is there a doc string?
     doc = inspect.getdoc(klass)
     if doc:
-        ss("    obj.doc() = ")
+        ss("  obj.doc() = ")
         PYB11docstring(doc, ss)
         ss(";\n")
 
@@ -471,7 +589,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
                   if not PYB11attrs(meth)["ignore"]]
 
     # Bind constructors of the class.
-    ss("\n    // Constructors\n")
+    ss("\n  // Constructors\n")
     kills = []
     for i, (mname, meth) in enumerate(allmethods):
         if mname[:6] == "pyinit":
@@ -483,7 +601,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
         del allmethods[i]
 
     # Bind special operators.
-    ss("\n    // Operators\n")
+    ss("\n  // Operators\n")
     kills = []
     for i, (mname, meth) in enumerate(allmethods):
         methattrs = PYB11attrs(meth)
@@ -498,7 +616,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
 
     # Bind the remaining methods of the class.
     if allmethods:
-        ss("\n    // Methods\n")
+        ss("\n  // Methods\n")
         for i, (mname, meth) in enumerate(allmethods):
             methattrs = PYB11attrs(meth)
             PYB11generic_class_method(klass, klassattrs, meth, methattrs, ss)
@@ -559,7 +677,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
 
     # If we're choosing to expose base hidden methods, check for those too.
     if klassattrs["exposeBaseOverloads"]:
-        ss("\n    // Overloaded base methods\n")
+        ss("\n  // Overloaded base methods\n")
         for bklass in inspect.getmro(klass)[1:]:
             bklassattrs = PYB11attrs(bklass)
             bcppname = "%(cppname)s" % bklassattrs
@@ -597,7 +715,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
                             raise RuntimeError("ERROR encountered processing (%s, %s) template instantiation\n    ERROR was: %s %s %s " % (tname, meth, excpt, type(excpt), excpt.args))
 
     # Look for any base virtual methods that have not been overridden
-    ss("\n    // Base virtual methods\n")
+    ss("\n  // Base virtual methods\n")
     for bklass in inspect.getmro(klass)[1:]:
         bklassattrs = PYB11attrs(bklass)
         bcppname = "%(cppname)s" % bklassattrs
@@ -621,7 +739,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
     # Look for any class scope enums and bind them
     enums = [x for x in dir(klassinst) if isinstance(eval("klassinst.%s" % x, globs, locs), PYB11enum) and x in klass.__dict__]
     if enums:
-        ss("\n    // %(cppname)s enums\n  " % klassattrs)
+        ss("\n  // %(cppname)s enums\n  " % klassattrs)
         ssenum = PYB11indentedIO("  ")
         for ename in enums:
             inst = eval("klassinst.%s" % ename)
@@ -629,7 +747,7 @@ def PYB11generateClass(klass, klassattrs, ssout):
         ss(ssenum.getvalue())
         ssenum.close()
 
-    ss("  }\n\n")
+    ss("}\n\n")
 
     # Look for any class scope classes and bind them
     klasses = [(x, eval("klass.%s" % x, globs, locs)) for x in dir(klassinst) if (inspect.isclass(eval("klass.%s" % x, globs, locs)) and x in klass.__dict__)]
