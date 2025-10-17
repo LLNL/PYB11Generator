@@ -17,14 +17,14 @@ def PYB11generateClassBindingFunctionDecls(modobj, ss):
     klasses = PYB11classes(modobj) + PYB11classTemplateInsts(modobj)
     klasses = sorted(klasses, key=PYB11sort_by_inheritance(klasses))
     for kname, klass in klasses:
-        if isinstance(klass, PYB11TemplateClass):
-            klass.generateClassBindingFunctionDecl(kname, ss)
-        else:
-            klassattrs = PYB11attrs(klass)
-            mods = klassattrs["module"]
-            if ((not klassattrs["ignore"]) and                                   # ignore this class?
-                ((klass not in mods) or mods[klass] == modobj.PYB11modulename)): # is this class imported from another mod?
-                ss("void bind%(pyname)sMethods(py::object& obj);\n" % klassattrs)
+        if not hasattr(klass, "PYB11ignore"):
+           if isinstance(klass, PYB11TemplateClass):
+               klass.generateClassBindingFunctionDecl(kname, ss)
+           else:
+               klassattrs = PYB11attrs(klass)
+               mods = klassattrs["module"]
+               if ((klass not in mods) or mods[klass] == modobj.PYB11modulename): # is this class imported from another mod?
+                   ss("void bind%(pyname)sMethods(py::object& obj);\n" % klassattrs)
     return
 
 #-------------------------------------------------------------------------------
@@ -38,14 +38,14 @@ def PYB11generateModuleClassObjs(modobj):
     with open(modobj.filename, "a") as f:
         ss = f.write
         for kname, klass in klasses:
-            if isinstance(klass, PYB11TemplateClass):
-                klass.generateObj(kname, ss)
-            else:
-                klassattrs = PYB11attrs(klass)
-                mods = klassattrs["module"]
-                if ((not klassattrs["ignore"]) and                                   # ignore this class?
-                    ((klass not in mods) or mods[klass] == modobj.PYB11modulename)): # is this class imported from another mod?
-                    PYB11generateClassObj(klass, klassattrs, ss)
+            if not hasattr(klass, "PYB11ignore"):
+                if isinstance(klass, PYB11TemplateClass):
+                    klass.generateObj(kname, ss)
+                else:
+                    klassattrs = PYB11attrs(klass)
+                    mods = klassattrs["module"]
+                    if ((klass not in mods) or mods[klass] == modobj.PYB11modulename): # is this class imported from another mod?
+                        PYB11generateClassObj(klass, klassattrs, ss)
 
     return
 
@@ -65,19 +65,19 @@ def PYB11generateModuleClassFuncs(modobj):
         else:
             klassattrs = PYB11attrs(klass)
             mods = klassattrs["module"]
-            if ((not klassattrs["ignore"]) and                                   # ignore this class?
-                ((klass not in mods) or mods[klass] == modobj.PYB11modulename)): # is this class imported from another mod?
+            if ((klass not in mods) or mods[klass] == modobj.PYB11modulename): # is this class imported from another mod?
                 PYB11generateClass(klass, klassattrs, ss)
 
     for kname, klass in klasses:
-        if modobj.multiple_files:
-            filename = modobj.basename + kname + ".cc"
-            modobj.generatedfiles_list.append(filename)
-            with open(filename, "w") as f:
-                generateKlassCode(kname, klass, f.write)
-        else:
-            with open(modobj.filename, "a") as f:
-                generateKlassCode(kname, klass, f.write)
+        if not hasattr(klass, "PYB11ignore"):
+            if modobj.multiple_files:
+                filename = modobj.basename + "_" + kname + ".cc"
+                modobj.generatedfiles_list.append(filename)
+                with open(filename, "w") as f:
+                    generateKlassCode(kname, klass, f.write)
+            else:
+                with open(modobj.filename, "a") as f:
+                    generateKlassCode(kname, klass, f.write)
 
     return
 
@@ -418,20 +418,6 @@ def PYB11generateClass(klass, klassattrs, ssout):
     Tdict = PYB11parseTemplates(klassattrs, bklasses)
     for key in klassattrs["template_dict"]:
         Tdict[key] = klassattrs["template_dict"][key]
-    for bklass in bklasses[klass]:
-        bklassattrs = PYB11attrs(bklass)
-        bcppname = "%(namespace)s%(cppname)s" % bklassattrs 
-        if bklassattrs["template"]:
-            bcppname += "<"
-            for i, arg in enumerate(bklassattrs["template"]):
-                t = arg.split()[1]
-                if i < len(bklassattrs["template"]) - 1:
-                    bcppname += ("%(" + t + ")s, ")
-                else:
-                    bcppname += ("%(" + t + ")s>")
-            bcppname = bcppname % Tdict
-        if bcppname != cppname:
-            ss(", " + bcppname)
 
     #...........................................................................
     # Ignore a method
