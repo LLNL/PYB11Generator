@@ -17,31 +17,28 @@ from .PYB11attr import *
 def PYB11generateModule(modobj,
                         modname = None,
                         filename = None,
-                        multiple_files = False,                     # Optionally generate multiple pybind11 source files
-                        generatedfiles = "PYB11_generated_files"):  # file nane to create list of generated pybind11 source files if multiple_files = True
+                        multiple_files = False,  # Optionally generate multiple pybind11 source files
+                        generatedfiles = None):  # file name to create list of generated pybind11 source files if multiple_files = True
     if modname is None:
         modname = modobj.__name__
     modobj.PYB11modulename = modname
     modobj.multiple_files = multiple_files
     if filename is None:
         filename = modname + ".cc"
+    basedir, tmp_filename = os.path.split(filename)
+    basename, ext = os.path.splitext(tmp_filename)
+    if not basedir:
+        raise RuntimeError("ERROR determining base directory from " + filename)
+    if not basename:
+        raise RuntimeError("ERROR determining base file name from " + filename)
+    if generatedfiles is None:
+        generatedfiles = modname + "_PYB11_generated_files"
     modobj.filename = filename
-    if multiple_files:
-        basename, ext = os.path.splitext(filename)
-        if not ext:
-            raise RuntimeError("ERROR determining base file name and extension from " + filename)
-        basedir = os.path.dirname(filename)
-        if basedir:
-            generatedfiles = os.path.join(basedir, generatedfiles)
-        modobj.basename = basename
-        modobj.basedir = basedir
-        modobj.generatedfiles = generatedfiles
-        modobj.master_include_file = basename + ".hh"
-    else:
-        modobj.basedir = None
-        modobj.generatedfiles = None
-        modobj.master_include_file = filename
-    modobj.generatedfiles_list = []
+    modobj.basedir = basedir
+    modobj.basename = basename
+    modobj.generatedfiles = generatedfiles
+    modobj.master_include_file = basename + ".hh"
+    modobj.generatedfiles_list = [tmp_filename]
 
     # Main module source
     PYB11generateModuleStart(modobj)
@@ -52,8 +49,8 @@ def PYB11generateModule(modobj,
     # STL types
     PYB11generateModuleSTL(modobj)
 
-    # Generate the class objects
-    PYB11generateModuleClassObjs(modobj)
+    # Generate the class binding calls
+    PYB11generateModuleClassBindingCalls(modobj)
 
     # methods
     PYB11generateModuleFunctions(modobj)
@@ -66,6 +63,13 @@ def PYB11generateModule(modobj,
 
     # Generate the class binding functions
     PYB11generateModuleClassFuncs(modobj)
+
+    # Write out our list of generated files
+    with open(generatedfiles, "w") as f:
+        ss = f.write
+        ss(f"#  PYB11Generator generated files for module {modname}\n")
+        for x in modobj.generatedfiles_list:
+            ss(x + "\n")
 
     PYB11output("modobj.PYB11modulename")
     PYB11output("modobj.filename")
@@ -86,7 +90,7 @@ def PYB11generateModuleStart(modobj):
     name = modobj.PYB11modulename
 
     # Includes
-    with open(modobj.master_include_file, "w") as f:
+    with open(os.path.join(modobj.basedir, modobj.master_include_file), "w") as f:
         ss = f.write
 
         ss(f"""//------------------------------------------------------------------------------
@@ -107,11 +111,7 @@ using namespace pybind11::literals;
 """)
 
         # Includes
-        allincs = []
-        if hasattr(modobj, "PYB11includes"):
-            allincs += modobj.PYB11includes
-        for objname, obj in PYB11objsWithMethod(modobj, "PYB11includes"):
-            allincs += obj.PYB11includes(modobj, objname)
+        allincs = PYB11findAllIncludes(modobj)
         if allincs:
             for inc in set(allincs):
                 ss('#include %s\n' % inc)
@@ -122,9 +122,8 @@ using namespace pybind11::literals;
     with open(modobj.filename, faccess) as f:
         ss = f.write
 
-        if modobj.multiple_files:
-            incfile = modobj.master_include_file
-            ss(f'''//------------------------------------------------------------------------------
+        incfile = modobj.master_include_file
+        ss(f'''//------------------------------------------------------------------------------
 // Module {name}
 //------------------------------------------------------------------------------
 #include "{incfile}"
@@ -170,6 +169,7 @@ using namespace pybind11::literals;
 """)
         if PYB11STLobjs(modobj):
             ss("void bindModuleSTLtypes(py::module_& mod);\n")
+
         PYB11generateClassBindingFunctionDecls(modobj, ss)
         ss("\n")
 

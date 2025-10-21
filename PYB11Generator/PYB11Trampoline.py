@@ -1,9 +1,7 @@
 #-------------------------------------------------------------------------------
 # PYB11Trampoline
 #-------------------------------------------------------------------------------
-import inspect
-import sys
-import io
+import sys, os, io, inspect
 
 from .PYB11utils import *
 
@@ -37,7 +35,7 @@ def PYB11generateModuleTrampolines(modobj):
         if modobj.multiple_files:
             klassattrs = PYB11attrs(klass)
             pyname = klassattrs["pyname"]
-            filename = modobj.basename + f"_{pyname}_trampoline.hh"
+            filename = os.path.join(modobj.basedir, modobj.basename + f"_{pyname}_trampoline.hh")
             with open(filename, "w") as f:
                 ss = f.write
                 PYB11generateTrampoline(klass, ss)

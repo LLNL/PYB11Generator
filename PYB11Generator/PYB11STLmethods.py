@@ -3,7 +3,7 @@
 #
 # Thin wrappers to generate the pybind11 STL functions.
 #-------------------------------------------------------------------------------
-import inspect
+import os, inspect
 from .PYB11utils import *
 
 #-------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ def PYB11generateModuleSTLmethod(modobj, stlobjs):
     modobj.generatedfiles_list.append(filename)
     name = modobj.PYB11modulename
     modincludefile = modobj.master_include_file
-    with open(filename, "w") as f:
+    with open(os.path.join(modobj.basedir, filename), "w") as f:
         ss = f.write
         ss(f'''//------------------------------------------------------------------------------
 // Bind STL for {name} module

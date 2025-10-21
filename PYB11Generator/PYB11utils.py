@@ -453,6 +453,17 @@ def PYB11objsWithMethod(modobj, methodname):
             if (hasattr(obj, methodname) and callable(getattr(obj, methodname)))]
 
 #-------------------------------------------------------------------------------
+# Find all unique include files
+#-------------------------------------------------------------------------------
+def PYB11findAllIncludes(modobj):
+    result = []
+    if hasattr(modobj, "PYB11includes"):
+        result += modobj.PYB11includes
+    for objname, obj in PYB11objsWithMethod(modobj, "PYB11includes"):
+        result += obj.PYB11includes(modobj, objname)
+    return list(set(result))
+
+#-------------------------------------------------------------------------------
 # PYB11attrs
 #
 # Read the possible PYB11 generation attributes from the obj
