@@ -49,7 +49,7 @@ def PYB11generateModuleClassBindingCalls(modobj):
                         klassattrs = PYB11attrs(klass)
                         mods = klassattrs["module"]
                         if ((klass not in mods) or mods[klass] == modobj.PYB11modulename): # is this class imported from another mod?
-                            ss("  bind%(pyname)sMethods(obj);\n" % klassattrs)
+                            ss("  bind%(pyname)s(m);\n" % klassattrs)
     return
 
 #-------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ class PYB11TemplateClass:
         if self.klass_template.__doc__:
             doc0 = copy.deepcopy(self.klass_template.__doc__)
             self.klass_template.__doc__ += self.docext
-        ss("  bind%(pyname)sMethods(obj);\n" % klassattrs)
+        ss("  bind%(pyname)s(m);\n" % klassattrs)
         if self.klass_template.__doc__:
             self.klass_template.__doc__ = doc0
         return
@@ -494,7 +494,7 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout):
             for inc in set(allincs):
                 ss('#include %s\n' % inc)
         if PYB11virtualClass(klass):
-            ss('#include "{}"\n'.format(modobj.basename + "_{}_trampoline.hh".format(klassattrs["pyname"])))
+            ss('#include "{}"\n'.format(modobj.basename + "_{}_trampoline.hh".format(klassattrs["pynamebase"])))
         ss("\n")
 
     ss("void bind%(pyname)s(py::module_& m) {\n" % klassattrs)
@@ -546,7 +546,7 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout):
         ss(", py::dynamic_attr()")
 
     # Close the class declaration and call the function to bind all its methods
-    ss(";\n")
+    ss(");\n")
 
     # Is there a doc string?
     doc = inspect.getdoc(klass)

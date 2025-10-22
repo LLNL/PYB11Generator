@@ -38,11 +38,11 @@ def PYB11generateModuleTrampolines(modobj):
             filename = os.path.join(modobj.basedir, modobj.basename + f"_{pyname}_trampoline.hh")
             with open(filename, "w") as f:
                 ss = f.write
-                PYB11generateTrampoline(klass, ss)
+                PYB11generateTrampoline(modobj, klass, ss)
         else:
             with open(modobj.filename, "a") as f:
                 ss = f.write
-                PYB11generateTrampoline(klass, ss)
+                PYB11generateTrampoline(modobj, klass, ss)
     return
 
 #-------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ def PYB11generateModuleTrampolines(modobj):
 #
 # Generate the trampoline class, including pure virtual hooks.
 #-------------------------------------------------------------------------------
-def PYB11generateTrampoline(klass, ssout):
+def PYB11generateTrampoline(modobj, klass, ssout):
 
     klassattrs = PYB11attrs(klass)
     template_klass = len(klassattrs["template"]) > 0
@@ -84,6 +84,10 @@ def PYB11generateTrampoline(klass, ssout):
 #define PYB11_trampoline_%(pyname)s
 
 """ % klassattrs)
+
+    # May need includes if separate file
+    if modobj.multiple_files:
+        ss('#include "{}"\n\n'.format(modobj.master_include_file))
 
     # Namespaces
     for ns in klassattrs["namespace"].split("::")[:-1]:

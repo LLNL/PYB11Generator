@@ -471,6 +471,7 @@ def PYB11findAllIncludes(modobj):
 def PYB11attrs(obj):
     d = {"pyname"                : obj.__name__,
          "cppname"               : obj.__name__,
+         "pynamebase"            : obj.__name__,
          "ignore"                : False,
          "namespace"             : "",
          "singleton"             : False,

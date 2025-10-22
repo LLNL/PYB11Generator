@@ -141,34 +141,39 @@ function(PYB11Generator_add_module package_name)
   message("-- ${package_name}_GENERATED_FILES: ${${package_name}_GENERATED_FILES}")
   
   # Generate the pybind11 C++ source file
-  PYB11_GENERATE_BINDINGS(${package_name} ${${package_name}_MODULE} ${${package_name}_SOURCE}
+  # The macro returns the list of pybind11 C++ source files in GENERATED_FILES_LIST
+  PYB11_GENERATE_BINDINGS(${package_name} ${${package_name}_MODULE} ${${package_name}_SOURCE} GENERATED_FILES_LIST
+                          MULTIPLE_FILES ${${package_name}_MULTIPLE_FILES} 
                           DEPENDS ${${package_name}_DEPENDS}
                           VIRTUAL_ENV ${${package_name}_VIRTUAL_ENV})
-
-  # Get the list of generated pybind11 C++ source files
-  file(STRINGS "${CMAKE_CURRENT_BINARY_DIR}/current/${${package_name}_GENERATED_FILES}" MODULE_SOURCES)
-  list(TRANSFORM MODULE_SOURCES PREPEND "current/")
-  message("-- MODULE_SOURCES: ${MODULE_SOURCES}")
 
   # The library build rule
   if (${${package_name}_USE_BLT}) 
     # Build using BLT macros -- assumes you've already included BLT CMake rules
     blt_add_library(NAME         ${${package_name}_MODULE}
-                    SOURCES      ${MODULE_SOURCES} ${${package_name}_SOURCE} ${${package_name}_EXTRA_SOURCE}
+                    SOURCES      ${GENERATED_FILES_LIST} ${${package_name}_SOURCE} ${${package_name}_EXTRA_SOURCE}
                     DEPENDS_ON   ${${package_name}_DEPENDS}
-                    INCLUDES     ${${package_name}_INCLUDES}
+                    INCLUDES     ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current
                     OUTPUT_NAME  ${${package_name}_MODULE}
                     CLEAR_PREFIX TRUE
                     SHARED       TRUE)
   else()
     # Build using the normal pybind11 rules
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_INCLUDES})
-    pybind11_add_module(${package_name} ${${package_name}_PYBIND11_OPTIONS} ${${package_name}_MODULE}.cc ${${package_name}_EXTRA_SOURCE})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current)
+    pybind11_add_module(${package_name} ${${package_name}_PYBIND11_OPTIONS} ${GENERATED_FILES_LIST} ${${package_name}_EXTRA_SOURCE})
     set_target_properties(${${package_name}_MODULE} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${package_name}_MODULE})
     target_link_libraries(${${package_name}_MODULE} PRIVATE ${${package_name}_LINKS})
+
+    # BLAGO
+    get_property(DIRS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+    foreach(DIR ${DIRS})
+      message(STATUS "Directory Include: ${DIR}")
+    endforeach()
+    # BLAGO
+
   endif()    
 
-  add_dependencies(${${package_name}_MODULE} ${${package_name}_MODULE}_src)
+  #add_dependencies(${${package_name}_MODULE} ${${package_name}_MODULE}_src)
   target_compile_options(${${package_name}_MODULE} PRIVATE ${${package_name}_COMPILE_OPTIONS})
 
   # Installation
@@ -219,7 +224,7 @@ endfunction()
 # use: ${PYB11_GENERATED_SOURCE}
 #-----------------------------------------------------------------------------------
 
-macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE)
+macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FILES_LIST)
   set(PYB11_GENERATED_SOURCE "${module_name}.cc")
 
   # Define our arguments
@@ -232,6 +237,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE)
   # message("** PYB11_SOURCE: ${PYB11_SOURCE}")
   # message("** DEPENDS: ${${package_name}_DEPENDS}")
   # message("** PYTHONPATH: ${${package_name}_PYTHONPATH}")
+  message("** MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
 
   # Multiple file output options
   if(NOT DEFINED ${package_name}_MULTIPLE_FILES)
@@ -263,16 +269,27 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE)
     get_target_property(PYTHON_EXE ${${package_name}_VIRTUAL_ENV} EXECUTABLE)
   endif()
 
-  # Always generate cpp files at build time. Any change in the cpp file
-  # will trigger a rebuild of the target pyb11 module
-  add_custom_target(
-    ${module_name}_src ALL
+  # Generate the pybind11 C++ files files and the list of those files
+  message("** ${${package_name}_MULTIPLE_FILES}")
+  execute_process(
     COMMAND ${ACTIVATE_VENV_CMD} env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
-    BYPRODUCTS ${PYB11_GENERATED_SOURCE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS ${${package_name}_VIRTUAL_ENV}
-    )
+  )
+  # add_custom_target(
+  #   ${module_name}_src ALL
+  #   COMMAND ${ACTIVATE_VENV_CMD} env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
+  #   BYPRODUCTS ${PYB11_GENERATED_SOURCE} ${${package_name}_GENERATED_FILES}
+  #   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  #   DEPENDS ${${package_name}_VIRTUAL_ENV}
+  #   )
 
   set(PYTHON_EXE ${PYTHON_EXE_BAK})
+
+  # Get the list of generated pybind11 C++ source files
+  file(STRINGS "${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_GENERATED_FILES}" GENERATED_FILES)
+  list(TRANSFORM GENERATED_FILES PREPEND "current/")
+  message("-- MODULE_SOURCES: ${GENERATED_FILES}")
+
+  set(${GENERATED_FILES_LIST} "${GENERATED_FILES}")# PARENT_SCOPE)
 
 endmacro()

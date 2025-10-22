@@ -37,7 +37,7 @@ def PYB11generateModule(modobj,
     modobj.basedir = basedir
     modobj.basename = basename
     modobj.generatedfiles = generatedfiles
-    modobj.master_include_file = basename + ".hh"
+    modobj.master_include_file = "PYB11_module_" + basename + ".hh"
     modobj.generatedfiles_list = [tmp_filename]
 
     # Main module source
@@ -67,7 +67,7 @@ def PYB11generateModule(modobj,
     # Write out our list of generated files
     with open(generatedfiles, "w") as f:
         ss = f.write
-        ss(f"#  PYB11Generator generated files for module {modname}\n")
+        #ss(f"#  PYB11Generator generated files for module {modname}\n")
         for x in modobj.generatedfiles_list:
             ss(x + "\n")
 
@@ -96,6 +96,9 @@ def PYB11generateModuleStart(modobj):
         ss(f"""//------------------------------------------------------------------------------
 // Module {name}
 //------------------------------------------------------------------------------
+#ifndef PYB11_{name}_master_include
+#define PYB11_{name}_master_include
+
 // Put Python includes first to avoid compile warnings about redefining _POSIX_C_SOURCE
 #include "pybind11/pybind11.h"
 #include "pybind11/stl_bind.h"
@@ -107,7 +110,6 @@ namespace py = pybind11;
 using namespace pybind11::literals;
 
 #define PYB11COMMA ,
-
 """)
 
         # Includes
@@ -116,18 +118,6 @@ using namespace pybind11::literals;
             for inc in set(allincs):
                 ss('#include %s\n' % inc)
             ss("\n")
-
-    # On to the module coding
-    faccess = "w" if modobj.multiple_files else "a"
-    with open(modobj.filename, faccess) as f:
-        ss = f.write
-
-        incfile = modobj.master_include_file
-        ss(f'''//------------------------------------------------------------------------------
-// Module {name}
-//------------------------------------------------------------------------------
-#include "{incfile}"
-''')
 
         # Use namespaces
         if hasattr(modobj, "PYB11namespaces"):
@@ -151,7 +141,20 @@ using namespace pybind11::literals;
             ss("\n")
         for objname, obj in PYB11objsWithMethod(modobj, "PYB11preamble"):
             obj.PYB11preamble(modobj, ss, objname)
-        ss("\n")
+        ss("\n#endif\n")
+
+    # On to the module coding
+    faccess = "w" if modobj.multiple_files else "a"
+    with open(modobj.filename, faccess) as f:
+        ss = f.write
+
+        incfile = modobj.master_include_file
+        ss(f'''//------------------------------------------------------------------------------
+// Module {name}
+//------------------------------------------------------------------------------
+#include "{incfile}"
+
+''')
 
         # Does anyone have any opaque types?
         if hasattr(modobj, "PYB11opaque"):
@@ -184,7 +187,6 @@ using namespace pybind11::literals;
 // Make the module
 //------------------------------------------------------------------------------
 PYBIND11_MODULE(%(name)s, m) {
-
 """ % {"name"     : name,
 })
 
