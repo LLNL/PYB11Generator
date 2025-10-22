@@ -153,13 +153,13 @@ function(PYB11Generator_add_module package_name)
     blt_add_library(NAME         ${${package_name}_MODULE}
                     SOURCES      ${GENERATED_FILES_LIST} ${${package_name}_SOURCE} ${${package_name}_EXTRA_SOURCE}
                     DEPENDS_ON   ${${package_name}_DEPENDS}
-                    INCLUDES     ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current
+                    INCLUDES     ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current_${${package_name}_MODULE}
                     OUTPUT_NAME  ${${package_name}_MODULE}
                     CLEAR_PREFIX TRUE
                     SHARED       TRUE)
   else()
     # Build using the normal pybind11 rules
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current_${${package_name}_MODULE})
     pybind11_add_module(${package_name} ${${package_name}_PYBIND11_OPTIONS} ${GENERATED_FILES_LIST} ${${package_name}_EXTRA_SOURCE})
     set_target_properties(${${package_name}_MODULE} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${package_name}_MODULE})
     target_link_libraries(${${package_name}_MODULE} PRIVATE ${${package_name}_LINKS})
@@ -287,7 +287,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
   # Get the list of generated pybind11 C++ source files
   file(STRINGS "${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_GENERATED_FILES}" GENERATED_FILES)
-  list(TRANSFORM GENERATED_FILES PREPEND "current/")
+  list(TRANSFORM GENERATED_FILES PREPEND "current_${package_name}/")
   message("-- MODULE_SOURCES: ${GENERATED_FILES}")
 
   set(${GENERATED_FILES_LIST} "${GENERATED_FILES}")# PARENT_SCOPE)

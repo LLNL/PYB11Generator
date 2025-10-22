@@ -89,7 +89,19 @@ def PYB11generateModuleStart(modobj):
 
     name = modobj.PYB11modulename
 
-    # Includes
+    # Generate module starting comments and include master header
+    faccess = "w" if modobj.multiple_files else "a"
+    with open(modobj.filename, faccess) as f:
+        ss = f.write
+        incfile = modobj.master_include_file
+        ss(f'''//------------------------------------------------------------------------------
+// Module {name}
+//------------------------------------------------------------------------------
+#include "{incfile}"
+
+''')
+
+    # Make master include file
     with open(os.path.join(modobj.basedir, modobj.master_include_file), "w") as f:
         ss = f.write
 
@@ -144,17 +156,8 @@ using namespace pybind11::literals;
         ss("\n#endif\n")
 
     # On to the module coding
-    faccess = "w" if modobj.multiple_files else "a"
-    with open(modobj.filename, faccess) as f:
+    with open(modobj.filename, "a") as f:
         ss = f.write
-
-        incfile = modobj.master_include_file
-        ss(f'''//------------------------------------------------------------------------------
-// Module {name}
-//------------------------------------------------------------------------------
-#include "{incfile}"
-
-''')
 
         # Does anyone have any opaque types?
         if hasattr(modobj, "PYB11opaque"):

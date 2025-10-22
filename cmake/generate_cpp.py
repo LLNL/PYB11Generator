@@ -11,15 +11,17 @@ generatedfiles = sys.argv[4]
 # print("--> ", generatedfiles)
 
 # Prepare output directories
-if not os.path.exists("current"):
-    os.makedirs("current")
-if os.path.exists("new"):
-    shutil.rmtree("new")
-os.makedirs("new")
+current_pth = "current_" + mod_name
+new_pth     = "new_"     + mod_name
+if not os.path.exists(current_pth):
+    os.makedirs(current_pth)
+if os.path.exists(new_pth):
+    shutil.rmtree(new_pth)
+os.makedirs(new_pth)
 
 # Paths to the main module pybind11 source files
-current_src = os.path.join("current", mod_name + ".cc")
-new_src     = os.path.join("new",     mod_name + ".cc")
+current_src = os.path.join(current_pth, mod_name + ".cc")
+new_src     = os.path.join(new_pth,    mod_name + ".cc")
 
 # Generate the source anew 
 code = """
@@ -45,12 +47,12 @@ assert os.path.isfile(new_src)
 
 # If the module source is changed, update it.  Otherwise
 # get rid of the temporary files and we're done.
-diff = filecmp.dircmp("current", "new")
+diff = filecmp.dircmp(current_pth, new_pth)
 if diff.left_only or diff.right_only or diff.diff_files:
-    shutil.rmtree("current")
-    shutil.move("new", "current")
+    shutil.rmtree(current_pth)
+    shutil.move(new_pth, current_pth)
 else:
-    shutil.rmtree("new")
+    shutil.rmtree(new_pth)
 
 assert os.path.isfile(current_src)
-assert not os.path.exists("new")
+assert not os.path.exists(new_pth)
