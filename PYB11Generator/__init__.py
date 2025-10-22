@@ -71,13 +71,6 @@ def PYB11generateModule(modobj,
         for x in modobj.generatedfiles_list:
             ss(x + "\n")
 
-    PYB11output("modobj.PYB11modulename")
-    PYB11output("modobj.filename")
-    PYB11output("modobj.basedir")
-    PYB11output("modobj.generatedfiles")
-    PYB11output("modobj.generatedfiles_list")
-    PYB11output("modobj.master_include_file")
-
     return
 
 #-------------------------------------------------------------------------------

@@ -38,10 +38,6 @@ PYB11generateModule({pyb11_module},
            multiple_files = multiple_files,
            generatedfiles = generatedfiles)
 
-print("--------------------------------------------------------------------------------")
-print(code)
-print("--------------------------------------------------------------------------------")
-
 exec(code)
 assert os.path.isfile(new_src)
 

@@ -107,20 +107,20 @@ function(PYB11Generator_add_module package_name)
   set(oneValueArgs   MODULE SOURCE INSTALL MULTIPLE_FILES GENERATED_FILES USE_BLT VIRTUAL_ENV)
   set(multiValueArgs INCLUDES LINKS DEPENDS PYBIND11_OPTIONS COMPILE_OPTIONS EXTRA_SOURCE)
   cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-  message("-- package_name : ${package_name}")
-  message("-- MODULE: ${${package_name}_MODULE}")
-  message("-- SOURCE: ${${package_name}_SOURCE}")
-  message("-- INSTALL: ${${package_name}_INSTALL}")
-  message("-- INCLUDES: ${${package_name}_INCLUDES}")
-  message("-- LINKS: ${${package_name}_LINKS}")
-  message("-- DEPENDS: ${${package_name}_DEPENDS}")
-  message("-- PYBIND11_OPTIONS: ${${package_name}_PYBIND11_OPTIONS}")
-  message("-- COMPILE_OPTIONS: ${${package_name}_COMPILE_OPTIONS}")
-  message("-- MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
-  message("-- GENERATED_FILES: ${${package_name}_GENERATED_FILES}")
-  message("-- USE_BLT: ${package_name}_USE_BLT")
-  message("-- EXTRA_SOURCE: ${package_name}_EXTRA_SOURCE")
-  message("-- VIRTUAL_ENV: ${${package_name}_VIRTUAL_ENV}")
+  # message("-- package_name : ${package_name}")
+  # message("-- MODULE: ${${package_name}_MODULE}")
+  # message("-- SOURCE: ${${package_name}_SOURCE}")
+  # message("-- INSTALL: ${${package_name}_INSTALL}")
+  # message("-- INCLUDES: ${${package_name}_INCLUDES}")
+  # message("-- LINKS: ${${package_name}_LINKS}")
+  # message("-- DEPENDS: ${${package_name}_DEPENDS}")
+  # message("-- PYBIND11_OPTIONS: ${${package_name}_PYBIND11_OPTIONS}")
+  # message("-- COMPILE_OPTIONS: ${${package_name}_COMPILE_OPTIONS}")
+  # message("-- MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
+  # message("-- GENERATED_FILES: ${${package_name}_GENERATED_FILES}")
+  # message("-- USE_BLT: ${package_name}_USE_BLT")
+  # message("-- EXTRA_SOURCE: ${package_name}_EXTRA_SOURCE")
+  # message("-- VIRTUAL_ENV: ${${package_name}_VIRTUAL_ENV}")
 
   # Set our names and paths
   if (NOT DEFINED ${package_name}_MODULE)
@@ -135,10 +135,10 @@ function(PYB11Generator_add_module package_name)
   if (NOT DEFINED ${package_name}_GENERATED_FILES)
     set(${package_name}_GENERATED_FILES "${package_name}_PYB11_generated_files")
   endif()
-  message("-- ${package_name}_MODULE: ${${package_name}_MODULE}")
-  message("-- ${package_name}_SOURCE: ${${package_name}_SOURCE}")
-  message("-- ${package_name}_MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
-  message("-- ${package_name}_GENERATED_FILES: ${${package_name}_GENERATED_FILES}")
+  # message("-- ${package_name}_MODULE: ${${package_name}_MODULE}")
+  # message("-- ${package_name}_SOURCE: ${${package_name}_SOURCE}")
+  # message("-- ${package_name}_MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
+  # message("-- ${package_name}_GENERATED_FILES: ${${package_name}_GENERATED_FILES}")
   
   # Generate the pybind11 C++ source file
   # The macro returns the list of pybind11 C++ source files in GENERATED_FILES_LIST
@@ -163,13 +163,6 @@ function(PYB11Generator_add_module package_name)
     pybind11_add_module(${package_name} ${${package_name}_PYBIND11_OPTIONS} ${GENERATED_FILES_LIST} ${${package_name}_EXTRA_SOURCE})
     set_target_properties(${${package_name}_MODULE} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${package_name}_MODULE})
     target_link_libraries(${${package_name}_MODULE} PRIVATE ${${package_name}_LINKS})
-
-    # BLAGO
-    get_property(DIRS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-    foreach(DIR ${DIRS})
-      message(STATUS "Directory Include: ${DIR}")
-    endforeach()
-    # BLAGO
 
   endif()    
 
@@ -237,7 +230,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   # message("** PYB11_SOURCE: ${PYB11_SOURCE}")
   # message("** DEPENDS: ${${package_name}_DEPENDS}")
   # message("** PYTHONPATH: ${${package_name}_PYTHONPATH}")
-  message("** MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
+  # message("** MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
 
   # Multiple file output options
   if(NOT DEFINED ${package_name}_MULTIPLE_FILES)
@@ -270,7 +263,6 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   endif()
 
   # Generate the pybind11 C++ files files and the list of those files
-  message("** ${${package_name}_MULTIPLE_FILES}")
   execute_process(
     COMMAND ${ACTIVATE_VENV_CMD} env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -288,7 +280,6 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   # Get the list of generated pybind11 C++ source files
   file(STRINGS "${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_GENERATED_FILES}" GENERATED_FILES)
   list(TRANSFORM GENERATED_FILES PREPEND "current_${package_name}/")
-  message("-- MODULE_SOURCES: ${GENERATED_FILES}")
 
   set(${GENERATED_FILES_LIST} "${GENERATED_FILES}")# PARENT_SCOPE)
 
