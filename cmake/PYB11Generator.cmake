@@ -101,6 +101,7 @@ if (NOT TARGET pybind11_headers)
 endif()
 
 function(PYB11Generator_add_module package_name)
+  message("-- Generating PYB11 code for ${package_name}")
 
   # Define our arguments
   set(options )
@@ -177,8 +178,14 @@ function(PYB11Generator_add_module package_name)
     install(TARGETS ${${package_name}_MODULE} DESTINATION ${${package_name}_INSTALL})
   endif()
 
+  # Read the generated CMake dependencies for PYB11 imported files
+  include(${CMAKE_CURRENT_BINARY_DIR}/${package_name}_stamp.cmake)
+
   # Make Cmake reconfigure (and regenerate our pybind11 code) if the PYB11 source is touched
-  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE})
+  foreach(item IN LISTS ${package_name}_DEPENDS)
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${item})
+  endforeach()
+  #set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE})
 
 endfunction()
 
@@ -277,6 +284,12 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   #   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   #   DEPENDS ${${package_name}_VIRTUAL_ENV}
   #   )
+
+  # Generate the dependencies list
+  execute_process(
+    COMMAND ${ACTIVATE_VENV_CMD} env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE} ${module_name}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
 
   set(PYTHON_EXE ${PYTHON_EXE_BAK})
 

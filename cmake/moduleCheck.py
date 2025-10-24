@@ -4,8 +4,8 @@ from modulefinder import ModuleFinder
 import sys, os
 import filecmp
 
-mod_name = sys.argv[1]
-mod_file = sys.argv[2]
+mod_file = sys.argv[1]
+mod_name = sys.argv[2]
 
 finder = ModuleFinder()
 finder.run_script(mod_file)
