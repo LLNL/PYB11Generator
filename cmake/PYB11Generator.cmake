@@ -152,12 +152,13 @@ function(PYB11Generator_add_module package_name)
   if (${${package_name}_USE_BLT}) 
     # Build using BLT macros -- assumes you've already included BLT CMake rules
     blt_add_library(NAME         ${${package_name}_MODULE}
-                    SOURCES      ${GENERATED_FILES_LIST} ${${package_name}_SOURCE} ${${package_name}_EXTRA_SOURCE}
+                    SOURCES      ${GENERATED_FILES_LIST} ${${package_name}_EXTRA_SOURCE}
                     DEPENDS_ON   ${${package_name}_DEPENDS}
                     INCLUDES     ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current_${${package_name}_MODULE}
                     OUTPUT_NAME  ${${package_name}_MODULE}
                     CLEAR_PREFIX TRUE
                     SHARED       TRUE)
+
   else()
     # Build using the normal pybind11 rules
     include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current_${${package_name}_MODULE})
