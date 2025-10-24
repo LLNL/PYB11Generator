@@ -177,6 +177,9 @@ function(PYB11Generator_add_module package_name)
     install(TARGETS ${${package_name}_MODULE} DESTINATION ${${package_name}_INSTALL})
   endif()
 
+  # Make Cmake reconfigure (and regenerate our pybind11 code) if the PYB11 source is touched
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE})
+
 endfunction()
 
 #-----------------------------------------------------------------------------------
