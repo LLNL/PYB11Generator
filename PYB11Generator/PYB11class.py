@@ -729,7 +729,7 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout):
         nklassattrs["pyname"] = klassattrs["pyname"] + "_" + nklassattrs["pyname"]
         nklassattrs["cppname"] = klassattrs["cppname"] + "::" + nklassattrs["cppname"]
         nklassattrs["template_dict"].update(Tdict)
-        PYB11generateClass(nklass, nklassattrs, ss)
+        PYB11generateClass(modobj, nklass, nklassattrs, ss)
 
     ssout(fs.getvalue() % Tdict)
     fs.close()
