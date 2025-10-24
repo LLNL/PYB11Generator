@@ -185,7 +185,6 @@ function(PYB11Generator_add_module package_name)
   foreach(item IN LISTS ${package_name}_DEPENDS)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${item})
   endforeach()
-  #set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE})
 
 endfunction()
 
@@ -277,13 +276,6 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
     COMMAND ${ACTIVATE_VENV_CMD} env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   )
-  # add_custom_target(
-  #   ${module_name}_src ALL
-  #   COMMAND ${ACTIVATE_VENV_CMD} env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
-  #   BYPRODUCTS ${PYB11_GENERATED_SOURCE} ${${package_name}_GENERATED_FILES}
-  #   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  #   DEPENDS ${${package_name}_VIRTUAL_ENV}
-  #   )
 
   # Generate the dependencies list
   execute_process(
