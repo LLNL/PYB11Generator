@@ -183,7 +183,7 @@ function(PYB11Generator_add_module package_name)
   include(${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_MODULE}_stamp.cmake)
 
   # Make Cmake reconfigure (and regenerate our pybind11 code) if the PYB11 source is touched
-  foreach(item IN LISTS ${package_name}_DEPENDS)
+  foreach(item IN LISTS ${${package_name}_MODULE}_FILE_DEPENDS)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${item})
   endforeach()
 

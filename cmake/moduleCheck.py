@@ -15,7 +15,7 @@ current_stamp_name = mod_name + "_stamp.cmake"
 tmp_stamp_name = current_stamp_name + ".tmp"
 
 with open(tmp_stamp_name, "w") as newF:
-    newF.write("set("+mod_name+"_DEPENDS \n")
+    newF.write("set("+mod_name+"_FILE_DEPENDS \n")
 
     for name, mod in finder.modules.items():
       if (mod.__file__):
