@@ -30,6 +30,7 @@ def PYB11generateModuleFunctions(modobj):
         for ftname in func_templates:
             func_template = eval("modobj.%s" % ftname)
             func_template(ftname, ss)
+        ss("\n")
     return
 
 #--------------------------------------------------------------------------------
