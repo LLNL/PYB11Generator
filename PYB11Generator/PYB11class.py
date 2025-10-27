@@ -11,13 +11,20 @@ from .PYB11enum import PYB11enum
 import os, copy, io, inspect
 
 #--------------------------------------------------------------------------------
+# Should we ignore a class?
+#--------------------------------------------------------------------------------
+def PYB11CheckKlassIgnore(klass):
+    return ((not hasattr(klass, "PYB11ignore")) or
+            getattr(klass, "PYB11ignore") == False)
+
+#--------------------------------------------------------------------------------
 # Generate binding function declarations
 #--------------------------------------------------------------------------------
 def PYB11generateClassBindingFunctionDecls(modobj, ss):
     klasses = PYB11classes(modobj) + PYB11classTemplateInsts(modobj)
     klasses = sorted(klasses, key=PYB11sort_by_inheritance(klasses))
     for kname, klass in klasses:
-        if not hasattr(klass, "PYB11ignore"):
+        if PYB11CheckKlassIgnore(klass):
            if isinstance(klass, PYB11TemplateClass):
                klass.generateClassBindingFunctionDecl(kname, ss)
            else:
@@ -42,7 +49,7 @@ def PYB11generateModuleClassBindingCalls(modobj):
   // Class bindings
 """)
             for kname, klass in klasses:
-                if not hasattr(klass, "PYB11ignore"):
+                if PYB11CheckKlassIgnore(klass):
                     if isinstance(klass, PYB11TemplateClass):
                         klass.generateBindingCall(kname, ss)
                     else:
@@ -50,6 +57,7 @@ def PYB11generateModuleClassBindingCalls(modobj):
                         mods = klassattrs["module"]
                         if ((klass not in mods) or mods[klass] == modobj.PYB11modulename): # is this class imported from another mod?
                             ss("  bind%(pyname)s(m);\n" % klassattrs)
+            ss("\n")
     return
 
 #-------------------------------------------------------------------------------
@@ -72,7 +80,7 @@ def PYB11generateModuleClassFuncs(modobj):
                 PYB11generateClass(modobj, klass, klassattrs, ss)
 
     for kname, klass in klasses:
-        if not hasattr(klass, "PYB11ignore"):
+        if PYB11CheckKlassIgnore(klass):
             if modobj.multiple_files:
                 filename = modobj.basename + "_" + kname + ".cc"
                 modobj.generatedfiles_list.append(filename)
