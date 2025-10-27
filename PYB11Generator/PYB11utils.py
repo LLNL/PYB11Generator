@@ -1,5 +1,5 @@
 from .PYB11Decorators import *
-import inspect, io, types, itertools
+import inspect, io, types, itertools, collections
 
 #-------------------------------------------------------------------------------
 # PYB11inject
@@ -461,7 +461,7 @@ def PYB11findAllIncludes(modobj):
         result += modobj.PYB11includes
     for objname, obj in PYB11objsWithMethod(modobj, "PYB11includes"):
         result += obj.PYB11includes(modobj, objname)
-    return list(set(result))
+    return list(collections.OrderedDict.fromkeys(result))
 
 #-------------------------------------------------------------------------------
 # PYB11attrs

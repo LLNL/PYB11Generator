@@ -120,7 +120,7 @@ using namespace pybind11::literals;
         # Includes
         allincs = PYB11findAllIncludes(modobj)
         if allincs:
-            for inc in set(allincs):
+            for inc in allincs:
                 ss('#include %s\n' % inc)
             ss("\n")
 
@@ -146,11 +146,6 @@ using namespace pybind11::literals;
             ss("\n")
         for objname, obj in PYB11objsWithMethod(modobj, "PYB11preamble"):
             obj.PYB11preamble(modobj, ss, objname)
-        ss("\n#endif\n")
-
-    # On to the module coding
-    with open(modobj.filename, "a") as f:
-        ss = f.write
 
         # Does anyone have any opaque types?
         if hasattr(modobj, "PYB11opaque"):
@@ -160,6 +155,11 @@ using namespace pybind11::literals;
 """)
             for x in modobj.PYB11opaque:
                 ss("PYBIND11_MAKE_OPAQUE(" + x.replace(",", " PYB11COMMA ") + ")\n")
+        ss("\n#endif\n")
+
+    # On to the module coding
+    with open(modobj.filename, "a") as f:
+        ss = f.write
 
         # Forward declare functions we use for multiple file bindings
         ss("""//------------------------------------------------------------------------------

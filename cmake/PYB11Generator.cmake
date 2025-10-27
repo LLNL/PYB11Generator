@@ -180,7 +180,7 @@ function(PYB11Generator_add_module package_name)
   endif()
 
   # Read the generated CMake dependencies for PYB11 imported files
-  include(${CMAKE_CURRENT_BINARY_DIR}/${package_name}_stamp.cmake)
+  include(${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_MODULE}_stamp.cmake)
 
   # Make Cmake reconfigure (and regenerate our pybind11 code) if the PYB11 source is touched
   foreach(item IN LISTS ${package_name}_DEPENDS)
@@ -256,7 +256,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   endif()
 
   # Places we need in the Python path
-  set(PYTHON_ENV "${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_CURRENT_SOURCE_DIR}:${PYB11GENERATOR_ROOT_DIR}:${${package_name}_PYTHONPATH}")
+  set(PYTHON_ENV ".:${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_CURRENT_SOURCE_DIR}:${PYB11GENERATOR_ROOT_DIR}:${${package_name}_PYTHONPATH}")
   if (DEFINED ENV{PYTHONPATH})
     set(PYTHON_ENV "${PYTHON_ENV}:$ENV{PYTHONPATH}")
   endif()
@@ -266,21 +266,26 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
   set(PYTHON_EXE_BAK ${PYTHON_EXE})
 
-  if (DEFINED ${package_name}_VIRTUAL_ENV)
-    get_target_property(ACTIVATE_VENV_CMD ${${package_name}_VIRTUAL_ENV} ACTIVATE_VENV)
-    list(APPEND ACTIVATE_VENV_CMD &&)
-    get_target_property(PYTHON_EXE ${${package_name}_VIRTUAL_ENV} EXECUTABLE)
-  endif()
+  # if (DEFINED ${package_name}_VIRTUAL_ENV)
+  #   get_target_property(ACTIVATE_VENV_CMD ${${package_name}_VIRTUAL_ENV} ACTIVATE_VENV)
+  #   list(APPEND ACTIVATE_VENV_CMD &&)
+  #   get_target_property(PYTHON_EXE ${${package_name}_VIRTUAL_ENV} EXECUTABLE)
+  # endif()
 
   # Generate the pybind11 C++ files files and the list of those files
   execute_process(
-    COMMAND ${ACTIVATE_VENV_CMD} env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
+    COMMAND env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   )
 
   # Generate the dependencies list
+  if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${PYB11_SOURCE})
+    set(FULL_PYB11_SOURCE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PYB11_SOURCE})
+  else()
+    set(FULL_PYB11_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE})
+  endif()
   execute_process(
-    COMMAND ${ACTIVATE_VENV_CMD} env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE} ${module_name}
+    COMMAND env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   )
 
@@ -288,7 +293,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
   # Get the list of generated pybind11 C++ source files
   file(STRINGS "${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_GENERATED_FILES}" GENERATED_FILES)
-  list(TRANSFORM GENERATED_FILES PREPEND "current_${package_name}/")
+  list(TRANSFORM GENERATED_FILES PREPEND "current_${module_name}/")
 
   set(${GENERATED_FILES_LIST} "${GENERATED_FILES}")# PARENT_SCOPE)
 
