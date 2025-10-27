@@ -32,6 +32,18 @@ def PYB11generateClassBindingFunctionDecls(modobj, ss):
                mods = klassattrs["module"]
                if ((klass not in mods) or mods[klass] == modobj.PYB11modulename): # is this class imported from another mod?
                    ss("void bind%(pyname)s(py::module_& m);\n" % klassattrs)
+
+                   # Check for any nested class scope classes
+                   klassinst = klass()
+                   globs, locs = globals(), locals()
+                   nklasses = [(x, eval("klass.%s" % x, globs, locs)) for x in dir(klassinst) if (inspect.isclass(eval("klass.%s" % x, globs, locs)) and x in klass.__dict__)]
+                   nklasses = sorted(nklasses, key=PYB11sort_by_inheritance(nklasses))
+                   for nkname, nklass in nklasses:
+                       nklassattrs = PYB11attrs(nklass)
+                       nklassattrs["pyname"] = klassattrs["pyname"] + "_" + nklassattrs["pyname"]
+                       nklassattrs["cppname"] = klassattrs["cppname"] + "::" + nklassattrs["cppname"]
+                       ss("void bind%(pyname)s(py::object& obj);\n" % nklassattrs)
+
     return
 
 #-------------------------------------------------------------------------------
@@ -171,7 +183,21 @@ class PYB11TemplateClass:
         if self.klass_template.__doc__:
             doc0 = copy.deepcopy(self.klass_template.__doc__)
             self.klass_template.__doc__ += self.docext
+
         ss("void bind%(pyname)s(py::module_& m);\n" % klassattrs)
+
+        # Check for any nested class scope classes
+        klass = self.klass_template
+        klassinst = klass()
+        globs, locs = globals(), locals()
+        nklasses = [(x, eval("klass.%s" % x, globs, locs)) for x in dir(klassinst) if (inspect.isclass(eval("klass.%s" % x, globs, locs)) and x in klass.__dict__)]
+        nklasses = sorted(nklasses, key=PYB11sort_by_inheritance(nklasses))
+        for nkname, nklass in nklasses:
+            nklassattrs = PYB11attrs(nklass)
+            nklassattrs["pyname"] = klassattrs["pyname"] + "_" + nklassattrs["pyname"]
+            nklassattrs["cppname"] = klassattrs["cppname"] + "::" + nklassattrs["cppname"]
+            ss("void bind%(pyname)s(py::object& obj);\n" % nklassattrs)
+
         if self.klass_template.__doc__:
             self.klass_template.__doc__ = doc0
         return
@@ -348,7 +374,8 @@ def PYB11generic_class_method(klass, klassattrs, meth, methattrs, ss):
 #
 # Bind the methods for the given class
 #-------------------------------------------------------------------------------
-def PYB11generateClass(modobj, klass, klassattrs, ssout):
+def PYB11generateClass(modobj, klass, klassattrs, ssout,
+                       nested_class = False):
     klassinst = klass()
 
     fs = io.StringIO()
@@ -505,7 +532,10 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout):
             ss('#include "{}"\n'.format(modobj.basename + "_{}_trampoline.hh".format(klassattrs["pynamebase"])))
         ss("\n")
 
-    ss("void bind%(pyname)s(py::module_& m) {\n" % klassattrs)
+    if nested_class:
+        ss("void bind%(pyname)s(py::object& baseobj) {\n" % klassattrs)
+    else:
+        ss("void bind%(pyname)s(py::module_& m) {\n" % klassattrs)
 
     # If the class has specified any typedefs, do them.
     if hasattr(klass, "PYB11typedefs"):
@@ -547,7 +577,10 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout):
         ss(", %(holder)s<%(namespace)s%(cppname)s>" % klassattrs)
 
     # Close the template declaration
-    ss('> obj(m, "%(pyname)s"' % klassattrs)
+    if nested_class:
+        ss('> obj(baseobj, "%(pyname)s"' % klassattrs)
+    else:
+        ss('> obj(m, "%(pyname)s"' % klassattrs)
 
     # Are we allowing dynamic attributes for the class?
     if klassattrs["dynamic_attr"]:
@@ -726,18 +759,27 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout):
         ss(ssenum.getvalue())
         ssenum.close()
 
-    ss("}\n\n")
-
     # Look for any class scope classes and bind them
     klasses = [(x, eval("klass.%s" % x, globs, locs)) for x in dir(klassinst) if (inspect.isclass(eval("klass.%s" % x, globs, locs)) and x in klass.__dict__)]
     klasses = sorted(klasses, key=PYB11sort_by_inheritance(klasses))
-    for (kname, nklass) in klasses:
-        #nklass = eval("klassinst.%s" % kname)
+    if klasses:
+        ss("\n  // %(cppname)s nested classes\n" % klassattrs)
+        for nkname, nklass in klasses:
+            nklassattrs = PYB11attrs(nklass)
+            nklassattrs["pyname"] = klassattrs["pyname"] + "_" + nklassattrs["pyname"]
+            nklassattrs["cppname"] = klassattrs["cppname"] + "::" + nklassattrs["cppname"]
+            nklassattrs["template_dict"].update(Tdict)
+            ss("  bind%(pyname)s(obj);\n" % nklassattrs)
+
+    ss("}\n\n")
+        
+    for nkname, nklass in klasses:
+        #nklass = eval("klassinst.%s" % nkname)
         nklassattrs = PYB11attrs(nklass)
         nklassattrs["pyname"] = klassattrs["pyname"] + "_" + nklassattrs["pyname"]
         nklassattrs["cppname"] = klassattrs["cppname"] + "::" + nklassattrs["cppname"]
         nklassattrs["template_dict"].update(Tdict)
-        PYB11generateClass(modobj, nklass, nklassattrs, ss)
+        PYB11generateClass(modobj, nklass, nklassattrs, ss, nested_class=True)
 
     ssout(fs.getvalue() % Tdict)
     fs.close()
