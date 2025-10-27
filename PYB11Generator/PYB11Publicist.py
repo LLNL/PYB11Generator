@@ -49,8 +49,8 @@ def PYB11generatePublicist(klass, ssout):
     ss("""//------------------------------------------------------------------------------
 // Publicist class for %(cppname)s
 //------------------------------------------------------------------------------
-#ifndef __publicist_%(pyname)s__
-#define __publicist_%(pyname)s__
+#ifndef PYB11_publicist_%(pyname)s
+#define PYB11_publicist_%(pyname)s
 
 """ % klassattrs)
 
