@@ -312,6 +312,7 @@ def PYB11virtualClass(klass):
         methattrs = PYB11attrs(meth)
         if methattrs["virtual"] or methattrs["pure_virtual"]:
             virtual = True
+            break
     return virtual
 
 #-------------------------------------------------------------------------------
@@ -327,6 +328,7 @@ def PYB11protectedClass(klass):
         methattrs = PYB11attrs(meth)
         if methattrs["protected"]:
             protected = True
+            break
     return protected
 
 #-------------------------------------------------------------------------------
