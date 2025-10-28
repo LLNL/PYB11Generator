@@ -97,7 +97,7 @@ def PYB11generateModuleSTLmethod(modobj, stlobjs):
 //------------------------------------------------------------------------------
 #include "{modincludefile}"
 
-void bindModuleSTLtypes(py::module_ mod) {{
+void bindModuleSTLtypes(py::module_& m) {{
 ''')
         for (name, obj) in stlobjs:
             ss("  ")
