@@ -1,9 +1,7 @@
 #-------------------------------------------------------------------------------
 # PYB11Publicist
 #-------------------------------------------------------------------------------
-import inspect
-import sys
-import io
+import sys, os, io, inspect
 
 from .PYB11utils import *
 
@@ -12,7 +10,7 @@ from .PYB11utils import *
 #
 # Generate publicists for any classes with protected methods.
 #-------------------------------------------------------------------------------
-def PYB11generateModulePublicists(modobj, ss):
+def PYB11generateModulePublicists(modobj):
     klasses = PYB11classes(modobj)
     known_publicists = []
     for kname, klass in klasses:
@@ -23,7 +21,15 @@ def PYB11generateModulePublicists(modobj, ss):
             ((template_klass or not klassattrs["ignore"]) and                 # ignore flag (except for template class)?
              (klassattrs["pyname"] not in known_publicists) and               # has this trampoline been generated?
             ((klass not in mods) or mods[klass] == modobj.PYB11modulename))): # is this class imported from another mod?
-            PYB11generatePublicist(klass, ss)
+
+            if modobj.multiple_files:
+                pyname = klassattrs["pyname"]
+                filename = os.path.join(modobj.basedir, modobj.basename + f"_{pyname}_publicist.hh")
+                with open(filename, "w") as f:
+                    PYB11generatePublicist(modobj, klass, f.write)
+            else:
+                with open(modobj.filename, "a") as f:
+                    PYB11generatePublicist(modobj, klass, f.write)
     return
 
 #-------------------------------------------------------------------------------
@@ -31,7 +37,7 @@ def PYB11generateModulePublicists(modobj, ss):
 #
 # Generate the publicist class, including pure virtual hooks.
 #-------------------------------------------------------------------------------
-def PYB11generatePublicist(klass, ssout):
+def PYB11generatePublicist(modobj, klass, ssout):
 
     klassattrs = PYB11attrs(klass)
     template_klass = len(klassattrs["template"]) > 0

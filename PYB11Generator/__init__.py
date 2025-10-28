@@ -155,11 +155,7 @@ using namespace pybind11::literals;
 """)
             for x in modobj.PYB11opaque:
                 ss("PYBIND11_MAKE_OPAQUE(" + x.replace(",", " PYB11COMMA ") + ")\n")
-        ss("\n#endif\n")
-
-    # On to the module coding
-    with open(modobj.filename, "a") as f:
-        ss = f.write
+            ss("\n")
 
         # Forward declare functions we use for multiple file bindings
         ss("""//------------------------------------------------------------------------------
@@ -170,13 +166,17 @@ using namespace pybind11::literals;
             ss("void bindModuleSTLtypes(py::module_& mod);\n")
 
         PYB11generateClassBindingFunctionDecls(modobj, ss)
-        ss("\n")
+        ss("\n#endif\n")
+
+    # On to the module coding
+    with open(modobj.filename, "a") as f:
+        ss = f.write
 
         # Trampolines
         PYB11generateModuleTrampolines(modobj)
 
         # Publicists
-        PYB11generateModulePublicists(modobj, ss)
+        PYB11generateModulePublicists(modobj)
 
         # Declare the module
         ss("""//------------------------------------------------------------------------------

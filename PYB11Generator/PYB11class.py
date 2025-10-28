@@ -521,7 +521,7 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout,
 //------------------------------------------------------------------------------
 """ % klassattrs)
 
-    if modobj.multiple_files:
+    if modobj.multiple_files and not nested_class:  # Nested classes already have the includes
         # Include files
         ss('#include "{}"\n'.format(modobj.master_include_file))
         allincs = PYB11findAllIncludes(modobj)
@@ -530,6 +530,11 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout,
                 ss('#include %s\n' % inc)
         if PYB11virtualClass(klass):
             ss('#include "{}"\n'.format(modobj.basename + "_{}_trampoline.hh".format(klassattrs["pynamebase"])))
+        if PYB11protectedClass(klass):
+            ss('#include "{}"\n'.format(modobj.basename + "_{}_publicist.hh".format(klassattrs["pynamebase"])))
+        ss("\n")
+
+        PYB11generateClassBindingFunctionDecls(modobj, ss)
         ss("\n")
 
     if nested_class:
