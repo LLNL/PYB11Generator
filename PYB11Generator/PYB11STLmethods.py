@@ -20,9 +20,9 @@ class PYB11_bind_vector:
         self.local = local
         return
 
-    def PYB11preamble(self, modobj, ss, name):
+    def PYB11opaqueTypes(self, modobj, ss, name):
         if self.opaque:
-            ss('PYBIND11_MAKE_OPAQUE(std::vector<' + PYB11CPPsafe(self.element) + '>)\n')
+            ss('PYBIND11_MAKE_OPAQUE(std::vector<' + PYB11CPPsafe(self.element) + '>);\n')
         return
 
     def __call__(self, modobj, ss, name):
@@ -52,10 +52,10 @@ class PYB11_bind_map:
         self.local = local
         return
 
-    def PYB11preamble(self, modobj, ss, name):
+    def PYB11opaqueTypes(self, modobj, ss, name):
         if self.opaque:
             cppname = "std::map<" + self.key + "," + self.value + ">"
-            ss("PYBIND11_MAKE_OPAQUE(" + PYB11CPPsafe(cppname) + ")\n")
+            ss("PYBIND11_MAKE_OPAQUE(" + PYB11CPPsafe(cppname) + ");\n")
         return
 
     def __call__(self, modobj, ss, name):

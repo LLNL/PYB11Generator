@@ -147,16 +147,6 @@ using namespace pybind11::literals;
         for objname, obj in PYB11objsWithMethod(modobj, "PYB11preamble"):
             obj.PYB11preamble(modobj, ss, objname)
 
-        # Does anyone have any opaque types?
-        if hasattr(modobj, "PYB11opaque"):
-            ss("""//------------------------------------------------------------------------------
-// Opaque type definitions
-//------------------------------------------------------------------------------
-""")
-            for x in modobj.PYB11opaque:
-                ss("PYBIND11_MAKE_OPAQUE(" + x.replace(",", " PYB11COMMA ") + ")\n")
-            ss("\n")
-
         # Forward declare functions we use for multiple file bindings
         ss("""//------------------------------------------------------------------------------
 // Forward decalare methods for providing bindings
@@ -171,6 +161,19 @@ using namespace pybind11::literals;
     # On to the module coding
     with open(modobj.filename, "a") as f:
         ss = f.write
+
+        # Does anyone have any opaque types?
+        if hasattr(modobj, "PYB11opaque"):
+            ss("""//------------------------------------------------------------------------------
+// Opaque type definitions
+//------------------------------------------------------------------------------
+""")
+            for x in modobj.PYB11opaque:
+                ss("PYBIND11_MAKE_OPAQUE(" + x.replace(",", " PYB11COMMA ") + ")\n")
+            ss("\n")
+        for objname, obj in PYB11objsWithMethod(modobj, "PYB11opaqueTypes"):
+            obj.PYB11opaqueTypes(modobj, ss, objname)
+        ss("\n")
 
         # Trampolines
         PYB11generateModuleTrampolines(modobj)
