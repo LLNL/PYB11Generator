@@ -22,7 +22,7 @@ class PYB11_bind_vector:
 
     def PYB11opaqueTypes(self, modobj, ss, name):
         if self.opaque:
-            ss('PYBIND11_MAKE_OPAQUE(std::vector<' + PYB11CPPsafe(self.element) + '>);\n')
+            ss(f"PYBIND11_MAKE_OPAQUE(PYBIND11_TYPE(std::vector<{self.element}>));\n")
         return
 
     def __call__(self, modobj, ss, name):
@@ -55,7 +55,7 @@ class PYB11_bind_map:
     def PYB11opaqueTypes(self, modobj, ss, name):
         if self.opaque:
             cppname = "std::map<" + self.key + "," + self.value + ">"
-            ss("PYBIND11_MAKE_OPAQUE(" + PYB11CPPsafe(cppname) + ");\n")
+            ss(f"PYBIND11_MAKE_OPAQUE(PYBIND11_TYPE({cppname}));\n")
         return
 
     def __call__(self, modobj, ss, name):
