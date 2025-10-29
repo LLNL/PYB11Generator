@@ -35,7 +35,12 @@ def PYB11generateModuleTrampolines(modobj):
         if modobj.multiple_files:
             klassattrs = PYB11attrs(klass)
             pyname = klassattrs["pyname"]
-            filename = os.path.join(modobj.basedir, modobj.basename + f"_{pyname}_trampoline.hh")
+            template_klass = len(klassattrs["template"]) > 0
+            cppbasename = klassattrs["full_cppname"]
+            if template_klass:
+                cppbasename = cppbasename.split("<")[0]
+            assert cppbasename
+            filename = os.path.join(modobj.basedir, modobj.basename + f"_{cppbasename}_trampoline.hh")
             with open(filename, "w") as f:
                 ss = f.write
                 PYB11generateTrampoline(modobj, klass, ss)

@@ -21,10 +21,16 @@ def PYB11generateModulePublicists(modobj):
             ((template_klass or not klassattrs["ignore"]) and                 # ignore flag (except for template class)?
              (klassattrs["pyname"] not in known_publicists) and               # has this trampoline been generated?
             ((klass not in mods) or mods[klass] == modobj.PYB11modulename))): # is this class imported from another mod?
+            known_publicists.append(klassattrs["pyname"])
 
             if modobj.multiple_files:
                 pyname = klassattrs["pyname"]
-                filename = os.path.join(modobj.basedir, modobj.basename + f"_{pyname}_publicist.hh")
+                template_klass = len(klassattrs["template"]) > 0
+                cppbasename = klassattrs["full_cppname"]
+                if template_klass:
+                    cppbasename = cppbasename.split("<")[0]
+                assert cppbasename
+                filename = os.path.join(modobj.basedir, modobj.basename + f"_{cppbasename}_publicist.hh")
                 with open(filename, "w") as f:
                     PYB11generatePublicist(modobj, klass, f.write)
             else:

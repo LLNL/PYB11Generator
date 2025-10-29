@@ -528,10 +528,17 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout,
         if allincs:
             for inc in set(allincs):
                 ss('#include %s\n' % inc)
+        template_klass = len(klassattrs["template"]) > 0
+        cppbasename = klassattrs["full_cppname"]
+        if template_klass:
+            cppbasename = cppbasename.split("<")[0]
+        assert cppbasename
         if PYB11virtualClass(klass):
-            ss('#include "{}"\n'.format(modobj.basename + "_{}_trampoline.hh".format(klassattrs["pynamebase"])))
+            filename = os.path.join(modobj.basename + f"_{cppbasename}_trampoline.hh")
+            ss('#include "{}"\n'.format(filename))
         if PYB11protectedClass(klass):
-            ss('#include "{}"\n'.format(modobj.basename + "_{}_publicist.hh".format(klassattrs["pynamebase"])))
+            filename = os.path.join(modobj.basename + f"_{cppbasename}_publicist.hh")
+            ss('#include "{}"\n'.format(filename))
         ss("\n")
 
         PYB11generateClassBindingFunctionDecls(modobj, ss)
