@@ -158,11 +158,20 @@ function(PYB11Generator_add_module package_name)
                     OUTPUT_NAME  ${${package_name}_MODULE}
                     CLEAR_PREFIX TRUE
                     SHARED       TRUE)
+    target_link_libraries(${${package_name}_MODULE} PRIVATE pybind11::module pybind11::lto pybind11::windows_extras)
+    pybind11_extension(${${package_name}_MODULE})
+    if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+      # Strip unnecessary sections of the binary on Linux/macOS
+      pybind11_strip(${${package_name}_MODULE})
+    endif()
+    set_target_properties(${${package_name}_MODULE} PROPERTIES CXX_VISIBILITY_PRESET "hidden"
+                                                    CUDA_VISIBILITY_PRESET "hidden")
 
   else()
     # Build using the normal pybind11 rules
     include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current_${${package_name}_MODULE})
-    pybind11_add_module(${package_name} ${${package_name}_PYBIND11_OPTIONS} ${GENERATED_FILES_LIST} ${${package_name}_EXTRA_SOURCE})
+    pybind11_add_module(${${package_name}_MODULE} ${${package_name}_PYBIND11_OPTIONS} ${GENERATED_FILES_LIST} ${${package_name}_EXTRA_SOURCE})
+    add_dependencies(${${package_name}_MODULE} ${${package_name}_DEPENDS})
     set_target_properties(${${package_name}_MODULE} PROPERTIES SUFFIX ".so" LIBRARY_OUTPUT_NAME ${${package_name}_MODULE})
     target_link_libraries(${${package_name}_MODULE} PRIVATE ${${package_name}_LINKS})
 
