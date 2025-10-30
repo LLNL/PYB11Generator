@@ -159,7 +159,7 @@ function(PYB11Generator_add_module package_name)
                     CLEAR_PREFIX TRUE
                     SHARED       TRUE)
     target_link_libraries(${${package_name}_MODULE} PRIVATE pybind11::module pybind11::lto pybind11::windows_extras)
-    pybind11_extension(${${package_name}_MODULE})
+    #pybind11_extension(${${package_name}_MODULE})
     if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
       # Strip unnecessary sections of the binary on Linux/macOS
       pybind11_strip(${${package_name}_MODULE})
