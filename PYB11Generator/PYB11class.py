@@ -526,7 +526,7 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout,
         ss('#include "{}"\n'.format(modobj.master_include_file))
         allincs = PYB11findAllIncludes(modobj)
         if allincs:
-            for inc in set(allincs):
+            for inc in allincs:
                 ss('#include %s\n' % inc)
         template_klass = len(klassattrs["template"]) > 0
         cppbasename = klassattrs["full_cppname"]
@@ -541,8 +541,8 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout,
             ss('#include "{}"\n'.format(filename))
         ss("\n")
 
-        PYB11generateClassBindingFunctionDecls(modobj, ss)
-        ss("\n")
+        # PYB11generateClassBindingFunctionDecls(modobj, ss)
+        # ss("\n")
 
     if nested_class:
         ss("void bind%(pyname)s(py::object& baseobj) {\n" % klassattrs)
