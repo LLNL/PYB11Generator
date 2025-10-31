@@ -288,7 +288,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   # set of resulting targets.  However, if we're only generating one monolithic pybind11
   # output we can instead make a custom target and do dependency rebuild checking at
   # compile time.
-  if (MULTIPLE_FILES)
+  if (${package_name}_MULTIPLE_FILES)
     message("-- Generating PYB11 code for ${package_name}")
 
     # Generate the pybind11 C++ files files and the list of those files
@@ -323,7 +323,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   # set(PYTHON_EXE ${PYTHON_EXE_BAK})
 
   # Get the list of generated pybind11 C++ source files
-  if (MULTIPLE_FILES)
+  if (${package_name}_MULTIPLE_FILES)
     file(STRINGS "${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_GENERATED_FILES}" GENERATED_FILES)
     list(TRANSFORM GENERATED_FILES PREPEND "current_${module_name}/")
   else()
