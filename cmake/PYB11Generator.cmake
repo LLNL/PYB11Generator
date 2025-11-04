@@ -163,8 +163,8 @@ function(PYB11Generator_add_module package_name)
       # Strip unnecessary sections of the binary on Linux/macOS
       pybind11_strip(${${package_name}_MODULE})
     endif()
-    # set_target_properties(${${package_name}_MODULE} PROPERTIES CXX_VISIBILITY_PRESET "hidden"
-    #                                                 CUDA_VISIBILITY_PRESET "hidden")
+    set_target_properties(${${package_name}_MODULE} PROPERTIES CXX_VISIBILITY_PRESET "hidden"
+                                                    CUDA_VISIBILITY_PRESET "hidden")
 
   else()
     # Build using the normal pybind11 rules
