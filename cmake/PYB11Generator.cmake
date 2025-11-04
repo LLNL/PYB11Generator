@@ -152,7 +152,7 @@ function(PYB11Generator_add_module package_name)
     # Build using BLT macros -- assumes you've already included BLT CMake rules
     blt_add_library(NAME         ${${package_name}_MODULE}
                     SOURCES      ${GENERATED_FILES_LIST} ${${package_name}_EXTRA_SOURCE}
-                    DEPENDS_ON   ${${package_name}_DEPENDS} ${${package_name}_FILE_DEPENDS} ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE}
+                    DEPENDS_ON   ${${package_name}_DEPENDS} ${${package_name}_FILE_DEPENDS}
                     INCLUDES     ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current_${${package_name}_MODULE}
                     OUTPUT_NAME  ${${package_name}_MODULE}
                     CLEAR_PREFIX TRUE
@@ -199,7 +199,6 @@ function(PYB11Generator_add_module package_name)
   else()
     # For monolithic pybind11 output we add a source dependency on the PYB11 Python file
     #add_dependencies(${${package_name}_MODULE} ${${package_name}_MODULE}_src)
-    message(" -- adding file dependency ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE}")
     set_property(SOURCE ${GENERATED_FILES_LIST} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE})
 
   endif()
