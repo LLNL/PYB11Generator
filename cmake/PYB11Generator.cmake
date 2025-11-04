@@ -190,7 +190,7 @@ function(PYB11Generator_add_module package_name)
   endif()
 
   # We need to regenerate at configuration time for multiple file output
-  if (MULTIPLE_FILES)
+  if (${package_name}_MULTIPLE_FILES)
     # Read the generated CMake dependencies for PYB11 imported files (sets ${package_name}_FILE_DEPENDS)
     include(${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_MODULE}_stamp.cmake)
     foreach(item IN LISTS ${${package_name}_MODULE}_FILE_DEPENDS)
