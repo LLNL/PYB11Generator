@@ -118,7 +118,7 @@ def PYB11generateModuleSTL(modobj):
             ss("  //..............................................................................\n")
             ss("  // STL bindings\n")
 
-        if modobj.multiple_files:
+        if False: # modobj.multiple_files:
             # Multiple files
             with open(modobj.filename, "a") as f:
                 ss = f.write
