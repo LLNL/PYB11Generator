@@ -94,19 +94,6 @@ def PYB11generateModuleStart(modobj):
 
 ''')
 
-        # Does anyone have any opaque types?
-        if hasattr(modobj, "PYB11opaque"):
-            ss("""//------------------------------------------------------------------------------
-// Opaque type definitions
-//------------------------------------------------------------------------------
-""")
-            for x in modobj.PYB11opaque:
-                ss(f"PYBIND11_MAKE_OPAQUE(PYBIND11_TYPE({x}))\n")
-            ss("\n")
-        for objname, obj in PYB11objsWithMethod(modobj, "PYB11opaqueTypes"):
-            obj.PYB11opaqueTypes(modobj, ss, objname)
-        ss("\n")
-
     # Make master include file
     with open(os.path.join(modobj.basedir, modobj.master_include_file), "w") as f:
         ss = f.write
@@ -157,6 +144,19 @@ using namespace pybind11::literals;
             ss("\n")
         for objname, obj in PYB11objsWithMethod(modobj, "PYB11preamble"):
             obj.PYB11preamble(modobj, ss, objname)
+
+        # Does anyone have any opaque types?
+        if hasattr(modobj, "PYB11opaque"):
+            ss("""//------------------------------------------------------------------------------
+// Opaque type definitions
+//------------------------------------------------------------------------------
+""")
+            for x in modobj.PYB11opaque:
+                ss(f"PYBIND11_MAKE_OPAQUE(PYBIND11_TYPE({x}))\n")
+            ss("\n")
+        for objname, obj in PYB11objsWithMethod(modobj, "PYB11opaqueTypes"):
+            obj.PYB11opaqueTypes(modobj, ss, objname)
+        ss("\n")
 
         # Forward declare functions we use for multiple file bindings
         ss("""//------------------------------------------------------------------------------
