@@ -152,7 +152,7 @@ function(PYB11Generator_add_module package_name)
     # Build using BLT macros -- assumes you've already included BLT CMake rules
     blt_add_library(NAME         ${${package_name}_MODULE}
                     SOURCES      ${GENERATED_FILES_LIST} ${${package_name}_EXTRA_SOURCE}
-                    DEPENDS_ON   ${${package_name}_DEPENDS} ${${package_name}_FILE_DEPENDS}
+                    DEPENDS_ON   ${${package_name}_DEPENDS} ${${package_name}_FILE_DEPENDS} ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE}
                     INCLUDES     ${${package_name}_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/current_${${package_name}_MODULE}
                     OUTPUT_NAME  ${${package_name}_MODULE}
                     CLEAR_PREFIX TRUE
@@ -178,7 +178,6 @@ function(PYB11Generator_add_module package_name)
 
   endif()    
 
-  #add_dependencies(${${package_name}_MODULE} ${${package_name}_MODULE}_src)
   target_compile_options(${${package_name}_MODULE} PRIVATE ${${package_name}_COMPILE_OPTIONS})
 
   # Installation
@@ -189,13 +188,20 @@ function(PYB11Generator_add_module package_name)
     install(TARGETS ${${package_name}_MODULE} DESTINATION ${${package_name}_INSTALL})
   endif()
 
-  # We need to regenerate at configuration time for multiple file output
   if (${package_name}_MULTIPLE_FILES)
+    # We need to regenerate at configuration time for multiple file output
     # Read the generated CMake dependencies for PYB11 imported files (sets ${package_name}_FILE_DEPENDS)
     include(${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_MODULE}_stamp.cmake)
     foreach(item IN LISTS ${${package_name}_MODULE}_FILE_DEPENDS)
       set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${item})
     endforeach()
+
+  else()
+    # For monolithic pybind11 output we add a source dependency on the PYB11 Python file
+    #add_dependencies(${${package_name}_MODULE} ${${package_name}_MODULE}_src)
+    message(" -- adding file dependency ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE}")
+    set_property(SOURCE ${GENERATED_FILES_LIST} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE})
+
   endif()
 
 endfunction()
