@@ -120,10 +120,10 @@ VIRTUAL_ENV <arg> (optional) :
 
 .. Note::
 
-   The state of ``9MULTIPLE_FILES`` will cause changes in when PYB11Generator generates the ``pybind11`` output files:
+   The state of ``MULTIPLE_FILES`` will cause changes in when PYB11Generator generates the pybind11 output files:
 
    MULTIPLE_FILES ON : 
-     PYB11Generator will run at configure (CMake) time, creating the set of output ``pybind11`` C++ files.  This is necessary in order to tell CMake what source files are being generated for compilation rules.
+     PYB11Generator will run at configure (CMake) time, creating the set of output pybind11 C++ files.  This is necessary in order to tell CMake what source files are being generated for compilation rules.
 
    MULTIPLE_FILES OFF :
-     PYB11Generator runs at compile time, generating a monolithic C++ ``pybind11` source file and one header per module.
+     PYB11Generator runs at compile time, generating a monolithic C++ pybind11 source file and one header per module.
