@@ -262,6 +262,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   # message("** DEPENDS: ${${package_name}_DEPENDS}")
   # message("** PYTHONPATH: ${${package_name}_PYTHONPATH}")
   # message("** MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
+  # message("** VIRTUAL_ENV: ${${package_name}_VIRTUAL_ENV}")
 
   # Multiple file output options
   if(NOT DEFINED ${package_name}_MULTIPLE_FILES)
@@ -279,19 +280,22 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   # Places we need in the Python path
   set(PYTHON_ENV ".:${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_CURRENT_SOURCE_DIR}:${PYB11GENERATOR_ROOT_DIR}:${${package_name}_PYTHONPATH}")
   if (DEFINED ENV{PYTHONPATH})
-    set(PYTHON_ENV "${PYTHON_ENV}:$ENV{PYTHONPATH}")
+    set(PYTHONPATH_BAK "$ENV{PYTHONPATH}")
+    string(CONCAT PYTHON_ENV ${PYTHON_ENV} ":" ${PYTHONPATH_BAK})
+    #set(PYTHON_ENV "${PYTHON_ENV}:$ENV{PYTHONPATH}")
   endif()
-  message("-- PYTHON_ENV: ${PYTHON_ENV}")
 
   # Extract the name of PYB11 generating source code without the .py extension
   string(REGEX REPLACE "\\.[^.]*$" "" pyb11_module ${PYB11_SOURCE})
 
-  # set(PYTHON_EXE_BAK ${PYTHON_EXE})
+  set(PYTHON_EXE_BAK ${PYTHON_EXE})
 
   # if (DEFINED ${package_name}_VIRTUAL_ENV)
-  #   get_target_property(ACTIVATE_VENV_CMD ${${package_name}_VIRTUAL_ENV} ACTIVATE_VENV)
-  #   list(APPEND ACTIVATE_VENV_CMD &&)
+  #   get_target_property(ACTIVATE_VENV_CMD ${${package_name}_VIRTUAL_ENV} ACTIVATE_VENV_LIST)
+  #   list(GET ACTIVATE_VENV_LIST 0 ACTIVATE_VENV_CMD)
+  #   string(APPEND ACTIVATE_VENV_CMD " &&")
   #   get_target_property(PYTHON_EXE ${${package_name}_VIRTUAL_ENV} EXECUTABLE)
+  #   message("** ACTIVATE_VENV_CMD: ${ACTIVATE_VENV_CMD}")
   # endif()
 
   # Now for a big branch.  If we're generating multiple output files we need to do all
@@ -304,7 +308,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
     # Generate the pybind11 C++ files files and the list of those files
     execute_process(
-      COMMAND env "PYTHONPATH=${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
+      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
@@ -315,7 +319,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
       set(FULL_PYB11_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE})
     endif()
     execute_process(
-      COMMAND env "PYTHONPATH=${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
+      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
@@ -323,7 +327,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
     add_custom_target(
       ${module_name}_src ALL
-      COMMAND env "PYTHONPATH=${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
+      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
       BYPRODUCTS current_${module_name}/${PYB11_GENERATED_SOURCE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       DEPENDS ${${package_name}_VIRTUAL_ENV}
@@ -331,7 +335,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
   endif()
     
-  # set(PYTHON_EXE ${PYTHON_EXE_BAK})
+  set(PYTHON_EXE ${PYTHON_EXE_BAK})
 
   # Get the list of generated pybind11 C++ source files
   if (${package_name}_MULTIPLE_FILES)
