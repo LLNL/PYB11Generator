@@ -66,7 +66,8 @@ The full function specification for ``PYB11Generator_add_module`` is::
                                MULTIPLE_FILES   ON/OFF
                                GENERATED_FILES  ...
                                USE_BLT          ON/OFF
-                               VIRTUAL_ENV      ...)
+                               VIRTUAL_ENV      ...
+                               PYTHONPATH       ...)
 
 where the arguments are:
 
@@ -113,6 +114,9 @@ VIRTUAL_ENV <arg> (optional) :
   The name of a python virtual environment target. The target must supply
   target properties EXECUTABLE and ACTIVATE_VENV to define the python executable
   and the command to activate the environment respectively.
+
+PYTHONPATH <arg> (optional) :
+  Additions needed for the environment PYTHONPATH
 
 .. Note::
 
