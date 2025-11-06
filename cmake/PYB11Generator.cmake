@@ -32,7 +32,8 @@
 #                             MULTIPLE_FILES   ON/OFF
 #                             GENERATED_FILES  ...
 #                             USE_BLT          ON/OFF
-#                             VIRTUAL_ENV      ...)
+#                             VIRTUAL_ENV      ...
+#                             PYTHONPATH       ...)
 #   where arguments are:
 #       <package_name> (required)
 #           The base name of the Python module being generated.  Results in a module
@@ -78,6 +79,8 @@
 #           The name of a python virtual environment target. The target must supply
 #           target properties EXECUTABLE and ACTIVATE_VENV to define the python executable
 #           and the command to activate the environment respectively.
+#       PYTHONPATH ... (optional)
+#           Additions needed for the environment PYTHONPATH
 #
 # This is the function users should call directly.  The macro PYB11_GENERATE_BINDINGS
 # defined next is primarily for internal use.
@@ -105,7 +108,7 @@ function(PYB11Generator_add_module package_name)
   # Define our arguments
   set(options )
   set(oneValueArgs   MODULE SOURCE INSTALL MULTIPLE_FILES GENERATED_FILES USE_BLT VIRTUAL_ENV)
-  set(multiValueArgs INCLUDES LINKS DEPENDS PYBIND11_OPTIONS COMPILE_OPTIONS EXTRA_SOURCE)
+  set(multiValueArgs INCLUDES LINKS DEPENDS PYBIND11_OPTIONS COMPILE_OPTIONS EXTRA_SOURCE PYTHONPATH)
   cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   # message("-- package_name : ${package_name}")
   # message("-- MODULE: ${${package_name}_MODULE}")
@@ -121,6 +124,7 @@ function(PYB11Generator_add_module package_name)
   # message("-- USE_BLT: ${package_name}_USE_BLT")
   # message("-- EXTRA_SOURCE: ${package_name}_EXTRA_SOURCE")
   # message("-- VIRTUAL_ENV: ${${package_name}_VIRTUAL_ENV}")
+  # message("-- PYTHONPATH: ${${package_name}_PYTHONPATH}")
 
   # Set our names and paths
   if (NOT DEFINED ${package_name}_MODULE)
@@ -145,7 +149,8 @@ function(PYB11Generator_add_module package_name)
   PYB11_GENERATE_BINDINGS(${package_name} ${${package_name}_MODULE} ${${package_name}_SOURCE} GENERATED_FILES_LIST
                           MULTIPLE_FILES ${${package_name}_MULTIPLE_FILES} 
                           DEPENDS ${${package_name}_DEPENDS}
-                          VIRTUAL_ENV ${${package_name}_VIRTUAL_ENV})
+                          VIRTUAL_ENV ${${package_name}_VIRTUAL_ENV}
+                          PYTHONPATH ${${package_name}_PYTHONPATH})
 
   # The library build rule
   if (${${package_name}_USE_BLT}) 
@@ -232,12 +237,12 @@ endfunction()
 #           Name for output file containing the list of C++ pybind11 output files
 #       DEPENDS ... (optional)
 #           Any CMake targets this package should depend on being built first
-#       PYTHONPATH ... (optional)
-#           Additions needed for the environment PYTHONPATH
 #       VIRTUAL_ENV ... (optional)
 #           The name of a python virtual environment target. The target must supply
 #           target properties EXECUTABLE and ACTIVATE_VENV to define the python executable
 #           and the command to activate the environment respectively.
+#       PYTHONPATH ... (optional)
+#           Additions needed for the environment PYTHONPATH
 #
 # To get the names of the generated source
 # use: ${PYB11_GENERATED_SOURCE}
@@ -276,6 +281,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   if (DEFINED ENV{PYTHONPATH})
     set(PYTHON_ENV "${PYTHON_ENV}:$ENV{PYTHONPATH}")
   endif()
+  message("-- PYTHON_ENV: ${PYTHON_ENV}")
 
   # Extract the name of PYB11 generating source code without the .py extension
   string(REGEX REPLACE "\\.[^.]*$" "" pyb11_module ${PYB11_SOURCE})
@@ -298,7 +304,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
     # Generate the pybind11 C++ files files and the list of those files
     execute_process(
-      COMMAND env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
+      COMMAND env "PYTHONPATH=${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
@@ -309,7 +315,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
       set(FULL_PYB11_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE})
     endif()
     execute_process(
-      COMMAND env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
+      COMMAND env "PYTHONPATH=${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
@@ -317,7 +323,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
     add_custom_target(
       ${module_name}_src ALL
-      COMMAND env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
+      COMMAND env "PYTHONPATH=${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
       BYPRODUCTS current_${module_name}/${PYB11_GENERATED_SOURCE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       DEPENDS ${${package_name}_VIRTUAL_ENV}
