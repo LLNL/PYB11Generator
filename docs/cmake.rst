@@ -66,8 +66,8 @@ The full function specification for ``PYB11Generator_add_module`` is::
                                MULTIPLE_FILES   ON/OFF
                                GENERATED_FILES  ...
                                USE_BLT          ON/OFF
-                               VIRTUAL_ENV      ...
-                               PYTHONPATH       ...)
+                               PYTHONPATH       ...
+                               ALLOW_SKIPS      ON/OFF)
 
 where the arguments are:
 
@@ -110,13 +110,12 @@ USE_BLT ON/OFF (optional, default OFF) :
   Note, using this option skips using pybind11's own add_module CMake logic,
   and therefore may make some pybind11 options no-ops.
 
-VIRTUAL_ENV <arg> (optional) :
-  The name of a python virtual environment target. The target must supply
-  target properties EXECUTABLE and ACTIVATE_VENV to define the python executable
-  and the command to activate the environment respectively.
-
 PYTHONPATH <arg> (optional) :
   Additions needed for the environment PYTHONPATH
+
+ALLOW_SKIPS ON/OFF (optional, default OFF) :
+  Developer option (and dangerous).  If ON any generated C++ pybind11 files
+  that start with the line "// PYB11skip" will not be regenerated and replaced.
 
 .. Note::
 
