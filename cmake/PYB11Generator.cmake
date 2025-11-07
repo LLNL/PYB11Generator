@@ -307,8 +307,10 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
     message("-- Generating PYB11 code for ${package_name}")
 
     # Generate the pybind11 C++ files files and the list of those files
+    set(ENV{PYTHONPATH} "${PYTHON_ENV}")
     execute_process(
-      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
+      COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
+      #COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${PYTHON_ENV} ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
@@ -319,9 +321,17 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
       set(FULL_PYB11_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE})
     endif()
     execute_process(
-      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
+      COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
+      #COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${PYTHON_ENV} ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
+
+    # Restore the starting environment PYTHONPATH
+    if (DEFINED PYTHONPATH_BAK)
+      set(ENV{PYTHONPATH} "${PYTHONPATH_BAK}")
+    else()
+      unset(ENV{PYTHONPATH})
+    endif()
 
   else()
 
