@@ -283,7 +283,7 @@ For testing and development occasionally it is useful to directly edit the pybin
 
   .. code-block:: cpp
 
-  // PYB11skip
+    // PYB11skip
 
 And add the option ``ALLOW_SKIPS ON`` to the CMake build configuration::
 
