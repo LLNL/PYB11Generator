@@ -3,12 +3,9 @@ import sys, os, shutil, filecmp
 # Arguments
 pyb11_mod_name = sys.argv[1]
 mod_name = sys.argv[2]
-multiple_files = sys.argv[3]
+multiple_files = eval(sys.argv[3])
 generatedfiles = sys.argv[4]
-# print("--> ", pyb11_mod_name)
-# print("--> ", mod_name)
-# print("--> ", multiple_files)
-# print("--> ", generatedfiles)
+allow_skips = eval(sys.argv[5])
 
 # Prepare output directories
 current_pth = "current_" + mod_name
@@ -41,14 +38,34 @@ PYB11generateModule({pyb11_module},
 exec(code)
 assert os.path.isfile(new_src)
 
-# If the module source is changed, update it.  Otherwise
-# get rid of the temporary files and we're done.
+# Look for any files we want to preserve from the existing generated pybind11 source
+skips = []
+if allow_skips:
+    # Scan to see if any of the current files should be preserved
+    current_files = os.listdir(current_pth)
+    for filename in current_files:
+        with open(os.path.join(current_pth, filename), "r") as f:
+            line = f.readline().strip()
+            if line.startswith("// PYB11skip"):
+                skips.append(filename)
+                print("PYB11Generator WARNING: skipping regenerating {} as requested".format(filename))
+
+# Compare the old and new generated files
 diff = filecmp.dircmp(current_pth, new_pth)
-if diff.left_only or diff.right_only or diff.diff_files:
-    shutil.rmtree(current_pth)
-    shutil.move(new_pth, current_pth)
-else:
-    shutil.rmtree(new_pth)
+
+# Copy any new files or changed files
+for filename in diff.right_only + diff.diff_files:
+    if not filename in skips:
+        shutil.copy(os.path.join(new_pth, filename),
+                    os.path.join(current_pth, filename))
+
+# Remove any files not in the new set
+for filename in diff.left_only:
+    if not filename in skips:
+        os.remove(os.path.join(current_pth, filename))
+
+# Clean up the temporary new file path
+shutil.rmtree(new_pth)
 
 assert os.path.isfile(current_src)
 assert not os.path.exists(new_pth)
