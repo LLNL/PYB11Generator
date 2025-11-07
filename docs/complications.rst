@@ -290,4 +290,4 @@ And add the option ``ALLOW_SKIPS ON`` to the CMake build configuration::
   PYB11Generator_add_module(...
                             ALLOW_SKIPS ON)
 
-Note that the default for ``ALLOW_SKIPS`` is ``OFF`` so PYB11Generator will not skip generating files.  You must both flip this option on and annotate the generated files with ``// PYB11skip`` for PYB11Generator to not overwrite such generated files.  In these cases PYB11Generator will print a warning if it encounters and skips such files.
+Note that the default for ``ALLOW_SKIPS`` is ``OFF`` so PYB11Generator will not skip generating files.  You must both flip this option on and annotate the generated files with ``// PYB11skip`` for PYB11Generator to not overwrite such generated files.  In these cases PYB11Generator will print a warning for each file that is skipped.
