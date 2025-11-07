@@ -1,9 +1,7 @@
 #-------------------------------------------------------------------------------
 # PYB11Trampoline
 #-------------------------------------------------------------------------------
-import inspect
-import sys
-import io
+import sys, os, io, inspect
 
 from .PYB11utils import *
 
@@ -12,7 +10,7 @@ from .PYB11utils import *
 #
 # Generate trampolines for any classes with virtual methods.
 #-------------------------------------------------------------------------------
-def PYB11generateModuleTrampolines(modobj, ss):
+def PYB11generateModuleTrampolines(modobj):
     klasses = PYB11classes(modobj)
 
     # Cull to just classes with virtual methods.
@@ -34,7 +32,22 @@ def PYB11generateModuleTrampolines(modobj, ss):
 
     # Generate trampolines
     for kname, klass in klasses:
-        PYB11generateTrampoline(klass, ss)
+        if modobj.multiple_files:
+            klassattrs = PYB11attrs(klass)
+            pyname = klassattrs["pyname"]
+            template_klass = len(klassattrs["template"]) > 0
+            cppbasename = klassattrs["full_cppname"]
+            if template_klass:
+                cppbasename = cppbasename.split("<")[0]
+            assert cppbasename
+            filename = os.path.join(modobj.basedir, modobj.basename + f"_{cppbasename}_trampoline.hh")
+            with open(filename, "w") as f:
+                ss = f.write
+                PYB11generateTrampoline(modobj, klass, ss)
+        else:
+            with open(modobj.filename, "a") as f:
+                ss = f.write
+                PYB11generateTrampoline(modobj, klass, ss)
     return
 
 #-------------------------------------------------------------------------------
@@ -42,7 +55,7 @@ def PYB11generateModuleTrampolines(modobj, ss):
 #
 # Generate the trampoline class, including pure virtual hooks.
 #-------------------------------------------------------------------------------
-def PYB11generateTrampoline(klass, ssout):
+def PYB11generateTrampoline(modobj, klass, ssout):
 
     klassattrs = PYB11attrs(klass)
     template_klass = len(klassattrs["template"]) > 0
@@ -72,10 +85,14 @@ def PYB11generateTrampoline(klass, ssout):
     ss("""//------------------------------------------------------------------------------
 // Trampoline class for %(cppname)s
 //------------------------------------------------------------------------------
-#ifndef __trampoline_%(pyname)s__
-#define __trampoline_%(pyname)s__
+#ifndef PYB11_trampoline_%(pyname)s
+#define PYB11_trampoline_%(pyname)s
 
 """ % klassattrs)
+
+    # May need includes if separate file
+    if modobj.multiple_files:
+        ss('#include "{}"\n\n'.format(modobj.master_include_file))
 
     # Namespaces
     for ns in klassattrs["namespace"].split("::")[:-1]:

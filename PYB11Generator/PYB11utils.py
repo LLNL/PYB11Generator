@@ -1,5 +1,5 @@
 from .PYB11Decorators import *
-import inspect, io, types, itertools
+import inspect, io, types, itertools, collections
 
 #-------------------------------------------------------------------------------
 # PYB11inject
@@ -312,6 +312,7 @@ def PYB11virtualClass(klass):
         methattrs = PYB11attrs(meth)
         if methattrs["virtual"] or methattrs["pure_virtual"]:
             virtual = True
+            break
     return virtual
 
 #-------------------------------------------------------------------------------
@@ -327,6 +328,7 @@ def PYB11protectedClass(klass):
         methattrs = PYB11attrs(meth)
         if methattrs["protected"]:
             protected = True
+            break
     return protected
 
 #-------------------------------------------------------------------------------
@@ -355,14 +357,6 @@ def PYB11union_dict(*args):
         for key in d:
             result[key] = d[key]
     return result
-
-#-------------------------------------------------------------------------------
-# PYB11CPPsafe
-#
-# Mangle a string to make commas safe for CPP directives.
-#-------------------------------------------------------------------------------
-def PYB11CPPsafe(string):
-    return string.replace(",", " PYB11COMMA ")
 
 #-------------------------------------------------------------------------------
 # PYB11cppname_exts
@@ -420,6 +414,50 @@ def PYB11docstring(doc, ss):
     return
 
 #-------------------------------------------------------------------------------
+# Helpful diagnostic function for development
+#-------------------------------------------------------------------------------
+def PYB11output(cmd, dict=None):
+    if dict is None:
+        frame = inspect.currentframe().f_back
+        ns = {}
+        ns.update(frame.f_globals)
+        ns.update(frame.f_locals)
+    print(cmd, " : ", eval(cmd, ns))
+    return
+
+#-------------------------------------------------------------------------------
+# Find all PYB11 objects
+#-------------------------------------------------------------------------------
+def PYB11objs(modobj):
+    return [(name, obj) for (name, obj) in inspect.getmembers(modobj)
+            if name[:5] != "PYB11"]
+
+#-------------------------------------------------------------------------------
+# Find all PYB11 objects with the given attribute
+#-------------------------------------------------------------------------------
+def PYB11objsWithAttr(modobj, attrname):
+    return [(name, obj) for (name, obj) in PYB11objs(modobj)
+            if hasattr(obj, attrname)]
+
+#-------------------------------------------------------------------------------
+# Find all PYB11 objects with the given method
+#-------------------------------------------------------------------------------
+def PYB11objsWithMethod(modobj, methodname):
+    return [(name, obj) for (name, obj) in PYB11objs(modobj)
+            if (hasattr(obj, methodname) and callable(getattr(obj, methodname)))]
+
+#-------------------------------------------------------------------------------
+# Find all unique include files
+#-------------------------------------------------------------------------------
+def PYB11findAllIncludes(modobj):
+    result = []
+    if hasattr(modobj, "PYB11includes"):
+        result += modobj.PYB11includes
+    for objname, obj in PYB11objsWithMethod(modobj, "PYB11includes"):
+        result += obj.PYB11includes(modobj, objname)
+    return list(collections.OrderedDict.fromkeys(result))
+
+#-------------------------------------------------------------------------------
 # PYB11attrs
 #
 # Read the possible PYB11 generation attributes from the obj
@@ -427,6 +465,7 @@ def PYB11docstring(doc, ss):
 def PYB11attrs(obj):
     d = {"pyname"                : obj.__name__,
          "cppname"               : obj.__name__,
+         "pynamebase"            : obj.__name__,
          "ignore"                : False,
          "namespace"             : "",
          "singleton"             : False,

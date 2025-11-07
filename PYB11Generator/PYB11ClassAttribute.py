@@ -11,7 +11,7 @@ def PYB11GenerateClassAttributes(klass, klassinst, klassattrs, ss):
     globs, locs = globals(), locals()
     PYB11attrs = [x for x in dir(klass) if isinstance(eval("klass.%s" % x, globs, locs), PYB11ClassAttribute) and x in klass.__dict__]
     if PYB11attrs:
-        ss("\n    // Properties\n")
+        ss("\n  // Properties\n")
 
     for attrname in PYB11attrs:
         exec('klassinst.%s("%s", klassattrs, ss)' % (attrname, attrname))
@@ -52,9 +52,9 @@ class PYB11ClassAttribute:
         else:
             cppname = name
         if self.static:
-            ss('    obj.def_%s_static("%s", ' % (self.deftype, pyname))
+            ss('  obj.def_%s_static("%s", ' % (self.deftype, pyname))
         else:
-            ss('    obj.def_%s("%s", ' % (self.deftype, pyname))
+            ss('  obj.def_%s("%s", ' % (self.deftype, pyname))
         ss(("&%(namespace)s%(cppname)s::" % klassattrs) + cppname)
         if self.returnpolicy:
             ss(', py::return_value_policy::%s' % self.returnpolicy)

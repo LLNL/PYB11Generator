@@ -61,7 +61,13 @@ The full function specification for ``PYB11Generator_add_module`` is::
                                INCLUDES         ...
                                LINKS            ...
                                DEPENDS          ...
-                               PYBIND11_OPTIONS ...)
+                               PYBIND11_OPTIONS ...
+                               COMPILE_OPTIONS  ...
+                               MULTIPLE_FILES   ON/OFF
+                               GENERATED_FILES  ...
+                               USE_BLT          ON/OFF
+                               PYTHONPATH       ...
+                               ALLOW_SKIPS      ON/OFF)
 
 where the arguments are:
 
@@ -89,6 +95,38 @@ DEPENDS <arg1> <arg2> ... (optional) :
 PYBIND11_OPTIONS <arg1> <arg2> ... (optional) :
   Any valid flags that can be passed to the built-in pybind11 ``pybind11_add_module`` CMake function.  See pybind11 CMake `documentation <https://pybind11.readthedocs.io/en/stable/compiling.html#building-with-cmake>`_.
 
+COMPILE_OPTIONS <arg1> <arg2> ... (optional) :
+  Any additional flags that should be passed during the compile stage.  See CMake documentation for TARGET_COMPILE_OPTIONS.
+
+MULTIPLE_FILES  ON/OFF (optional, default OFF) :
+  Breakup the output pybind11 code across different source files to allow parallel compilation
+
+GENERATED_FILES <arg> (optional) :
+  Name for output file containing the list of C++ pybind11 output files
+
+USE_BLT ON/OFF (optional, default OFF) :
+  For those using the BLT Cmake extension (https://llnl-blt.readthedocs.io/),
+  which does not play well with standard CMake add_library options.
+  Note, using this option skips using pybind11's own add_module CMake logic,
+  and therefore may make some pybind11 options no-ops.
+
+PYTHONPATH <arg> (optional) :
+  Additions needed for the environment PYTHONPATH
+
+ALLOW_SKIPS ON/OFF (optional, default OFF) :
+  Developer option (and dangerous).  If ON any generated C++ pybind11 files
+  that start with the line "// PYB11skip" will not be regenerated and replaced.
+
 .. Note::
 
-   ``PYB11Generator_add_module`` only looks at the ``SOURCE`` Python file (default ``<package_name>_PYB11.py``.  However, that file may in turn import as many other Python files as desired to expose more interface as part of the module, so the user should feel free to organize their PYB11Generator bindings as desired for clarity.  A typical pattern would be to have the top-level module ``<package_name>_PYB11.py`` import individual class bindings from separate Python files for each bound class, for instance.
+   ``PYB11Generator_add_module`` only looks at the ``SOURCE`` Python file (default ``<package_name>_PYB11.py``.  However, that file may in turn import as many other Python files as desired to expose more interface as part of the module, so the user should feel free to organize their PYB11Generator bindings as desired for clarity.  A typical pattern would be to have the top-level module ``<package_name>_PYB11.py`` import individual class bindings from separate Python files for each bound class, for instance.  Such dependencies should be noted and cause recompiling as appropriate.
+
+.. Note::
+
+   The state of ``MULTIPLE_FILES`` will cause changes in when PYB11Generator generates the pybind11 output files:
+
+   MULTIPLE_FILES ON : 
+     PYB11Generator will run at configure (CMake) time, creating the set of output pybind11 C++ files.  This is necessary in order to tell CMake what source files are being generated for compilation rules.
+
+   MULTIPLE_FILES OFF :
+     PYB11Generator runs at compile time, generating a monolithic C++ pybind11 source file and one header per module.

@@ -7,16 +7,19 @@ import sys, inspect
 #
 # Bind the classes in the module
 #-------------------------------------------------------------------------------
-def PYB11generateModuleAttrs(modobj, ss):
+def PYB11generateModuleAttrs(modobj):
     
-    # Module attrs
-    globs, locs = globals(), locals()
-    stuff = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11attr)]
-    if stuff:
-        ss('\n  // module attributes\n')
-        for pyname in stuff:
-            inst = eval("modobj.%s" % pyname)
-            inst(pyname, ss)
+    with open(modobj.filename, "a") as f:
+        ss = f.write
+
+        # Module attrs
+        globs, locs = globals(), locals()
+        stuff = [x for x in dir(modobj) if isinstance(eval("modobj.%s" % x, globs, locs), PYB11attr)]
+        if stuff:
+            ss('\n  // module attributes\n')
+            for pyname in stuff:
+                inst = eval("modobj.%s" % pyname)
+                inst(pyname, ss)
 
     return
 

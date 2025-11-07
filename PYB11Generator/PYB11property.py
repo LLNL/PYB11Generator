@@ -57,7 +57,7 @@ class PYB11property:
             else:
                 proptype = "_readonly"
 
-        ss('    obj.def_property%s("%s", ' % (proptype, propname))
+        ss('  obj.def_property%s("%s", ' % (proptype, propname))
 
         # getter code
         if self.getterraw:
@@ -152,7 +152,7 @@ def PYB11GenerateProperty(propname,
         else:
             proptype = "_readonly"
 
-    ss('    obj.def_property%s("%s", (%s ' % (proptype, propname, returnType))
+    ss('  obj.def_property%s("%s", (%s ' % (proptype, propname, returnType))
 
     if getterattrs["static"]:
         ss('(%(namespace)s*)()' % klassattrs)
@@ -206,7 +206,7 @@ def PYB11GenerateClassProperties(klass, klassinst, klassattrs, ss):
     props = [x for x in dir(klass) if isinstance(eval("klass.%s" % x, globs, locs), property) and x in klass.__dict__]
     PYB11props = [x for x in dir(klass) if isinstance(eval("klass.%s" % x, globs, locs), PYB11property) and x in klass.__dict__]
     if props or PYB11props:
-        ss("\n    // Properties\n")
+        ss("\n  // Properties\n")
 
     for propname in props:
         prop = eval("klass.%s" % propname)
