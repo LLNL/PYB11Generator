@@ -1,3 +1,2 @@
-recursive-include cmake *.cmake
-recursive-include cmake *.py
-include LICENSE README.md pyproject.toml setup.py
+recursive-include cmake *
+recursive-include extern *
