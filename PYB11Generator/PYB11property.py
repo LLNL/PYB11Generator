@@ -73,9 +73,9 @@ class PYB11property:
                 if self.returnType:
                     ss(' -> ' + self.returnType)
                 if self.static:
-                    ss((' { return %(namespace)s%(cppname)s::' % klassattrs) + self.getter + '; }')
+                    ss((' { return %(namespace)s%(cppname)s::' % klassattrs) + self.getter + '(); }')
                 else:
-                    ss((' { return self.' % klassattrs) + self.getter + '; }')
+                    ss((' { return self.' % klassattrs) + self.getter + '(); }')
 
             else:
                 if self.returnType:
