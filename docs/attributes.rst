@@ -10,6 +10,6 @@ Standalone variables defined outside the scope of classes or structs can be expo
 
    double square_of_two = 4;
 
-This can be exposed in a pybind11 module using ``PYB11attr``::
+This can be exposed in a PYB11Generator module using ``PYB11attr``::
 
   square_of_two = PYB11attr()
