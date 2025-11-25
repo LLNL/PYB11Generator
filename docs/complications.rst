@@ -243,9 +243,9 @@ This example can be wrapped for Python using PYB11Generator using the ``@PYB11te
 Binding ``constexpr`` statements
 --------------------------------
 
-In C++ ``constexpr`` denotes quantities that are known at compile time and therefore can be entirely optimized away during the compilation phase.  Python does not really have this concept, but nonetheless we can expose ``constexpr`` definitions in our Python modules.  There are two cases we might want to consider.
+In C++ ``constexpr`` denotes quantities that are known at compile time and therefore can be entirely optimized away during the compilation phase.  Python does not really have this concept, but nonetheless we can expose ``constexpr`` definitions in our Python modules using methods we have already covered.
 
-* If we have a constexpr defined outside the scope of class or struct, we can simply use the :func:`PYB11attr` command to bind it.  So for example the following C++ declaration:
+* If we have a constexpr variable defined outside the scope of class or struct, we can simply use the :func:`PYB11attr` command to bind it as we would any other :ref:`attributes`.  So for example the following C++ declaration:
 
   .. code-block:: cpp
 
@@ -255,7 +255,23 @@ In C++ ``constexpr`` denotes quantities that are known at compile time and there
 
     square_of_two = PYB11attr()
 
-* If we have a constexpr statment defined inside a class scope we can use the :func:`PYB11property` method with the special ``constexpr`` flag instead.  So a class such as:
+* Similarly a constexpr function can be bound using the ordinary methods for binding :ref:`functions`.  So the following combination of C++ variables and functions:
+
+  .. code-block:: cpp
+
+     constexpr unsigned square_of_two = 2u*2u;
+     static constexpr unsigned cube_of_three = 3u*3u*3u;
+     constexpr double a_constexpr_function() { return square_of_two * cube_of_three; }
+
+  can be bound in a PYB11Generator module as::
+
+    square_of_two = PYB11attr()
+    cube_of_three = PYB11attr()
+
+    def a_constexpr_function():
+        return
+
+* Similarly constexpr variables and methods of classes can be bound using the statements discussed in :ref:`classes`:
 
   .. code-block:: cpp
 
@@ -265,15 +281,31 @@ In C++ ``constexpr`` denotes quantities that are known at compile time and there
        ~A()                                      { printf("A::~A()\\n"); }
        static constexpr double square_of_pi = M_PI*M_PI;
        static constexpr size_t size_of_something = 24u;
+
+       static constexpr double some_static_constexpr_method()      { return square_of_pi * square_of_two; }
+       constexpr double some_constexpr_method(double x, double y)  { return x*y * some_static_constexpr_method(); }
      };
 
-  can have its nested ``constexpr`` variables exposed with the bindings::
+  becomes in PYB11Generator bindings::
 
     class A:
+
         def pyinit(self):
             "Default A()"
-        square_of_pi = PYB11property(constexpr=True)
-        size_of_something = PYB11property(constexpr=True)
+
+        # Methods
+        @PYB11static
+        def some_static_constexpr_method(self):
+            return "double"
+
+        def some_constexpr_method(self,
+                                  x = "double",
+                                  y = "double"):
+            return "double"
+
+        # Attributes
+        square_of_pi = PYB11readonly(static=True)
+        size_of_something = PYB11readonly(static=True)
 
 ------------------------------------------------
 Directly editing PYB11Generator generated files
