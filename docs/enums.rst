@@ -47,3 +47,4 @@ We can bind this enum using PYB11Generator with::
 
       members = PYB11enum(("HomestarRunner", "StrongSad", "Homsar", "PaintingOfGuyWithBigKnife", "FrankBennedetto"))
 
+The PYB11enum has a few keyword arguments that may be specified to control how pybind11 handles the enum type, as documented in :ref:`PYB11-functions`.

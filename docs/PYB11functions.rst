@@ -142,6 +142,8 @@ This section describes the special functions and classes defined in PYB11Generat
 
    * export_values: if ``True``, causes the enum values to be exported into the enclosing scope (like an old-style C enum).
 
+   * native_type: the Python native enum type to use as the base. Curent possibilites are ``enum.Enum``, ``enum.IntEnum``, ``enum.Flag``, and ``enum.IntFlat`` (default ``enum.Enum``).  See the pybind11 documentation on ``py::native_enum`` for more information.
+
    * doc: an optional document string.
 
 .. #############################################################################

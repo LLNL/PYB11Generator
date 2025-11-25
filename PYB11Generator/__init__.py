@@ -105,11 +105,12 @@ def PYB11generateModuleStart(modobj):
 #define PYB11_{name}_master_include
 
 // Put Python includes first to avoid compile warnings about redefining _POSIX_C_SOURCE
-#include "pybind11/pybind11.h"
-#include "pybind11/stl_bind.h"
-#include "pybind11/stl.h"
-#include "pybind11/functional.h"
-#include "pybind11/operators.h"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
+#include <pybind11/operators.h>
+#include <pybind11/native_enum.h>
 
 namespace py = pybind11;
 using namespace pybind11::literals;
