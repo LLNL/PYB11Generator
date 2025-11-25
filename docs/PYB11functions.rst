@@ -128,7 +128,7 @@ This section describes the special functions and classes defined in PYB11Generat
   * ``docext``: An optional string extension to be applied to the docstring associated with ``klass_template``.
 
 .. #############################################################################
-.. py:function:: PYB11enum(values[, name=None, namespace="", cppname=None, export_values=False, doc=None])
+.. py:function:: PYB11enum(values[, name=None, namespace="", cppname=None, export_values=False, native_type="enum.Enum", doc=None])
 
    Declare a C++ enum for wrapping in pybind11 -- see `pybind11 docs <https://pybind11.readthedocs.io/en/stable/classes.html#enumerations-and-internal-types>`_.
 
