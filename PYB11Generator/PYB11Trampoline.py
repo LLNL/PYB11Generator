@@ -130,7 +130,10 @@ def PYB11generateTrampoline(modobj, klass, ssout):
     bklassnames[0] = "PYB11self"
 
     # Class name
-    ss("""class PYB11Trampoline%(cppname)s: public %(full_cppname)s {
+    ss("class PYB11Trampoline%(cppname)s: public %(full_cppname)s" % klassattrs)
+    if klassattrs["holder"] == "py::smart_holder":
+        ss(", public py::trampoline_self_life_support")
+    ss(""" {
 public:
   using %(full_cppname)s::%(cppname)s;   // inherit constructors
   typedef %(full_cppname)s PYB11self;    // Necessary to protect macros below from names with commas in them
