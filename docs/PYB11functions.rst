@@ -128,7 +128,7 @@ This section describes the special functions and classes defined in PYB11Generat
   * ``docext``: An optional string extension to be applied to the docstring associated with ``klass_template``.
 
 .. #############################################################################
-.. py:function:: PYB11enum(values[, name=None, namespace="", cppname=None, export_values=False, native_type="enum.Enum", doc=None])
+.. py:function:: PYB11enum(values[, name=None, namespace="", cppname=None, export_values=True, native_type="enum.Enum", doc=None])
 
    Declare a C++ enum for wrapping in pybind11 -- see `pybind11 docs <https://pybind11.readthedocs.io/en/stable/classes.html#enumerations-and-internal-types>`_.
 
@@ -142,7 +142,7 @@ This section describes the special functions and classes defined in PYB11Generat
 
    * export_values: if ``True``, causes the enum values to be exported into the enclosing scope (like an old-style C enum).
 
-   * native_type: the Python native enum type to use as the base. Curent possibilites are ``enum.Enum``, ``enum.IntEnum``, ``enum.Flag``, and ``enum.IntFlat`` (default ``enum.Enum``).  See the pybind11 documentation on ``py::native_enum`` for more information.
+   * native_type: the Python native enum type to use as the base. Curent possibilites are ``enum.Enum``, ``enum.IntEnum``, ``enum.Flag``, and ``enum.IntFlat`` (default ``enum.IntEnum``).  See the pybind11 documentation on ``py::native_enum`` for more information.
 
    * doc: an optional document string.
 
