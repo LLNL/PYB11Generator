@@ -11,7 +11,7 @@ Generally memory management "just works" when binding C++ and Python with pybind
 Class holder types
 ==================
 
-When pybind11 creates a new instance of a bound C++ class, it uses a smart pointer type to hold and manage that instance.  Prior to v3.0, the default type used by pybind11 for this purpose was ``std::unique_ptr``.  This is still the default for pybind11, but with v3 a new option was introduced (``py::smart_holder``, see `pybind11 docs  <https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#smart-pointers-py-class>_)`, which has several advantages for interoperability between Python and C++ code.  PYB11Generator now defaults to use the ``py::shared_ptr`` as the holder type for objects created in Python, which is a change from prior versions of PYB11Generator which defaulted to the pybind11 default of ``std::unique_ptr``.  In most circumstances this is fine, but if it is necessary to take control and specify the smart pointer type that should be used to manage new objects, this can be accomplished by decorating class declarations with ``@PYB11holder``.  For instance, to make pybind11 use ``std::shared_ptr`` to hold a class type ``A``::
+When pybind11 creates a new instance of a bound C++ class, it uses a smart pointer type to hold and manage that instance.  Prior to v3.0, the default type used by pybind11 for this purpose was ``std::unique_ptr``.  This is still the default for pybind11, but with v3 a new option was introduced (``py::smart_holder``, see `pybind11 docs <https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#smart-pointers-py-class>`_), which has several advantages for interoperability between Python and C++ code.  PYB11Generator now defaults to use the ``py::smart_holder`` as the holder type for objects created in Python, which is a change from prior versions of PYB11Generator which defaulted to the pybind11 default of ``std::unique_ptr``.  In most circumstances this is fine, but if it is necessary to take control and specify the smart pointer type that should be used to manage new objects, this can be accomplished by decorating class declarations with ``@PYB11holder``.  For instance, to make pybind11 use ``std::shared_ptr`` to hold a class type ``A``::
 
   @PYB11holder("std::shared_ptr")
   class A:
@@ -19,7 +19,7 @@ When pybind11 creates a new instance of a bound C++ class, it uses a smart point
       def pyinit(self):
           "Default constructor"
 
-This tells pybind11 any new instance of ``A`` created from python should be managed by ``std::shared_ptr``.  pybind11 supports ``std::unique_ptr`` and ``std::shared_ptr`` without further work.  It is possible to use any reference counting smart pointer for this purpose, but types other than ``std::unique_ptr`` and ``std::shared_ptr`` require more information be specified to pybind11.  PYB11 does not provide any convenience methods for adding that additional information, but it can be done directly with pybind11  as described in the `pybind11 documentation <https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#custom-smart-pointers>`_.
+This tells pybind11 any new instance of ``A`` created from python should be managed by ``std::shared_ptr``.  pybind11 supports ``std::unique_ptr`` and ``std::shared_ptr`` without further work.  It is possible to use any reference counting smart pointer for this purpose, but types other than ``std::unique_ptr`` and ``std::shared_ptr`` require more information be specified to pybind11.  PYB11 does not provide any convenience methods for adding that additional information, but it can be done directly with pybind11 as described in the `pybind11 documentation <https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html#custom-smart-pointers>`_ .
 
 .. Note::
 
@@ -27,7 +27,7 @@ This tells pybind11 any new instance of ``A`` created from python should be mana
 
 .. Note::
 
-   The old default of `std::unique_ptr` can be utilized by decorating a class with either ``@PYB11holder("std::unique_ptr")`` or more succinctly as ``PYB11holder(None)``.
+   The old default of ``std::unique_ptr`` can be utilized by decorating a class with either ``@PYB11holder("std::unique_ptr")`` or more succinctly as ``PYB11holder(None)``.
 
 .. _return-policies:
 
