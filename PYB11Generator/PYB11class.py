@@ -586,7 +586,9 @@ def PYB11generateClass(modobj, klass, klassattrs, ssout,
 
     # Did we specify a holder type?
     elif klassattrs["holder"]:
-        ss(", %(holder)s<%(namespace)s%(cppname)s>" % klassattrs)
+        ss(", %(holder)s" % klassattrs)
+        if klassattrs["holder"] != "py::smart_holder":
+            ss("<%(namespace)s%(cppname)s>" % klassattrs)
 
     # Close the template declaration
     if nested_class:

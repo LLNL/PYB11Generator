@@ -469,7 +469,7 @@ def PYB11attrs(obj):
          "ignore"                : False,
          "namespace"             : "",
          "singleton"             : False,
-         "holder"                : None,
+         "holder"                : "py::smart_holder",
          "exposeBaseOverloads"   : True,
          "dynamic_attr"          : None,
          "virtual"               : False,
