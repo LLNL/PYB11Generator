@@ -14,10 +14,12 @@ class PYB11_bind_vector:
     def __init__(self,
                  element,            # template element type for vector
                  opaque = False,     # should we make the type opaque?
-                 local = None):      # should the opaque choice be module local?
+                 local = None,       # should the opaque choice be module local?
+                 holder = "py::smart_holder"):
         self.element = element
         self.opaque = opaque
         self.local = local
+        self.holder = holder
         return
 
     def PYB11opaqueTypes(self, modobj, ss, name):
@@ -26,7 +28,7 @@ class PYB11_bind_vector:
         return
 
     def __call__(self, modobj, ss, name):
-        ss('py::bind_vector<std::vector<' + self.element + '>>(m, "' + name + '"')
+        ss('py::bind_vector<std::vector<' + self.element + '>, ' + self.holder + '>(m, "' + name + '"')
         if not self.local is None:
             ss(', py::module_local(')
             if self.local:
@@ -45,11 +47,13 @@ class PYB11_bind_map:
                  key,                # template key type
                  value,              # template value type
                  opaque = False,     # should we make the container opaque
-                 local = None):      # should the opaque choice be module local?
+                 local = None,       # should the opaque choice be module local?
+                 holder = "py::smart_holder"):
         self.key = key
         self.value = value
         self.opaque = opaque
         self.local = local
+        self.holder = holder
         return
 
     def PYB11opaqueTypes(self, modobj, ss, name):
@@ -59,7 +63,7 @@ class PYB11_bind_map:
         return
 
     def __call__(self, modobj, ss, name):
-        ss('py::bind_map<std::map<' + self.key + ', ' + self.value + '>>(m, "' + name + '"')
+        ss('py::bind_map<std::map<' + self.key + ', ' + self.value + '>, ' + self.holder + '>(m, "' + name + '"')
         if not self.local is None:
             ss(', py::module_local(')
             if self.local:
