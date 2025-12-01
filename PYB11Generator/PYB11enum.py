@@ -34,7 +34,7 @@ class PYB11enum:
                  name = None,
                  namespace = "",
                  cppname = None,
-                 export_values = True,
+                 export_values = False,
                  native_type = "enum.IntEnum",
                  doc = None):
         self.values = values
