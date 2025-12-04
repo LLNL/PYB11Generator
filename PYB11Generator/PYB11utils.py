@@ -1,3 +1,4 @@
+from .PYB11config import *
 from .PYB11Decorators import *
 import inspect, io, types, itertools, collections
 
@@ -469,7 +470,7 @@ def PYB11attrs(obj):
          "ignore"                : False,
          "namespace"             : "",
          "singleton"             : False,
-         "holder"                : "py::smart_holder",
+         "holder"                : PYB11config().default_holder_type,
          "exposeBaseOverloads"   : True,
          "dynamic_attr"          : None,
          "virtual"               : False,

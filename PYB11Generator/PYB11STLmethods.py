@@ -4,6 +4,7 @@
 # Thin wrappers to generate the pybind11 STL functions.
 #-------------------------------------------------------------------------------
 import os, inspect
+from .PYB11config import *
 from .PYB11utils import *
 
 #-------------------------------------------------------------------------------
@@ -15,11 +16,11 @@ class PYB11_bind_vector:
                  element,            # template element type for vector
                  opaque = False,     # should we make the type opaque?
                  local = None,       # should the opaque choice be module local?
-                 holder = "py::smart_holder"):
+                 holder = None):     # optionally override holder used
         self.element = element
         self.opaque = opaque
         self.local = local
-        self.holder = holder
+        self.holder = holder if holder else PYB11config().default_holder_type
         return
 
     def PYB11opaqueTypes(self, modobj, ss, name):
@@ -48,12 +49,12 @@ class PYB11_bind_map:
                  value,              # template value type
                  opaque = False,     # should we make the container opaque
                  local = None,       # should the opaque choice be module local?
-                 holder = "py::smart_holder"):
+                 holder = None):     # optionally override holder used
         self.key = key
         self.value = value
         self.opaque = opaque
         self.local = local
-        self.holder = holder
+        self.holder = holder if holder else PYB11config().default_holder_type
         return
 
     def PYB11opaqueTypes(self, modobj, ss, name):

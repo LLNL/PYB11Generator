@@ -2,6 +2,7 @@
 # PYB11Generator
 #-------------------------------------------------------------------------------
 import inspect, sys, os
+from .PYB11config import *
 from .PYB11utils import *
 from .PYB11Decorators import *
 from .PYB11STLmethods import *
@@ -17,8 +18,9 @@ from .PYB11attr import *
 def PYB11generateModule(modobj,
                         modname = None,
                         filename = None,
-                        multiple_files = False,  # Optionally generate multiple pybind11 source files
-                        generatedfiles = None):  # file name to create list of generated pybind11 source files if multiple_files = True
+                        multiple_files = False,      # Optionally generate multiple pybind11 source files
+                        generatedfiles = None,       # file name to create list of generated pybind11 source files if multiple_files = True
+                        default_holder_type = None): # change default holder type for this module
     if modname is None:
         modname = modobj.__name__
     modobj.PYB11modulename = modname
@@ -39,6 +41,10 @@ def PYB11generateModule(modobj,
     modobj.generatedfiles = generatedfiles
     modobj.master_include_file = "PYB11_module_" + basename + ".hh"
     modobj.generatedfiles_list = [tmp_filename]
+
+    # Set the default holder if needed
+    if default_holder_type:
+        PYB11config().default_holder_type = default_holder_type
 
     # Main module source
     PYB11generateModuleStart(modobj)
