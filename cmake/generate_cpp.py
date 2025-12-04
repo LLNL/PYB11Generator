@@ -6,6 +6,7 @@ mod_name = sys.argv[2]
 multiple_files = eval(sys.argv[3])
 generatedfiles = sys.argv[4]
 allow_skips = eval(sys.argv[5])
+default_holder_type = sys.argv[6]
 
 # Prepare output directories
 current_pth = "current_" + mod_name
@@ -21,20 +22,16 @@ current_src = os.path.join(current_pth, mod_name + ".cc")
 new_src     = os.path.join(new_pth,    mod_name + ".cc")
 
 # Generate the source anew 
-code = """
+code = f"""
 from PYB11Generator import *
-import {pyb11_module}
-PYB11generateModule({pyb11_module}, 
+import {pyb11_mod_name}
+PYB11generateModule({pyb11_mod_name}, 
                     modname = \"{mod_name}\",
                     filename = \"{new_src}\",
                     multiple_files = {multiple_files},
-                    generatedfiles = \"{generatedfiles}\")
-""".format(pyb11_module   = pyb11_mod_name,
-           mod_name       = mod_name,
-           new_src        = new_src,
-           multiple_files = multiple_files,
-           generatedfiles = generatedfiles)
-
+                    generatedfiles = \"{generatedfiles}\",
+                    default_holder_type = \"{default_holder_type}\")
+"""
 exec(code)
 assert os.path.isfile(new_src)
 

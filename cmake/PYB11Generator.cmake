@@ -31,6 +31,7 @@
 #                             COMPILE_OPTIONS  ...
 #                             MULTIPLE_FILES   ON/OFF
 #                             GENERATED_FILES  ...
+#                             HOLDER_TYPE      ...
 #                             USE_BLT          ON/OFF
 #                             PYTHONPATH       ...
 #                             ALLOW_SKIPS      ON/OFF)
@@ -70,6 +71,9 @@
 #           compilation
 #       GENERATED_FILES ... (optional)
 #           Name for output file containing the list of C++ pybind11 output files
+#       HOLDER_TYPE ... (optional)
+#           default: py::smart_holder
+#           Specify the holder_type for pybind11 to manage new C++ wrapped objects.
 #       USE_BLT ON/OFF (optional, default OFF)
 #           For those using the BLT Cmake extension (https://llnl-blt.readthedocs.io/),
 #           which does not play well with standard CMake add_library options.
@@ -106,24 +110,9 @@ function(PYB11Generator_add_module package_name)
 
   # Define our arguments
   set(options )
-  set(oneValueArgs   MODULE SOURCE INSTALL MULTIPLE_FILES GENERATED_FILES USE_BLT ALLOW_SKIPS)
+  set(oneValueArgs   MODULE SOURCE INSTALL MULTIPLE_FILES GENERATED_FILES HOLDER_TYPE USE_BLT ALLOW_SKIPS)
   set(multiValueArgs INCLUDES LINKS DEPENDS PYBIND11_OPTIONS COMPILE_OPTIONS EXTRA_SOURCE PYTHONPATH)
   cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-  # message("-- package_name : ${package_name}")
-  # message("-- MODULE: ${${package_name}_MODULE}")
-  # message("-- SOURCE: ${${package_name}_SOURCE}")
-  # message("-- INSTALL: ${${package_name}_INSTALL}")
-  # message("-- INCLUDES: ${${package_name}_INCLUDES}")
-  # message("-- LINKS: ${${package_name}_LINKS}")
-  # message("-- DEPENDS: ${${package_name}_DEPENDS}")
-  # message("-- PYBIND11_OPTIONS: ${${package_name}_PYBIND11_OPTIONS}")
-  # message("-- COMPILE_OPTIONS: ${${package_name}_COMPILE_OPTIONS}")
-  # message("-- MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
-  # message("-- GENERATED_FILES: ${${package_name}_GENERATED_FILES}")
-  # message("-- USE_BLT: ${package_name}_USE_BLT")
-  # message("-- EXTRA_SOURCE: ${package_name}_EXTRA_SOURCE")
-  # message("-- PYTHONPATH: ${${package_name}_PYTHONPATH}")
-  # message("-- ALLOW_SKIPS: ${${package_name}_ALLOW_SKIPS}")
 
   # Set our names and paths
   if (NOT DEFINED ${package_name}_MODULE)
@@ -138,19 +127,36 @@ function(PYB11Generator_add_module package_name)
   if (NOT DEFINED ${package_name}_GENERATED_FILES)
     set(${package_name}_GENERATED_FILES "${package_name}_PYB11_generated_files")
   endif()
+  if (NOT DEFINED ${package_name}_HOLDER_TYPE)
+    set(${package_name}_HOLDER_TYPE "py::smart_holder")
+  endif()
   if (NOT DEFINED ${package_name}_ALLOW_SKIPS)
     set(${package_name}_ALLOW_SKIPS "OFF")
   endif()
-  # message("-- ${package_name}_MODULE: ${${package_name}_MODULE}")
-  # message("-- ${package_name}_SOURCE: ${${package_name}_SOURCE}")
-  # message("-- ${package_name}_MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
-  # message("-- ${package_name}_GENERATED_FILES: ${${package_name}_GENERATED_FILES}")
-  # message("-- ${pacakge_name}_ALLOW_SKIPS: ${${package_name}_ALLOW_SKIPS}")
   
+  # message("-- package_name : ${package_name}")
+  # message("-- MODULE: ${${package_name}_MODULE}")
+  # message("-- SOURCE: ${${package_name}_SOURCE}")
+  # message("-- INSTALL: ${${package_name}_INSTALL}")
+  # message("-- INCLUDES: ${${package_name}_INCLUDES}")
+  # message("-- LINKS: ${${package_name}_LINKS}")
+  # message("-- DEPENDS: ${${package_name}_DEPENDS}")
+  # message("-- PYBIND11_OPTIONS: ${${package_name}_PYBIND11_OPTIONS}")
+  # message("-- COMPILE_OPTIONS: ${${package_name}_COMPILE_OPTIONS}")
+  # message("-- MULTIPLE_FILES: ${${package_name}_MULTIPLE_FILES}")
+  # message("-- GENERATED_FILES: ${${package_name}_GENERATED_FILES}")
+  # message("-- HOLDER_TYPE: ${${package_name}_HOLDER_TYPE}")
+  # message("-- USE_BLT: ${package_name}_USE_BLT")
+  # message("-- EXTRA_SOURCE: ${package_name}_EXTRA_SOURCE")
+  # message("-- PYTHONPATH: ${${package_name}_PYTHONPATH}")
+  # message("-- ALLOW_SKIPS: ${${package_name}_ALLOW_SKIPS}")
+
   # Generate the pybind11 C++ source file
   # The macro returns the list of pybind11 C++ source files in GENERATED_FILES_LIST
   PYB11_GENERATE_BINDINGS(${package_name} ${${package_name}_MODULE} ${${package_name}_SOURCE} GENERATED_FILES_LIST
-                          MULTIPLE_FILES ${${package_name}_MULTIPLE_FILES} 
+                          MULTIPLE_FILES ${${package_name}_MULTIPLE_FILES}
+                          GENERATED_FILES ${${package_name}_GENERATED_FILES}
+                          HOLDER_TYPE ${${package_name}_HOLDER_TYPE}
                           DEPENDS ${${package_name}_DEPENDS}
                           PYTHONPATH ${${package_name}_PYTHONPATH}
                           ALLOW_SKIPS ${${package_name}_ALLOW_SKIPS})
@@ -238,6 +244,8 @@ endfunction()
 #           compilation
 #       GENERATED_FILES ... (optional)
 #           Name for output file containing the list of C++ pybind11 output files
+#       HOLDER_TYPE ... (optional)
+#           Specify the holder_type for pybind11 to manage new C++ wrapped objects.
 #       DEPENDS ... (optional)
 #           Any CMake targets this package should depend on being built first
 #       PYTHONPATH ... (optional)
@@ -245,9 +253,6 @@ endfunction()
 #       ALLOW_SKIPS  ON/OFF (optional, default OFF)
 #           Developer option (and dangerous).  If ON any generated C++ pybind11 files
 #           that start with the line "// PYB11skip" will not be regenerated and replaced
-#
-# To get the names of the generated source
-# use: ${PYB11_GENERATED_SOURCE}
 #-----------------------------------------------------------------------------------
 
 macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FILES_LIST)
@@ -255,7 +260,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
   # Define our arguments
   set(options )
-  set(oneValueArgs MULTIPLE_FILES GENERATED_FILES ALLOW_SKIPS)
+  set(oneValueArgs MULTIPLE_FILES GENERATED_FILES HOLDER_TYPE ALLOW_SKIPS)
   set(multiValueArgs DEPENDS PYTHONPATH)
   cmake_parse_arguments(${package_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   # message("** package_name: ${package_name}")
@@ -267,16 +272,10 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   # message("** ALLOW_SKIPS: ${${package_name}_ALLOW_SKIPS}")
 
   # Multiple file output options
-  if(NOT DEFINED ${package_name}_MULTIPLE_FILES)
-    set(${package_name}_MULTIPLE_FILES OFF)
-  endif()
   if(${${package_name}_MULTIPLE_FILES})
     set(${package_name}_MULTIPLE_FILES "True")
   else()
     set(${package_name}_MULTIPLE_FILES "False")
-  endif()
-  if (NOT DEFINED ${package_name}_GENERATED_FILES)
-    set(${package_name}_GENERATED_FILES "${package_name}_PYB11_generated_files")
   endif()
   if(${${package_name}_ALLOW_SKIPS})
     set(${package_name}_ALLOW_SKIPS "True")
@@ -305,7 +304,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
     # Generate the pybind11 C++ files files and the list of those files
     set(ENV{PYTHONPATH} "${PYTHON_ENV}")
     execute_process(
-      COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS}
+      COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
@@ -331,7 +330,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
     add_custom_target(
       ${module_name}_src ALL
-      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS}
+      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE}
       BYPRODUCTS current_${module_name}/${PYB11_GENERATED_SOURCE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
