@@ -109,7 +109,7 @@ and ``example.cc`` contains the pybind11 bindings:
 
 The pybind11 code in ``example.cc`` is identical to the native pybind11 binding code from the pybind11 tutorial :ref:`pybind11:simple_example`, modulo some comments.  This code can now be compiled to the final Python shared module as described this same pybind11 tutorial::
 
-  $ c++ -O3 -Wall -shared -std=c++17 -fPIC `python -m pybind11 --includes` example.cc -o example.so
+  $ c++ -O3 -Wall -shared -std=c++11 -fPIC `python -m pybind11 --includes` example.cc -o example.so
 
 assuming you have installed pybind11 as a PIP package with python (otherwise you may need to augment the include path as appropriate to find the pybind11 install).
 
