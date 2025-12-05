@@ -76,19 +76,30 @@ Now executing the command::
 
   $ python -c 'from PYB11Generator import *; import simple_example; PYB11generateModule(simple_example, "example")'
 
-creates a file ``example.cc``, which looks like (omitting the boilerplate preamble code with ``#include``'s):
+creates three files: ``PYB11_module_example.hh``, ``example.cc``, and ``example_PYB11_generated_files``.  The last is just a list of the files to be compiled (``example.cc`` in this case), while the first two contain our C++ code as follows.
+
+The header file ``PYB11_module_example.hh`` includes some boiler-plate pybind11 incluedes (omitted here for clarity) and our C++ declarations:
 
 .. code-block:: cpp
 
-  int add(int i, int j) {
-    return i + j;
-  }
+   //------------------------------------------------------------------------------
+   // User defined preamble
+   //------------------------------------------------------------------------------
+
+   int add(int i, int j) {
+     return i + j;
+   }
+
+and ``example.cc`` contains the pybind11 bindings:
+
+.. code-block:: cpp
 
   //------------------------------------------------------------------------------
-  // Make the module
+  // Module example
   //------------------------------------------------------------------------------
+  #include "PYB11_module_example.hh"
+
   PYBIND11_MODULE(example, m) {
-
     m.doc() = "pybind11 example plugin"  ;
 
     //...........................................................................
@@ -96,9 +107,11 @@ creates a file ``example.cc``, which looks like (omitting the boilerplate preamb
     m.def("add", &add, "A function which adds two numbers");
   }
 
-This is identical to the native pybind11 binding code from the pybind11 tutorial :ref:`pybind11:simple_example`, modulo some comments.  This code can now be compiled to the final Python shared module as described this same pybind11 tutorial::
+The pybind11 code in ``example.cc`` is identical to the native pybind11 binding code from the pybind11 tutorial :ref:`pybind11:simple_example`, modulo some comments.  This code can now be compiled to the final Python shared module as described this same pybind11 tutorial::
 
-  $ c++ -O3 -Wall -shared -std=c++11 -fPIC `python -m pybind11 --includes` example.cc -o example.so
+  $ c++ -O3 -Wall -shared -std=c++17 -fPIC `python -m pybind11 --includes` example.cc -o example.so
+
+assuming you have installed pybind11 as a PIP package with python (otherwise you may need to augment the include path as appropriate to find the pybind11 install).
 
 A few things worth noting:
 

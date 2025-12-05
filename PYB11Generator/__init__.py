@@ -26,7 +26,7 @@ def PYB11generateModule(modobj,
     modobj.PYB11modulename = modname
     modobj.multiple_files = multiple_files
     if filename is None:
-        filename = modname + ".cc"
+        filename = os.path.join(".", modname + ".cc")
     basedir, tmp_filename = os.path.split(filename)
     basename, ext = os.path.splitext(tmp_filename)
     if not basedir:
