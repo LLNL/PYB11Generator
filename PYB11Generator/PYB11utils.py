@@ -1,6 +1,6 @@
 from .PYB11config import *
 from .PYB11Decorators import *
-import inspect, io, types, itertools, collections
+import inspect, io, types, itertools, collections, os
 
 #-------------------------------------------------------------------------------
 # PYB11inject

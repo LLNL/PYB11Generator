@@ -202,20 +202,23 @@ function(PYB11Generator_add_module package_name)
     install(TARGETS ${${package_name}_MODULE} DESTINATION ${${package_name}_INSTALL})
   endif()
 
-  if (${package_name}_MULTIPLE_FILES)
-    # We need to regenerate at configuration time for multiple file output
-    # Read the generated CMake dependencies for PYB11 imported files (sets ${package_name}_FILE_DEPENDS)
-    include(${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_MODULE}_stamp.cmake)
-    foreach(item IN LISTS ${${package_name}_MODULE}_FILE_DEPENDS)
-      set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${item})
-    endforeach()
+  # Add a source dependency on the PYB11 Python file
+  set_property(SOURCE ${GENERATED_FILES_LIST} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE})
 
-  else()
-    # For monolithic pybind11 output we add a source dependency on the PYB11 Python file
-    #add_dependencies(${${package_name}_MODULE} ${${package_name}_MODULE}_src)
-    set_property(SOURCE ${GENERATED_FILES_LIST} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE})
+  # if (${package_name}_MULTIPLE_FILES)
+  #   # We need to regenerate at configuration time for multiple file output
+  #   # Read the generated CMake dependencies for PYB11 imported files (sets ${package_name}_FILE_DEPENDS)
+  #   include(${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_MODULE}_stamp.cmake)
+  #   foreach(item IN LISTS ${${package_name}_MODULE}_FILE_DEPENDS)
+  #     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${item})
+  #   endforeach()
 
-  endif()
+  # else()
+  #   # For monolithic pybind11 output we add a source dependency on the PYB11 Python file
+  #   #add_dependencies(${${package_name}_MODULE} ${${package_name}_MODULE}_src)
+  #   set_property(SOURCE ${GENERATED_FILES_LIST} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${${package_name}_SOURCE})
+
+  # endif()
 
 endfunction()
 
@@ -293,29 +296,15 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
   # Extract the name of PYB11 generating source code without the .py extension
   string(REGEX REPLACE "\\.[^.]*$" "" pyb11_module ${PYB11_SOURCE})
 
-  # Now for a big branch.  If we're generating multiple output files we need to do all
-  # generation and dependency checking at configure time, since we don't have a fixed
-  # set of resulting targets.  However, if we're only generating one monolithic pybind11
-  # output we can instead make a custom target and do dependency rebuild checking at
-  # compile time.
+  # Get the list of generated pybind11 C++ source files
+  # If we're building a monolithic module we know the name of the single generated file, but
+  # for multiple file output we need PY11Generator to do a dry run and tell us the files.
   if (${package_name}_MULTIPLE_FILES)
-    message("-- Generating PYB11 code for ${package_name}")
+    message("-- Generating PYB11 file name targets for ${package_name}")
 
-    # Generate the pybind11 C++ files files and the list of those files
     set(ENV{PYTHONPATH} "${PYTHON_ENV}")
     execute_process(
-      COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE} "False"
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
-
-    # Generate the dependencies list
-    if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${PYB11_SOURCE})
-      set(FULL_PYB11_SOURCE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PYB11_SOURCE})
-    else()
-      set(FULL_PYB11_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE})
-    endif()
-    execute_process(
-      COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
+      COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE} "True"
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
@@ -326,25 +315,52 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
       unset(ENV{PYTHONPATH})
     endif()
 
-  else()
-
-    add_custom_target(
-      ${module_name}_src ALL
-      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE} "False"
-      BYPRODUCTS current_${module_name}/${PYB11_GENERATED_SOURCE}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
-
-  endif()
-    
-  # Get the list of generated pybind11 C++ source files
-  if (${package_name}_MULTIPLE_FILES)
     file(STRINGS "${CMAKE_CURRENT_BINARY_DIR}/${${package_name}_GENERATED_FILES}" GENERATED_FILES)
     list(TRANSFORM GENERATED_FILES PREPEND "current_${module_name}/")
+
   else()
     set(GENERATED_FILES "current_${module_name}/${PYB11_GENERATED_SOURCE}")
+
   endif()
 
-  set(${GENERATED_FILES_LIST} "${GENERATED_FILES}")# PARENT_SCOPE)
+  set(${GENERATED_FILES_LIST} "${GENERATED_FILES}")
 
+  # if (${package_name}_MULTIPLE_FILES)
+  #   message("-- Generating PYB11 file name targets for ${package_name}")
+
+  #   # Generate the pybind11 C++ files files and the list of those files
+  #   set(ENV{PYTHONPATH} "${PYTHON_ENV}")
+  #   execute_process(
+  #     COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE} "False"
+  #     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  #   )
+
+  #   # Generate the dependencies list
+  #   if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${PYB11_SOURCE})
+  #     set(FULL_PYB11_SOURCE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PYB11_SOURCE})
+  #   else()
+  #     set(FULL_PYB11_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${PYB11_SOURCE})
+  #   endif()
+  #   execute_process(
+  #     COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/moduleCheck.py ${FULL_PYB11_SOURCE_PATH} ${module_name}
+  #     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  #   )
+
+  #   # Restore the starting environment PYTHONPATH
+  #   if (DEFINED PYTHONPATH_BAK)
+  #     set(ENV{PYTHONPATH} "${PYTHONPATH_BAK}")
+  #   else()
+  #     unset(ENV{PYTHONPATH})
+  #   endif()
+
+  # endif()
+
+  # Create the custom target to generate the pybind11 source at build time
+  add_custom_target(
+    ${module_name}_src ALL
+    COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE} "False"
+    BYPRODUCTS ${GENERATED_FILES}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+    
 endmacro()
