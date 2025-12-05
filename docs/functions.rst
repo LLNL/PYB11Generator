@@ -106,7 +106,7 @@ For a full description of ``PYB11TemplateFunction`` see :func:`PYB11TemplateFunc
 
       template<int T1, double T2> func(const double x);
 
-   In such cases we need  need to specify these template parameters appropriately to PYB11Generator.  This is done by explictly declaring the types of the template parameters in ``PYB11template``::
+   In such cases we need to specify these template parameters appropriately to PYB11Generator.  This is done by explictly declaring the types of the template parameters in ``PYB11template``::
 
      @PYB11template("int T1", "double T2")
      def func(x = "const double"):
