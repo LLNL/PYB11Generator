@@ -55,7 +55,7 @@ def PYB11generateModuleClassBindingCalls(modobj):
     klasses = PYB11classes(modobj) + PYB11classTemplateInsts(modobj)
     klasses = sorted(klasses, key=PYB11sort_by_inheritance(klasses))
     if klasses:
-        with open(modobj.filename, "a") as f:
+        with open(PYB11filename(modobj.filename), "a") as f:
             ss = f.write
             ss("""  //..............................................................................
   // Class bindings
@@ -97,10 +97,10 @@ def PYB11generateModuleClassFuncs(modobj):
                 filename = modobj.basename + "_" + kname + ".cc"
                 modobj.generatedfiles_list.append(filename)
                 filename = os.path.join(modobj.basedir, filename)
-                with open(filename, "w") as f:
+                with open(PYB11filename(filename), "w") as f:
                     generateKlassCode(kname, klass, f.write)
             else:
-                with open(modobj.filename, "a") as f:
+                with open(PYB11filename(modobj.filename), "a") as f:
                     generateKlassCode(kname, klass, f.write)
 
     return

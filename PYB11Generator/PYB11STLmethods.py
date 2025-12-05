@@ -95,7 +95,7 @@ def PYB11generateModuleSTLmethod(modobj, stlobjs):
     modobj.generatedfiles_list.append(filename)
     name = modobj.PYB11modulename
     modincludefile = modobj.master_include_file
-    with open(os.path.join(modobj.basedir, filename), "w") as f:
+    with open(PYB11filename(os.path.join(modobj.basedir, filename)), "w") as f:
         ss = f.write
         ss(f'''//------------------------------------------------------------------------------
 // Bind STL for {name} module
@@ -118,21 +118,21 @@ void bindModuleSTLtypes(py::module_& m) {{
 def PYB11generateModuleSTL(modobj):
     stuff = PYB11STLobjs(modobj)
     if stuff:
-        with open(modobj.filename, "a") as f:
+        with open(PYB11filename(modobj.filename), "a") as f:
             ss = f.write
             ss("  //..............................................................................\n")
             ss("  // STL bindings\n")
 
         if False: # modobj.multiple_files:
             # Multiple files
-            with open(modobj.filename, "a") as f:
+            with open(PYB11filename(modobj.filename), "a") as f:
                 ss = f.write
                 ss("  bindModuleSTLtypes(m);\n\n")
             PYB11generateModuleSTLmethod(modobj, stuff)
 
         else:
             # Monolithic file
-            with open(modobj.filename, "a") as f:
+            with open(PYB11filename(modobj.filename), "a") as f:
                 ss = f.write
                 for (name, obj) in stuff:
                     ss("  ")

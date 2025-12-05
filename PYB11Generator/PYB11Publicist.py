@@ -31,10 +31,10 @@ def PYB11generateModulePublicists(modobj):
                     cppbasename = cppbasename.split("<")[0]
                 assert cppbasename
                 filename = os.path.join(modobj.basedir, modobj.basename + f"_{cppbasename}_publicist.hh")
-                with open(filename, "w") as f:
+                with open(PYB11filename(filename), "w") as f:
                     PYB11generatePublicist(modobj, klass, f.write)
             else:
-                with open(modobj.filename, "a") as f:
+                with open(PYB11filename(modobj.filename), "a") as f:
                     PYB11generatePublicist(modobj, klass, f.write)
     return
 

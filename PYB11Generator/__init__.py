@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
 # PYB11Generator
 #-------------------------------------------------------------------------------
-import inspect, sys, os
+import inspect, sys, os, subprocess
 from .PYB11config import *
 from .PYB11utils import *
 from .PYB11Decorators import *
@@ -20,7 +20,8 @@ def PYB11generateModule(modobj,
                         filename = None,
                         multiple_files = False,      # Optionally generate multiple pybind11 source files
                         generatedfiles = None,       # file name to create list of generated pybind11 source files if multiple_files = True
-                        default_holder_type = None): # change default holder type for this module
+                        default_holder_type = None,  # change default holder type for this module
+                        dry_run = False):            # Only compute the set of .cc files that would be created, but don't generate them (useful for configuration of builds)
     if modname is None:
         modname = modobj.__name__
     modobj.PYB11modulename = modname
@@ -42,7 +43,8 @@ def PYB11generateModule(modobj,
     modobj.master_include_file = "PYB11_module_" + basename + ".hh"
     modobj.generatedfiles_list = [tmp_filename]
 
-    # Set the default holder if needed
+    # Set global configuration
+    PYB11config().dry_run = dry_run
     if default_holder_type:
         PYB11config().default_holder_type = default_holder_type
 
@@ -73,7 +75,6 @@ def PYB11generateModule(modobj,
     # Write out our list of generated files
     with open(generatedfiles, "w") as f:
         ss = f.write
-        #ss(f"#  PYB11Generator generated files for module {modname}\n")
         for x in modobj.generatedfiles_list:
             ss(x + "\n")
 
@@ -90,7 +91,7 @@ def PYB11generateModuleStart(modobj):
 
     # Generate module starting comments and include master header
     faccess = "w" if modobj.multiple_files else "a"
-    with open(modobj.filename, faccess) as f:
+    with open(PYB11filename(modobj.filename), faccess) as f:
         ss = f.write
         incfile = modobj.master_include_file
         ss(f'''//------------------------------------------------------------------------------
@@ -101,7 +102,7 @@ def PYB11generateModuleStart(modobj):
 ''')
 
     # Make master include file
-    with open(os.path.join(modobj.basedir, modobj.master_include_file), "w") as f:
+    with open(PYB11filename(os.path.join(modobj.basedir, modobj.master_include_file)), "w") as f:
         ss = f.write
 
         ss(f"""//------------------------------------------------------------------------------
@@ -177,7 +178,7 @@ using namespace pybind11::literals;
         ss("\n#endif\n")
 
     # On to the module coding
-    with open(modobj.filename, "a") as f:
+    with open(PYB11filename(modobj.filename), "a") as f:
         ss = f.write
 
         # Trampolines
@@ -227,6 +228,6 @@ PYBIND11_MODULE(%(name)s, m) {
 # PYB11generateModuleClose
 #-------------------------------------------------------------------------------
 def PYB11generateModuleClose(modobj):
-    with open(modobj.filename, "a") as f:
+    with open(PYB11filename(modobj.filename), "a") as f:
         f.write("}\n")
     return

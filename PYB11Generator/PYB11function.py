@@ -13,7 +13,7 @@ import copy, io
 # Bind the methods in the module
 #-------------------------------------------------------------------------------
 def PYB11generateModuleFunctions(modobj):
-    with open(modobj.filename, "a") as f:
+    with open(PYB11filename(modobj.filename), "a") as f:
         ss = f.write
         methods = PYB11functions(modobj)
         if methods:

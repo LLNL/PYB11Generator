@@ -459,6 +459,12 @@ def PYB11findAllIncludes(modobj):
     return list(collections.OrderedDict.fromkeys(result))
 
 #-------------------------------------------------------------------------------
+# Wrap opening an output file and creating it's stream to support dry_run
+#-------------------------------------------------------------------------------
+def PYB11filename(filename):
+    return os.devnull if PYB11config().dry_run else filename
+
+#-------------------------------------------------------------------------------
 # PYB11attrs
 #
 # Read the possible PYB11 generation attributes from the obj

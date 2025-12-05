@@ -26,7 +26,5 @@ class PYB11config(metaclass=PYB11Singleton):
 
     def __init__(self):
         self.default_holder_type = "py::smart_holder"
+        self.dry_run = False
         return
-
-    def set_holder_type(self, val):
-        self.default_holder_type = val

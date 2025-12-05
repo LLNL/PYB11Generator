@@ -9,7 +9,7 @@ import sys, inspect
 #-------------------------------------------------------------------------------
 def PYB11generateModuleAttrs(modobj):
     
-    with open(modobj.filename, "a") as f:
+    with open(PYB11filename(modobj.filename), "a") as f:
         ss = f.write
 
         # Module attrs

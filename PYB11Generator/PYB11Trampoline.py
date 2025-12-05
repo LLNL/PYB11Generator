@@ -41,11 +41,11 @@ def PYB11generateModuleTrampolines(modobj):
                 cppbasename = cppbasename.split("<")[0]
             assert cppbasename
             filename = os.path.join(modobj.basedir, modobj.basename + f"_{cppbasename}_trampoline.hh")
-            with open(filename, "w") as f:
+            with open(PYB11filename(filename), "w") as f:
                 ss = f.write
                 PYB11generateTrampoline(modobj, klass, ss)
         else:
-            with open(modobj.filename, "a") as f:
+            with open(PYB11filename(modobj.filename), "a") as f:
                 ss = f.write
                 PYB11generateTrampoline(modobj, klass, ss)
     return

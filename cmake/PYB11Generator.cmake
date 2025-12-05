@@ -304,7 +304,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
     # Generate the pybind11 C++ files files and the list of those files
     set(ENV{PYTHONPATH} "${PYTHON_ENV}")
     execute_process(
-      COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE}
+      COMMAND ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE} "False"
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
@@ -330,7 +330,7 @@ macro(PYB11_GENERATE_BINDINGS package_name module_name PYB11_SOURCE GENERATED_FI
 
     add_custom_target(
       ${module_name}_src ALL
-      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE}
+      COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHON_ENV}" ${PYTHON_EXE} ${PYB11GENERATOR_ROOT_DIR}/cmake/generate_cpp.py ${pyb11_module} ${module_name} ${${package_name}_MULTIPLE_FILES} ${${package_name}_GENERATED_FILES} ${${package_name}_ALLOW_SKIPS} ${${package_name}_HOLDER_TYPE} "False"
       BYPRODUCTS current_${module_name}/${PYB11_GENERATED_SOURCE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
