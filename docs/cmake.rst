@@ -65,6 +65,7 @@ The full function specification for ``PYB11Generator_add_module`` is::
                                COMPILE_OPTIONS  ...
                                MULTIPLE_FILES   ON/OFF
                                GENERATED_FILES  ...
+                               HOLDER_TYPE      ...
                                USE_BLT          ON/OFF
                                PYTHONPATH       ...
                                ALLOW_SKIPS      ON/OFF)
@@ -103,6 +104,9 @@ MULTIPLE_FILES  ON/OFF (optional, default OFF) :
 
 GENERATED_FILES <arg> (optional) :
   Name for output file containing the list of C++ pybind11 output files
+
+HOLDER_TYPE ... (optional, default py::smart_holder)
+    Specify the holder_type for pybind11 to manage new C++ wrapped objects.
 
 USE_BLT ON/OFF (optional, default OFF) :
   For those using the BLT Cmake extension (https://llnl-blt.readthedocs.io/),
