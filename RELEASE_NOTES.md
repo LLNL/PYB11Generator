@@ -1,3 +1,16 @@
+Version vYYYY.MM.p -- Release date YYYY-MM-DD
+==============================================
+  * Important Notes:
+
+Notable changes include:
+
+  * New features / API changes:
+    * Extending PYB11keepalive to allow multiple calls per method/function
+
+  * Bug fixes:
+
+  * Build changes / improvements:
+
 Version v2026.05.0 -- Release date 2026-05-29
 ==============================================
   * Important Notes:
