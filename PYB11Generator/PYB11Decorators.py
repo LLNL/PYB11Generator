@@ -202,7 +202,9 @@ class PYB11keepalive:
         assert len(self.val) == 2
         return
     def __call__(self, thing):
-        thing.PYB11keepalive = self.val
+        if not hasattr(thing, "PYB11keepalive"):
+            thing.PYB11keepalive = []
+        thing.PYB11keepalive.append(self.val)
         return thing
 
 #-------------------------------------------------------------------------------

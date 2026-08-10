@@ -503,7 +503,7 @@ def PYB11attrs(obj):
          "noconvert"             : False,
          "implementation"        : None,
          "returnpolicy"          : None,
-         "keepalive"             : None,
+         "keepalive"             : [],
          "call_guard"            : None,
          "template"              : (),
          "template_dict"         : {},

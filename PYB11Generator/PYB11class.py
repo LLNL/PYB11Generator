@@ -352,9 +352,11 @@ def PYB11generic_class_method(klass, klassattrs, meth, methattrs, ss):
 
     # Is there a keep_alive policy?
     if methattrs["keepalive"]:
-        assert isinstance(methattrs["keepalive"], tuple)
-        assert len(methattrs["keepalive"]) == 2
-        ss(", py::keep_alive<%i, %i>()" % methattrs["keepalive"])
+        assert isinstance(methattrs["keepalive"], list)
+        for stuff in methattrs["keepalive"]:
+            assert isinstance(stuff, tuple)
+            assert len(stuff) == 2
+            ss(", py::keep_alive<%i, %i>()" % stuff)
 
     # Write the doc string
     doc = inspect.getdoc(meth)
